@@ -24,6 +24,10 @@ type PortalShellProps = {
   page: PortalPage;
   selectedPostSlug?: string;
   selectedAnnouncementSlug?: string;
+  selectedAnnouncementRequestSlug?: string;
+  selectedSocialHubSection?: "benefits" | "clubs";
+  selectedSocialHubItem?: string;
+  isAnnouncementEdit?: boolean;
 };
 function withRole(href: string, role: Role) {
   return `${href}?role=${role}`;
@@ -37,13 +41,41 @@ function getRoleHref(pathname: string, role: Role) {
   return withRole(pathname, role);
 }
 
+function getNotifications(language: Lang, role: Role) {
+  if (language === "tr") {
+    return role === "admin"
+      ? [
+          { text: "İkinci el telefon ilanına 4 yeni beğeni geldi.", href: "/blog/selling-iphone-13" },
+          { text: "Kiralık ev paylaşımına 2 yeni yorum geldi.", href: "/blog/seeking-rental-near-office" },
+          { text: "Ürün ekibinden yeni bir duyuru talebi geldi.", href: "/announcements/requests" },
+        ]
+      : [
+          { text: "Kiralık ev paylaşımına 3 yeni yorum geldi.", href: "/blog/seeking-rental-near-office" },
+          { text: "İkinci el telefon ilanınız 5 beğeni aldı.", href: "/blog/selling-iphone-13" },
+          { text: "Tişört hediyesi için yeni bir duyuru yayınlandı.", href: "/announcements/tshirt-gift" },
+        ];
+  }
+
+  return role === "admin"
+    ? [
+        { text: "Your second-hand phone post received 4 new likes.", href: "/blog/selling-iphone-13" },
+        { text: "Your rental post received 2 new comments.", href: "/blog/seeking-rental-near-office" },
+        { text: "A new announcement request came from the product team.", href: "/announcements/requests" },
+      ]
+    : [
+        { text: "Your rental post received 3 new comments.", href: "/blog/seeking-rental-near-office" },
+        { text: "Your second-hand phone post got 5 likes.", href: "/blog/selling-iphone-13" },
+        { text: "A new tshirt gift announcement was published.", href: "/announcements/tshirt-gift" },
+      ];
+}
+
 function getText(language: Lang) {
   if (language === "tr") {
     return {
       nav: {
         adminDashboard: "Yönetici paneli",
         announcements: "Duyurular",
-        blogManagement: "Blog yönetimi",
+        blogManagement: "Blog",
         documents: "Dokümanlar",
         formSubmissions: "Form gönderimleri",
         socialHubSettings: "Social Hub ayarları",
@@ -51,23 +83,27 @@ function getText(language: Lang) {
         socialHub: "Social Hub",
       },
       headings: {
-        dashboard: { title: "Panel", description: "Güncellemeler, dokümanlar, formlar ve sosyal aktiviteler özeti." },
+        dashboard: { title: "Panel", description: "" },
         announcements: { title: "Duyurular", description: "" },
         announcementRequest: { title: "Duyuru Talebi", description: "" },
+        announcementRequests: { title: "Duyurular", description: "" },
+        announcementCreate: { title: "Duyuru Oluştur", description: "" },
+        announcementEdit: { title: "Duyuru Düzenle", description: "" },
         blog: { title: "Blog", description: "" },
         publish: { title: "Yayınla", description: "" },
         documents: { title: "Dokümanlar", description: "" },
         forms: { title: "Formlar", description: "Form gönderimleri ve şirket içi talepler." },
         socialHub: { title: "Social Hub", description: "" },
+        socialHubEdit: { title: "Social Hub Güncelle", description: "" },
       },
       dashboard: {
         hero: "Şirket güncellemeleri, HR dokümanları, iç formlar ve sosyal aktiviteler için tek yer.",
         openAnnouncements: "Duyuruları aç",
         openHrHub: "HR Hub'ı aç",
         quickSnapshot: "Hızlı görünüm",
-        adminPriorities: "Yönetici öncelikleri",
+        adminPriorities: "",
         todayAtGlance: "Bugünün özeti",
-        contentSubmissionsActivity: "İçerik, gönderimler ve hareketlilik",
+        contentSubmissionsActivity: "",
         updatesDocumentsActions: "Güncellemeler, dokümanlar ve işlemler",
         blog: "Blog",
         reviewPosts: "Blog gönderilerini incele",
@@ -82,10 +118,14 @@ function getText(language: Lang) {
         social: "Sosyal",
         socialHubTitle: "Social Hub",
         socialHubDesc: "Kulüpler, aktiviteler ve MultiSport seçeneklerini görüntüle.",
+        monthly: "Aylık",
+        weekly: "Haftalık",
+        daily: "Günlük",
       },
       announcements: {
         teamAnnouncement: "Ekibimizin bir duyurusu var",
-        back: "Duyurulara dön",
+        requests: "Talepler",
+        back: "Geri",
         notFound: "Duyuru bulunamadı",
         tshirtForm: "Tişört formu",
         employeeEmail: "Çalışan e-postası",
@@ -93,10 +133,25 @@ function getText(language: Lang) {
         size: "Beden",
         submit: "Gönder",
         requestTitle: "Bir duyuru talebi paylaş",
+        requestsTitle: "Duyuru talepleri",
+        createTitle: "Yeni duyuru oluştur",
+        addForm: "Form ekle",
+        formTemplate: "Form şablonu",
+        attachment: "Ek dosya ekle (görsel, video)",
+        requestOwner: "Talep sahibi",
+        requestTeam: "Ekip",
+        approve: "Onayla",
+        reject: "Reddet",
         teamName: "Ekip adı",
         announcementTitle: "Duyuru başlığı",
         announcementContent: "Duyuru içeriği",
         sendToAdmin: "Yöneticiye gönder",
+        edit: "Düzenle",
+        editTitle: "Duyuruyu düzenle",
+        save: "Değişiklikleri kaydet",
+        delete: "Duyuruyu sil",
+        detail: "Kısa açıklama",
+        body: "Detay içeriği",
       },
       blog: {
         postModeration: "Paylaşım moderasyonu",
@@ -105,10 +160,12 @@ function getText(language: Lang) {
         publish: "Yayınla",
         todaysBirthdays: "Bugünün doğum günleri",
         postNotFound: "Paylaşım bulunamadı",
-        backToPosts: "Blog'a dön",
+        backToPosts: "Geri",
         sharedBy: "Paylaşan",
         unlike: "Beğenmekten vazgeç",
         like: "Beğen",
+        delete: "Sil",
+        views: "Görüntülenme",
         comments: "Yorumlar",
         writeComment: "Yorum yaz...",
         postComment: "Yorumu gönder",
@@ -169,10 +226,16 @@ function getText(language: Lang) {
         reading: "Farklı departmanlardan ekip arkadaşlarıyla aylık kitap seçimleri ve küçük buluşmalar yapılır.",
         foodie: "Ekip öğle yemeği keşifleri, çevre önerileri ve zaman zaman iş çıkışı tadımlar düzenlenir.",
         haliSaha: "Eğlenceli haftalık futbol seansı isteyen herkes için halı saha maçları organize edilir.",
-        update: "Kulüp bilgilerini güncelle",
+        update: "Ekle",
+        edit: "Düzenle",
+        updateBenefits: "Ekle",
+        updateTitle: "Social Hub güncelle",
+        updateSectionBenefits: "Sosyal haklar",
+        updateSectionClubs: "Kulüpler",
       },
       common: {
         search: "Ara",
+        notifications: "Bildirimler",
         createAnnouncement: "Duyuru oluştur",
         adminDashboard: "Yönetici paneli",
         announcements: "Duyurular",
@@ -185,7 +248,7 @@ function getText(language: Lang) {
     nav: {
       adminDashboard: "Admin dashboard",
       announcements: "Announcements",
-      blogManagement: "Blog management",
+      blogManagement: "Blog",
       documents: "Documents",
       formSubmissions: "Form submissions",
       socialHubSettings: "Social Hub settings",
@@ -193,23 +256,27 @@ function getText(language: Lang) {
       socialHub: "Social Hub",
     },
     headings: {
-      dashboard: { title: "Dashboard", description: "Overview of updates, documents, forms, and social activities." },
+      dashboard: { title: "Dashboard", description: "" },
       announcements: { title: "Announcements", description: "" },
       announcementRequest: { title: "Announcement Request", description: "" },
+      announcementRequests: { title: "Announcements", description: "" },
+      announcementCreate: { title: "Create Announcement", description: "" },
+      announcementEdit: { title: "Edit Announcement", description: "" },
       blog: { title: "Blog", description: "" },
       publish: { title: "Publish", description: "" },
       documents: { title: "Documents", description: "" },
       forms: { title: "Forms", description: "Submission tracking and internal request forms." },
       socialHub: { title: "Social Hub", description: "" },
+      socialHubEdit: { title: "Update Social Hub", description: "" },
     },
     dashboard: {
       hero: "One place for company updates, HR documents, internal forms, and social activities.",
       openAnnouncements: "Open announcements",
       openHrHub: "Open HR Hub",
       quickSnapshot: "Quick snapshot",
-      adminPriorities: "Admin priorities",
+      adminPriorities: "",
       todayAtGlance: "Today at a glance",
-      contentSubmissionsActivity: "Content, submissions, and activity",
+      contentSubmissionsActivity: "",
       updatesDocumentsActions: "Updates, documents, and actions",
       blog: "Blog",
       reviewPosts: "Review posts",
@@ -224,10 +291,14 @@ function getText(language: Lang) {
       social: "Social",
       socialHubTitle: "Social Hub",
       socialHubDesc: "View clubs, activities, and MultiSport options.",
+      monthly: "Monthly",
+      weekly: "Weekly",
+      daily: "Daily",
     },
     announcements: {
       teamAnnouncement: "Our team has an announcement",
-      back: "Back to announcements",
+      requests: "Requests",
+      back: "Back",
       notFound: "Announcement not found",
       tshirtForm: "Tshirt form",
       employeeEmail: "Employee email",
@@ -235,10 +306,25 @@ function getText(language: Lang) {
       size: "Size",
       submit: "Submit",
       requestTitle: "Share an announcement request",
+      requestsTitle: "Announcement requests",
+      createTitle: "Create a new announcement",
+      addForm: "Add form",
+      formTemplate: "Form template",
+      attachment: "Add attachment (image, video)",
+      requestOwner: "Request owner",
+      requestTeam: "Team",
+      approve: "Approve",
+      reject: "Reject",
       teamName: "Team name",
       announcementTitle: "Announcement title",
       announcementContent: "Announcement content",
       sendToAdmin: "Send to admin",
+      edit: "Edit",
+      editTitle: "Edit announcement",
+      save: "Save changes",
+      delete: "Delete announcement",
+      detail: "Short description",
+      body: "Detail content",
     },
     blog: {
       postModeration: "Post moderation",
@@ -247,10 +333,12 @@ function getText(language: Lang) {
       publish: "Publish",
       todaysBirthdays: "Today's birthdays",
       postNotFound: "Post not found",
-      backToPosts: "Back to posts",
+      backToPosts: "Back",
       sharedBy: "Shared by",
       unlike: "Unlike",
       like: "Like",
+      delete: "Delete",
+      views: "Views",
       comments: "Comments",
       writeComment: "Write a comment...",
       postComment: "Post comment",
@@ -311,10 +399,16 @@ function getText(language: Lang) {
       reading: "Monthly book selections and small discussion meetups with teammates from different departments.",
       foodie: "Team lunch discoveries, neighborhood recommendations, and occasional after-work tastings.",
       haliSaha: "Casual five-a-side games organized for anyone who wants a fun weekly football session.",
-      update: "Update club information",
+      update: "Add",
+      edit: "Edit",
+      updateBenefits: "Add",
+      updateTitle: "Update Social Hub",
+      updateSectionBenefits: "Social benefits",
+      updateSectionClubs: "Clubs",
     },
     common: {
       search: "Search",
+      notifications: "Notifications",
       createAnnouncement: "Create announcement",
       adminDashboard: "Admin Dashboard",
       announcements: "Announcements",
@@ -377,76 +471,79 @@ function DashboardPage({ role, language }: { role: Role; language: Lang }) {
 
   return (
     <div className="space-y-6">
-      <section className={`grid gap-6 ${isAdmin ? "xl:grid-cols-[1.3fr_0.7fr]" : "xl:grid-cols-1"}`}>
-        {isAdmin ? (
-          <div className="overflow-hidden rounded-3xl bg-slate-950 p-6 text-white shadow-xl sm:p-8">
-            <span className="rounded-full bg-emerald-400/15 px-3 py-1 text-xs font-medium text-emerald-200">
-              {roleLabel(role, language)}
-            </span>
-            <h2 className="mt-4 max-w-2xl text-3xl font-semibold tracking-tight sm:text-4xl">
-              {t.dashboard.hero}
-            </h2>
-            <div className="mt-6 flex flex-wrap gap-3">
-              <ButtonLink href={withRole("/announcements", role)} variant="light">
-                {t.dashboard.openAnnouncements}
-              </ButtonLink>
-              <ButtonLink href={withRole("/documents", role)} variant="outline">
-                {t.dashboard.openHrHub}
-              </ButtonLink>
-            </div>
-          </div>
-        ) : null}
-
-        <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+        {!isAdmin ? (
           <SectionTitle
             eyebrow={t.dashboard.quickSnapshot}
-            title={isAdmin ? t.dashboard.adminPriorities : t.dashboard.todayAtGlance}
-            description={isAdmin ? t.dashboard.contentSubmissionsActivity : t.dashboard.updatesDocumentsActions}
+            title={t.dashboard.todayAtGlance}
+            description={t.dashboard.updatesDocumentsActions}
           />
-          <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
-            {stats.map((stat) => (
+        ) : null}
+        <div className={`${isAdmin ? "grid gap-3 sm:grid-cols-2" : "mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-1"}`}>
+          {stats.map((stat) => {
+            const isPortalLogins = stat.label === "Portal logins" || stat.label === "Portal girişleri";
+
+            return (
               <div key={stat.label} className="rounded-2xl bg-slate-50 p-4">
                 <p className="text-sm text-slate-500">{stat.label}</p>
                 <p className="mt-2 text-2xl font-semibold text-slate-950">{stat.value}</p>
                 <p className="mt-1 text-sm text-slate-500">{stat.helper}</p>
+                {isPortalLogins ? (
+                  <div className="mt-4 grid grid-cols-3 gap-2 text-center">
+                    <div className="rounded-xl bg-white px-2 py-2">
+                      <p className="text-[11px] text-slate-500">{t.dashboard.monthly}</p>
+                      <p className="mt-1 text-sm font-semibold text-slate-950">1,284</p>
+                    </div>
+                    <div className="rounded-xl bg-white px-2 py-2">
+                      <p className="text-[11px] text-slate-500">{t.dashboard.weekly}</p>
+                      <p className="mt-1 text-sm font-semibold text-slate-950">312</p>
+                    </div>
+                    <div className="rounded-xl bg-white px-2 py-2">
+                      <p className="text-[11px] text-slate-500">{t.dashboard.daily}</p>
+                      <p className="mt-1 text-sm font-semibold text-slate-950">47</p>
+                    </div>
+                  </div>
+                ) : null}
               </div>
-            ))}
-          </div>
+            );
+          })}
         </div>
       </section>
 
-      <section className="grid gap-6 xl:grid-cols-3">
-        <Link
-          href={withRole("/blog", role)}
-          className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition hover:border-sky-200"
-        >
-          <SectionTitle
-            eyebrow={t.dashboard.blog}
-            title={isAdmin ? t.dashboard.reviewPosts : t.dashboard.employeePosts}
-            description={isAdmin ? t.dashboard.moderatePosts : t.dashboard.coworkerSharing}
-          />
-        </Link>
-        <Link
-          href={withRole("/forms", role)}
-          className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition hover:border-sky-200"
-        >
-          <SectionTitle
-            eyebrow={t.dashboard.forms}
-            title={isAdmin ? t.dashboard.trackSubmissions : t.dashboard.openForms}
-            description={isAdmin ? t.dashboard.reviewExport : t.dashboard.completeRequests}
-          />
-        </Link>
-        <Link
-          href={withRole("/social-hub", role)}
-          className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition hover:border-sky-200"
-        >
-          <SectionTitle
-            eyebrow={t.dashboard.social}
-            title={t.dashboard.socialHubTitle}
-            description={t.dashboard.socialHubDesc}
-          />
-        </Link>
-      </section>
+      {!isAdmin ? (
+        <section className="grid gap-6 xl:grid-cols-3">
+          <Link
+            href={withRole("/blog", role)}
+            className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition hover:border-sky-200"
+          >
+            <SectionTitle
+              eyebrow={t.dashboard.blog}
+              title={t.dashboard.employeePosts}
+              description={t.dashboard.coworkerSharing}
+            />
+          </Link>
+          <Link
+            href={withRole("/forms", role)}
+            className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition hover:border-sky-200"
+          >
+            <SectionTitle
+              eyebrow={t.dashboard.forms}
+              title={t.dashboard.openForms}
+              description={t.dashboard.completeRequests}
+            />
+          </Link>
+          <Link
+            href={withRole("/social-hub", role)}
+            className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition hover:border-sky-200"
+          >
+            <SectionTitle
+              eyebrow={t.dashboard.social}
+              title={t.dashboard.socialHubTitle}
+              description={t.dashboard.socialHubDesc}
+            />
+          </Link>
+        </section>
+      ) : null}
     </div>
   );
 }
@@ -457,13 +554,19 @@ function AnnouncementsPage({ role, language }: { role: Role; language: Lang }) {
 
   return (
     <div className="space-y-4">
-      {role === "employee" ? (
-        <div className="flex justify-end">
+      <div className="flex justify-end gap-3">
+        {role === "admin" ? (
+          <ButtonLink href={withRole("/announcements/requests", role)} variant="outline">
+            {t.announcements.requests}
+          </ButtonLink>
+        ) : null}
+
+        {role === "employee" ? (
           <ButtonLink href={withRole("/announcements/request", role)}>
             {t.announcements.teamAnnouncement}
           </ButtonLink>
-        </div>
-      ) : null}
+        ) : null}
+      </div>
 
       <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
         <div className="space-y-4">
@@ -496,19 +599,36 @@ function AnnouncementDetailPage({ role, slug, language }: { role: Role; slug: st
 
   return (
     <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-      <Link
-        href={withRole("/announcements", role)}
-        className="inline-flex rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-900"
-      >
-        {t.announcements.back}
-      </Link>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <Link
+          href={withRole("/announcements", role)}
+          className="inline-flex rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-900"
+        >
+          ← {t.announcements.back}
+        </Link>
+
+        {role === "admin" ? (
+          <ButtonLink href={withRole(`/announcements/${slug}/edit`, role)} variant="outline">
+            {t.announcements.edit}
+          </ButtonLink>
+        ) : null}
+      </div>
       <h2 className="mt-6 text-2xl font-semibold text-sky-800">{announcement.title}</h2>
-      <p className="mt-3 text-sm leading-6 text-slate-600">{announcement.detail}</p>
+
+      <p className="mt-6 text-sm leading-6 text-slate-600">{announcement.detail}</p>
       <div className="mt-6 space-y-4 text-sm leading-7 text-slate-700">
         {announcement.body.map((paragraph) => (
           <p key={paragraph}>{paragraph}</p>
         ))}
       </div>
+
+      {role === "admin" ? (
+        <div className="mt-6 flex justify-end">
+          <div className="rounded-full bg-slate-50 px-4 py-2 text-xs text-slate-500">
+            Views: <span className="font-semibold text-slate-900">20</span>
+          </div>
+        </div>
+      ) : null}
 
       {announcement.hasForm ? (
         <div className="mt-8 rounded-3xl border border-slate-200 bg-slate-50 p-5">
@@ -532,6 +652,255 @@ function AnnouncementDetailPage({ role, slug, language }: { role: Role; slug: st
           </div>
         </div>
       ) : null}
+    </div>
+  );
+}
+
+function getAnnouncementRequests(language: Lang) {
+  return language === "tr"
+    ? [
+        {
+          slug: "product-sprint-demo",
+          owner: "Merve A.",
+          team: "Ürün Ekibi",
+          title: "Yeni sprint demosu duyurusu",
+          content: "Cuma günü yapılacak sprint demosunu tüm çalışanlarla paylaşmak istiyoruz.",
+        },
+        {
+          slug: "volunteer-day-call",
+          owner: "Can B.",
+          team: "People & Culture",
+          title: "Gönüllülük günü katılım çağrısı",
+          content: "Önümüzdeki ay yapılacak gönüllülük günü için çalışan katılımı topluyoruz.",
+        },
+      ]
+    : [
+        {
+          slug: "product-sprint-demo",
+          owner: "Merve A.",
+          team: "Product Team",
+          title: "New sprint demo announcement",
+          content: "We want to share Friday's sprint demo with all employees.",
+        },
+        {
+          slug: "volunteer-day-call",
+          owner: "Can B.",
+          team: "People & Culture",
+          title: "Volunteer day participation call",
+          content: "We are collecting employee participation for next month's volunteer day.",
+        },
+      ];
+}
+
+function AnnouncementRequestsPage({ role, language }: { role: Role; language: Lang }) {
+  const t = getText(language);
+  const requests = getAnnouncementRequests(language);
+
+  return (
+    <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      <SectionTitle title={t.announcements.requestsTitle} description="" />
+      <div className="mt-6 space-y-4">
+        {requests.map((request) => (
+          <Link
+            key={request.slug}
+            href={withRole(`/announcements/requests/${request.slug}`, role)}
+            className="block rounded-2xl border border-slate-200 p-4 transition hover:bg-sky-50"
+          >
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <h3 className="font-medium text-slate-950">{request.title}</h3>
+              <p className="text-sm text-slate-500">{t.announcements.requestOwner}: {request.owner}</p>
+            </div>
+            <p className="mt-2 text-sm text-slate-500">{t.announcements.requestTeam}: {request.team}</p>
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function AnnouncementRequestDetailPage({ role, slug, language }: { role: Role; slug: string; language: Lang }) {
+  const t = getText(language);
+  const request = getAnnouncementRequests(language).find((item) => item.slug === slug);
+
+  if (!request) {
+    return (
+      <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+        <SectionTitle title={t.announcements.notFound} description="" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      <Link
+        href={withRole("/announcements/requests", role)}
+        className="inline-flex rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-900"
+      >
+        ← {t.announcements.back}
+      </Link>
+
+      <h2 className="mt-6 text-2xl font-semibold text-sky-800">{request.title}</h2>
+      <p className="mt-3 text-sm text-slate-500">{t.announcements.requestOwner}: {request.owner}</p>
+      <p className="mt-1 text-sm text-slate-500">{t.announcements.requestTeam}: {request.team}</p>
+      <p className="mt-6 text-sm leading-6 text-slate-600">{request.content}</p>
+
+      <div className="mt-6 flex flex-wrap gap-3">
+        <button
+          type="button"
+          className="rounded-2xl bg-sky-700 px-4 py-2 text-sm font-medium text-white shadow-sm"
+        >
+          {t.announcements.approve}
+        </button>
+        <button
+          type="button"
+          className="rounded-2xl border border-red-200 bg-red-50 px-4 py-2 text-sm font-medium text-red-700 shadow-sm"
+        >
+          {t.announcements.reject}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function AnnouncementCreatePage({ language }: { role: Role; language: Lang }) {
+  const t = getText(language);
+  const [title, setTitle] = useState("");
+  const [detail, setDetail] = useState("");
+  const [body, setBody] = useState("");
+  const [formAdded, setFormAdded] = useState(false);
+
+  return (
+    <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      <SectionTitle title={t.announcements.createTitle} description="" />
+
+      <div className="mt-6 space-y-4">
+        <input
+          value={title}
+          onChange={(event) => setTitle(event.target.value)}
+          className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
+          placeholder={t.announcements.announcementTitle}
+        />
+        <input
+          value={detail}
+          onChange={(event) => setDetail(event.target.value)}
+          className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
+          placeholder={t.announcements.detail}
+        />
+        <textarea
+          value={body}
+          onChange={(event) => setBody(event.target.value)}
+          className="h-48 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
+          placeholder={t.announcements.body}
+        />
+        <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-500">
+          {t.announcements.attachment}
+        </div>
+
+        {formAdded ? (
+          <div className="rounded-3xl border border-slate-200 bg-slate-50 p-5">
+            <SectionTitle title={t.announcements.formTemplate} description="" />
+            <div className="mt-4 space-y-3">
+              <div className="rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-500">
+                {t.announcements.employeeEmail}
+              </div>
+              <div className="rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-500">
+                {t.announcements.name}
+              </div>
+              <div className="rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-500">
+                {t.announcements.size}
+              </div>
+              <button
+                type="button"
+                className="rounded-2xl bg-sky-700 px-4 py-3 text-sm font-medium text-white shadow-sm"
+              >
+                {t.announcements.submit}
+              </button>
+            </div>
+          </div>
+        ) : null}
+      </div>
+
+      <div className="mt-6 flex flex-wrap gap-3">
+        <button
+          type="button"
+          onClick={() => setFormAdded(true)}
+          className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm font-medium text-slate-900 shadow-sm"
+        >
+          {t.announcements.addForm}
+        </button>
+        <button
+          type="button"
+          className="rounded-2xl bg-sky-700 px-4 py-3 text-sm font-medium text-white shadow-sm"
+        >
+          {t.announcements.save}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function AnnouncementEditPage({ role, slug, language }: { role: Role; slug: string; language: Lang }) {
+  const t = getText(language);
+  const announcement = getAnnouncementBySlug(slug, language);
+  const [title, setTitle] = useState(announcement?.title ?? "");
+  const [detail, setDetail] = useState(announcement?.detail ?? "");
+  const [body, setBody] = useState(announcement?.body.join("\n\n") ?? "");
+
+  if (!announcement) {
+    return (
+      <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+        <SectionTitle title={t.announcements.notFound} description="" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <SectionTitle title={t.announcements.editTitle} description="" />
+        <Link
+          href={withRole("/announcements", role)}
+          className="inline-flex rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-900"
+        >
+          ← {t.announcements.back}
+        </Link>
+      </div>
+
+      <div className="mt-6 space-y-4">
+        <input
+          value={title}
+          onChange={(event) => setTitle(event.target.value)}
+          className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
+          placeholder={t.announcements.announcementTitle}
+        />
+        <input
+          value={detail}
+          onChange={(event) => setDetail(event.target.value)}
+          className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
+          placeholder={t.announcements.detail}
+        />
+        <textarea
+          value={body}
+          onChange={(event) => setBody(event.target.value)}
+          className="h-48 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
+          placeholder={t.announcements.body}
+        />
+      </div>
+
+      <div className="mt-6 flex flex-wrap gap-3">
+        <button
+          type="button"
+          className="rounded-2xl bg-sky-700 px-4 py-3 text-sm font-medium text-white shadow-sm"
+        >
+          {t.announcements.save}
+        </button>
+        <button
+          type="button"
+          className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700 shadow-sm"
+        >
+          {t.announcements.delete}
+        </button>
+      </div>
     </div>
   );
 }
@@ -637,12 +1006,23 @@ function BlogPostPage({ role, slug, language }: { role: Role; slug: string; lang
   return (
     <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
       <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-        <Link
-          href={withRole("/blog", role)}
-          className="inline-flex rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-900"
-        >
-          {t.blog.backToPosts}
-        </Link>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <Link
+            href={withRole("/blog", role)}
+            className="inline-flex rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-900"
+          >
+            ← {t.blog.backToPosts}
+          </Link>
+
+          {role === "admin" ? (
+            <button
+              type="button"
+              className="rounded-full border border-red-200 bg-red-50 px-4 py-2 text-sm font-medium text-red-700 shadow-sm"
+            >
+              {t.blog.delete}
+            </button>
+          ) : null}
+        </div>
         <h2 className="mt-6 text-2xl font-semibold text-sky-800">{post.title}</h2>
         <p className="mt-2 text-sm text-slate-500">{t.blog.sharedBy} {post.author}</p>
 
@@ -668,6 +1048,12 @@ function BlogPostPage({ role, slug, language }: { role: Role; slug: string; lang
           >
             {liked ? t.blog.unlike : t.blog.like} · {likes}
           </button>
+        </div>
+
+        <div className="mt-6 flex justify-end">
+          <div className="rounded-full bg-slate-50 px-4 py-2 text-xs text-slate-500">
+            {t.blog.views}: <span className="font-semibold text-slate-900">20</span>
+          </div>
         </div>
       </div>
 
@@ -783,7 +1169,7 @@ function DocumentsPage({ role, language }: { role: Role; language: Lang }) {
               <h3 className="font-medium text-slate-950">{document.name}</h3>
             </div>
             <ButtonLink
-              href={withRole(document.href, role)}
+              href={withRole(role === "admin" ? "/documents" : document.href, role)}
             >
               {document.action}
             </ButtonLink>
@@ -844,107 +1230,172 @@ function FormsPage({ role, language }: { role: Role; language: Lang }) {
   );
 }
 
-function SocialHubPage({ role, language }: { role: Role; language: Lang }) {
-  const isAdmin = role === "admin";
-  const t = getText(language);
-
+function ExpandableSocialItem({
+  title,
+  content,
+  editHref,
+  isAdmin,
+  editLabel,
+}: {
+  title: string;
+  content: string;
+  editHref: string;
+  isAdmin: boolean;
+  editLabel: string;
+}) {
   const summaryClassName =
     "flex cursor-pointer list-none items-center justify-between gap-3 font-medium text-slate-950";
 
   return (
+    <div className="flex items-start gap-3">
+      <details className="flex-1 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+        <summary className={summaryClassName}>
+          <span>{title}</span>
+          <span className="text-slate-500">▾</span>
+        </summary>
+        <p className="mt-3 text-sm leading-6 text-slate-600">{content}</p>
+      </details>
+
+      {isAdmin ? (
+        <ButtonLink href={editHref} variant="outline">
+          {editLabel}
+        </ButtonLink>
+      ) : null}
+    </div>
+  );
+}
+
+function SocialHubPage({ role, language }: { role: Role; language: Lang }) {
+  const isAdmin = role === "admin";
+  const t = getText(language);
+
+  return (
     <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
       <SectionTitle
-        eyebrow={isAdmin ? t.socialHub.admin : undefined}
         title={isAdmin ? t.socialHub.manage : t.socialHub.openInfo}
         description=""
       />
 
       <div className="mt-6 space-y-6">
         <div>
-          <h3 className="text-lg font-semibold text-sky-800">{t.socialHub.benefits}</h3>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h3 className="text-lg font-semibold text-sky-800">{t.socialHub.benefits}</h3>
+            {isAdmin ? (
+              <ButtonLink href={withRole("/social-hub/edit?section=benefits", role)} variant="outline">
+                {t.socialHub.updateBenefits}
+              </ButtonLink>
+            ) : null}
+          </div>
           <div className="mt-3 space-y-3">
-            <details className="rounded-2xl border border-slate-200 bg-slate-50 p-4" open>
-              <summary className={summaryClassName}>
-                <span>{t.socialHub.multiSportTitle}</span>
-                <span className="text-slate-500">▾</span>
-              </summary>
-              <p className="mt-3 text-sm leading-6 text-slate-600">
-                {t.socialHub.multiSport}
-              </p>
-            </details>
+            <ExpandableSocialItem
+              title={t.socialHub.multiSportTitle}
+              content={t.socialHub.multiSport}
+              editHref={withRole("/social-hub/edit?section=benefits&item=multisport", role)}
+              isAdmin={isAdmin}
+              editLabel={t.socialHub.edit}
+            />
 
-            <details className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-              <summary className={summaryClassName}>
-                <span>{t.socialHub.dieticianTitle}</span>
-                <span className="text-slate-500">▾</span>
-              </summary>
-              <p className="mt-3 text-sm leading-6 text-slate-600">
-                {t.socialHub.dietician}
-              </p>
-            </details>
+            <ExpandableSocialItem
+              title={t.socialHub.dieticianTitle}
+              content={t.socialHub.dietician}
+              editHref={withRole("/social-hub/edit?section=benefits&item=dietician", role)}
+              isAdmin={isAdmin}
+              editLabel={t.socialHub.edit}
+            />
           </div>
         </div>
 
         <div>
-          <h3 className="text-lg font-semibold text-sky-800">{t.socialHub.clubs}</h3>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h3 className="text-lg font-semibold text-sky-800">{t.socialHub.clubs}</h3>
+            {isAdmin ? (
+              <ButtonLink href={withRole("/social-hub/edit?section=clubs", role)} variant="outline">
+                {t.socialHub.update}
+              </ButtonLink>
+            ) : null}
+          </div>
           <div className="mt-3 space-y-3">
-            <details className="rounded-2xl border border-slate-200 bg-slate-50 p-4" open>
-              <summary className={summaryClassName}>
-                <span>{t.socialHub.rowingTitle}</span>
-                <span className="text-slate-500">▾</span>
-              </summary>
-              <p className="mt-3 text-sm leading-6 text-slate-600">
-                {t.socialHub.rowing}
-              </p>
-            </details>
+            <ExpandableSocialItem
+              title={t.socialHub.rowingTitle}
+              content={t.socialHub.rowing}
+              editHref={withRole("/social-hub/edit?section=clubs&item=rowing", role)}
+              isAdmin={isAdmin}
+              editLabel={t.socialHub.edit}
+            />
 
-            <details className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-              <summary className={summaryClassName}>
-                <span>{t.socialHub.footballTitle}</span>
-                <span className="text-slate-500">▾</span>
-              </summary>
-              <p className="mt-3 text-sm leading-6 text-slate-600">
-                {t.socialHub.football}
-              </p>
-            </details>
+            <ExpandableSocialItem
+              title={t.socialHub.footballTitle}
+              content={t.socialHub.football}
+              editHref={withRole("/social-hub/edit?section=clubs&item=football", role)}
+              isAdmin={isAdmin}
+              editLabel={t.socialHub.edit}
+            />
 
-            <details className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-              <summary className={summaryClassName}>
-                <span>{t.socialHub.readingTitle}</span>
-                <span className="text-slate-500">▾</span>
-              </summary>
-              <p className="mt-3 text-sm leading-6 text-slate-600">
-                {t.socialHub.reading}
-              </p>
-            </details>
+            <ExpandableSocialItem
+              title={t.socialHub.readingTitle}
+              content={t.socialHub.reading}
+              editHref={withRole("/social-hub/edit?section=clubs&item=reading", role)}
+              isAdmin={isAdmin}
+              editLabel={t.socialHub.edit}
+            />
 
-            <details className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-              <summary className={summaryClassName}>
-                <span>{t.socialHub.foodieTitle}</span>
-                <span className="text-slate-500">▾</span>
-              </summary>
-              <p className="mt-3 text-sm leading-6 text-slate-600">
-                {t.socialHub.foodie}
-              </p>
-            </details>
+            <ExpandableSocialItem
+              title={t.socialHub.foodieTitle}
+              content={t.socialHub.foodie}
+              editHref={withRole("/social-hub/edit?section=clubs&item=foodie", role)}
+              isAdmin={isAdmin}
+              editLabel={t.socialHub.edit}
+            />
 
-            <details className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-              <summary className={summaryClassName}>
-                <span>{t.socialHub.haliSahaTitle}</span>
-                <span className="text-slate-500">▾</span>
-              </summary>
-              <p className="mt-3 text-sm leading-6 text-slate-600">
-                {t.socialHub.haliSaha}
-              </p>
-            </details>
+            <ExpandableSocialItem
+              title={t.socialHub.haliSahaTitle}
+              content={t.socialHub.haliSaha}
+              editHref={withRole("/social-hub/edit?section=clubs&item=hali-saha", role)}
+              isAdmin={isAdmin}
+              editLabel={t.socialHub.edit}
+            />
           </div>
         </div>
 
-        {isAdmin ? (
-          <ButtonLink href={withRole("/social-hub", role)} variant="outline">
-            {t.socialHub.update}
-          </ButtonLink>
-        ) : null}
+      </div>
+    </div>
+  );
+}
+
+function SocialHubEditPage({
+  language,
+  section,
+  item,
+}: {
+  role: Role;
+  language: Lang;
+  section: "benefits" | "clubs";
+  item?: string;
+}) {
+  const t = getText(language);
+  const isBenefits = section === "benefits";
+
+  return (
+    <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      <SectionTitle title={t.socialHub.updateTitle} description="" />
+      <div className="mt-6 rounded-2xl bg-slate-50 p-4 text-sm font-medium text-slate-700">
+        {item ?? (isBenefits ? t.socialHub.updateSectionBenefits : t.socialHub.updateSectionClubs)}
+      </div>
+      <div className="mt-4 space-y-4">
+        <input
+          className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none"
+          placeholder={item ?? (isBenefits ? t.socialHub.updateSectionBenefits : t.socialHub.updateSectionClubs)}
+        />
+        <textarea
+          className="h-48 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none"
+          placeholder={item ?? (isBenefits ? t.socialHub.updateSectionBenefits : t.socialHub.updateSectionClubs)}
+        />
+        <button
+          type="button"
+          className="rounded-2xl bg-sky-700 px-4 py-3 text-sm font-medium text-white shadow-sm"
+        >
+          {t.announcements.save}
+        </button>
       </div>
     </div>
   );
@@ -956,6 +1407,9 @@ function renderPage(
   language: Lang,
   selectedPostSlug?: string,
   selectedAnnouncementSlug?: string,
+  selectedAnnouncementRequestSlug?: string,
+  selectedSocialHubSection?: "benefits" | "clubs",
+  selectedSocialHubItem?: string,
 ) {
   switch (page) {
     case "announcements":
@@ -964,6 +1418,16 @@ function renderPage(
         : <AnnouncementsPage role={role} language={language} />;
     case "announcement-request":
       return <AnnouncementRequestPage role={role} language={language} />;
+    case "announcement-requests":
+      return selectedAnnouncementRequestSlug
+        ? <AnnouncementRequestDetailPage role={role} slug={selectedAnnouncementRequestSlug} language={language} />
+        : <AnnouncementRequestsPage role={role} language={language} />;
+    case "announcement-create":
+      return <AnnouncementCreatePage role={role} language={language} />;
+    case "announcement-edit":
+      return selectedAnnouncementSlug
+        ? <AnnouncementEditPage role={role} slug={selectedAnnouncementSlug} language={language} />
+        : <AnnouncementsPage role={role} language={language} />;
     case "blog":
       return selectedPostSlug
         ? <BlogPostPage role={role} slug={selectedPostSlug} language={language} />
@@ -973,9 +1437,13 @@ function renderPage(
     case "documents":
       return <DocumentsPage role={role} language={language} />;
     case "forms":
-      return <FormsPage role={role} language={language} />;
+      return role === "admin"
+        ? <AnnouncementsPage role={role} language={language} />
+        : <FormsPage role={role} language={language} />;
     case "social-hub":
       return <SocialHubPage role={role} language={language} />;
+    case "social-hub-edit":
+      return <SocialHubEditPage role={role} language={language} section={selectedSocialHubSection ?? "benefits"} item={selectedSocialHubItem} />;
     default:
       return role === "admin"
         ? <DashboardPage role={role} language={language} />
@@ -988,21 +1456,25 @@ export default function PortalShell({
   page,
   selectedPostSlug,
   selectedAnnouncementSlug,
+  selectedAnnouncementRequestSlug,
+  selectedSocialHubSection,
+  selectedSocialHubItem,
 }: PortalShellProps) {
   const pathname = usePathname();
   const [language, setLanguage] = useState<Lang>(() => {
     if (typeof window === "undefined") return "en";
     return getLang(window.localStorage.getItem("token-hub-language") ?? undefined);
   });
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
 
   const t = getText(language);
+  const notifications = getNotifications(language, role);
   const navLinks = role === "admin"
     ? [
         { label: t.nav.adminDashboard, href: "/" },
         { label: t.nav.announcements, href: "/announcements" },
         { label: t.nav.blogManagement, href: "/blog" },
         { label: t.nav.documents, href: "/documents" },
-        { label: t.nav.formSubmissions, href: "/forms" },
         { label: t.nav.socialHubSettings, href: "/social-hub" },
       ]
     : [
@@ -1015,13 +1487,21 @@ export default function PortalShell({
     page === "dashboard"
       ? {
           title: role === "admin" ? t.common.adminDashboard : t.common.announcements,
-          description: role === "admin" ? t.headings.dashboard.description : "",
+          description: "",
         }
       : page === "announcement-request"
         ? t.headings.announcementRequest
-        : page === "social-hub"
+        : page === "announcement-requests"
+          ? t.headings.announcementRequests
+          : page === "announcement-create"
+            ? t.headings.announcementCreate
+            : page === "announcement-edit"
+              ? t.headings.announcementEdit
+          : page === "social-hub"
           ? t.headings.socialHub
-          : t.headings[page];
+          : page === "social-hub-edit"
+            ? t.headings.socialHubEdit
+            : t.headings[page];
 
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top,_#eff6ff,_#f8fafc_40%,_#eef2ff_100%)] text-slate-900">
@@ -1052,6 +1532,22 @@ export default function PortalShell({
               );
             })}
           </nav>
+
+          <div className="mt-auto rounded-full border border-white/10 bg-white/5 p-1">
+            {(["employee", "admin"] as Role[]).map((option) => (
+              <Link
+                key={option}
+                href={getRoleHref(pathname, option)}
+                className={`inline-flex rounded-full px-4 py-2 text-sm font-medium transition ${
+                  role === option
+                    ? "bg-white text-slate-950 shadow-sm"
+                    : "text-slate-300 hover:text-white"
+                }`}
+              >
+                {roleLabel(option, language)}
+              </Link>
+            ))}
+          </div>
         </aside>
 
         <div className="flex-1">
@@ -1072,20 +1568,48 @@ export default function PortalShell({
                     {t.common.search}
                   </div>
 
-                  <div className="rounded-full border border-slate-200 bg-slate-50 p-1">
-                    {(["employee", "admin"] as Role[]).map((option) => (
-                      <Link
-                        key={option}
-                        href={getRoleHref(pathname, option)}
-                        className={`rounded-full px-4 py-2 text-sm font-medium transition ${
-                          role === option
-                            ? "bg-slate-950 !text-white shadow-sm"
-                            : "!text-slate-700 hover:!text-slate-950"
-                        }`}
-                      >
-                        {roleLabel(option, language)}
-                      </Link>
-                    ))}
+                  <div className="relative">
+                    <button
+                      type="button"
+                      onClick={() => setNotificationsOpen((current) => !current)}
+                      className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm"
+                    >
+                      <span className="inline-flex items-center gap-2">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1.8"
+                          className="h-4 w-4"
+                          aria-hidden="true"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M14.857 17H20l-1.405-1.405A2.03 2.03 0 0 1 18 14.158V11a6.002 6.002 0 0 0-4-5.659V5a2 2 0 1 0-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5.143M14.857 17a3.001 3.001 0 0 1-5.714 0m5.714 0H9.143"
+                          />
+                        </svg>
+                        <span>{notifications.length}</span>
+                      </span>
+                    </button>
+
+                    {notificationsOpen ? (
+                      <div className="absolute right-0 top-full z-30 mt-2 w-80 rounded-3xl border border-slate-200 bg-white p-4 shadow-xl">
+                        <div className="space-y-3">
+                          {notifications.map((item) => (
+                            <Link
+                              key={item.text}
+                              href={withRole(item.href, role)}
+                              onClick={() => setNotificationsOpen(false)}
+                              className="block rounded-2xl bg-slate-50 p-3 text-sm leading-6 text-slate-600 transition hover:bg-sky-50"
+                            >
+                              {item.text}
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    ) : null}
                   </div>
 
                   <div className="rounded-full border border-slate-200 bg-slate-50 p-1">
@@ -1111,7 +1635,7 @@ export default function PortalShell({
                   </div>
 
                   {role === "admin" ? (
-                    <ButtonLink href={withRole("/announcements", role)}>
+                    <ButtonLink href={withRole("/announcements/create", role)}>
                       {t.common.createAnnouncement}
                     </ButtonLink>
                   ) : null}
@@ -1141,7 +1665,7 @@ export default function PortalShell({
           </header>
 
           <main className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
-            {renderPage(page, role, language, selectedPostSlug, selectedAnnouncementSlug)}
+            {renderPage(page, role, language, selectedPostSlug, selectedAnnouncementSlug, selectedAnnouncementRequestSlug, selectedSocialHubSection, selectedSocialHubItem)}
           </main>
         </div>
       </div>

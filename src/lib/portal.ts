@@ -4,11 +4,15 @@ export type PortalPage =
   | "dashboard"
   | "announcements"
   | "announcement-request"
+  | "announcement-requests"
+  | "announcement-create"
+  | "announcement-edit"
   | "blog"
   | "publish"
   | "documents"
   | "forms"
-  | "social-hub";
+  | "social-hub"
+  | "social-hub-edit";
 
 export function getRole(role?: string): Role {
   return role === "admin" ? "admin" : "employee";
@@ -336,15 +340,11 @@ export function getEmployeeStats(lang: Lang) {
 export function getAdminStats(lang: Lang) {
   return lang === "tr"
     ? [
-        { label: "Bekleyen onaylar", value: "8", helper: "İlanlar + dokümanlar" },
-        { label: "Aktif çalışan paylaşımları", value: "19", helper: "Pazar yeri, tavsiye, kiralık" },
         { label: "Form gönderimleri", value: "126", helper: "Dışa aktarıma hazır" },
-        { label: "Çalışan kullanımı", value: "92%", helper: "Bu ay portal girişi" },
+        { label: "Portal girişleri", value: "1,284", helper: "Bu ay toplam giriş" },
       ]
     : [
-        { label: "Pending approvals", value: "8", helper: "Posts + documents" },
-        { label: "Active employee posts", value: "19", helper: "Marketplace, advice, housing" },
         { label: "Form submissions", value: "126", helper: "Export ready" },
-        { label: "Employee adoption", value: "92%", helper: "Portal logins this month" },
+        { label: "Portal logins", value: "1,284", helper: "Total this month" },
       ];
 }
