@@ -73,12 +73,13 @@ function getText(language: Lang) {
   if (language === "tr") {
     return {
       nav: {
-        adminDashboard: "Yönetici paneli",
+        adminDashboard: "Yönetici Paneli",
         announcements: "Duyurular",
         blogManagement: "Blog",
         documents: "Dokümanlar",
-        formSubmissions: "Form gönderimleri",
-        socialHubSettings: "Social Hub ayarları",
+        welcomeOnBoard: "Welcome On Board",
+        formSubmissions: "Form Gönderimleri",
+        socialHubSettings: "Social Hub",
         blog: "Blog",
         socialHub: "Social Hub",
       },
@@ -92,6 +93,7 @@ function getText(language: Lang) {
         blog: { title: "Blog", description: "" },
         publish: { title: "Yayınla", description: "" },
         documents: { title: "Dokümanlar", description: "" },
+        "welcome-on-board": { title: "Welcome On Board", description: "" },
         forms: { title: "Formlar", description: "Form gönderimleri ve şirket içi talepler." },
         socialHub: { title: "Social Hub", description: "" },
         socialHubEdit: { title: "Social Hub Güncelle", description: "" },
@@ -191,6 +193,30 @@ function getText(language: Lang) {
       documents: {
         search: "Doküman, form, rehber ara...",
       },
+      welcomeOnBoard: {
+        usefulLinks: "Faydalı linkler",
+        basicProcesses: "Ofis başlangıç bilgileri",
+        expenseTitle: "Masraf ve satın alma",
+        expenseDesc: "Masraf girişleri, satın alma süreçleri, fiş yükleme ve onay takibi.",
+        itTitle: "IT destek talepleri",
+        itDesc: "Laptop, erişim, ekipman ve teknik destek kayıtları.",
+        hrTitle: "İK self servis",
+        hrDesc: "Kişisel bilgiler, bordro ve çalışan bilgileri.",
+        printerTitle: "Şirket yazıcısı nasıl kullanılır?",
+        printerDesc: "Yazıcıya bağlan, güvenli baskı kodunu gir ve çıktını teslim al.",
+        wifiTitle: "Şirket Wi‑Fi ağları",
+        wifiDesc: "Office-Employee ana ağ, Office-Guest misafir ağı ve bağlantı bilgileri.",
+        idCardTitle: "Şirket giriş kartı",
+        idCardDesc: "Yeni kart talebi, kayıp kart bildirimi ve ofis erişim süreci.",
+        add: "Ekle",
+        edit: "Düzenle",
+        delete: "Sil",
+        save: "Kaydet",
+        cancel: "İptal",
+        itemTitle: "Başlık",
+        itemDescription: "Açıklama",
+        itemLink: "Link",
+      },
       forms: {
         eyebrow: "Formlar",
         tracking: "Gönderim takibi",
@@ -208,12 +234,13 @@ function getText(language: Lang) {
       },
       socialHub: {
         admin: "Yönetici",
-        openInfo: "Sosyal bilgileri aç",
-        manage: "Sosyal aktiviteleri yönet",
-        benefits: "Sosyal haklar",
+        openInfo: "Sosyal Bilgileri Aç",
+        manage: "Social Hub",
+        benefits: "Sosyal Haklar",
         clubs: "Kulüpler",
         multiSportTitle: "MultiSport",
         dieticianTitle: "Diyetisyen",
+        camblyTitle: "Cambly",
         rowingTitle: "Kürek Kulübü",
         footballTitle: "Futbol Takımı",
         readingTitle: "Kitap Kulübü",
@@ -221,6 +248,7 @@ function getText(language: Lang) {
         haliSahaTitle: "Halı Saha Grubu",
         multiSport: "Çalışanlar şirket destekli erişim ile anlaşmalı spor salonları ve wellness noktalarında MultiSport kullanabilir.",
         dietician: "Çalışanlar şirket diyetisyen desteği ile beslenme, sağlıklı rutinler ve kişisel iyi yaşam planlaması konusunda yönlendirme alabilir.",
+        cambly: "Çalışanlar Cambly üzerinden yabancı dil pratiği yapabilir ve şirket destekli konuşma seanslarına erişebilir.",
         rowing: "Kürek takımımız Golden Horn Water Sports Club'da antrenman yapıyor ve kurumsal yarışmalara hazırlanıyor. Daha fazla bilgi için Murat Yalçın ile iletişime geçebilirsiniz.",
         football: "Takıma katılmak isteyen çalışanlar için haftalık antrenmanlar ve şirket maçları düzenlenir.",
         reading: "Farklı departmanlardan ekip arkadaşlarıyla aylık kitap seçimleri ve küçük buluşmalar yapılır.",
@@ -236,8 +264,8 @@ function getText(language: Lang) {
       common: {
         search: "Ara",
         notifications: "Bildirimler",
-        createAnnouncement: "Duyuru oluştur",
-        adminDashboard: "Yönetici paneli",
+        createAnnouncement: "Duyuru Oluştur",
+        adminDashboard: "Yönetici Paneli",
         announcements: "Duyurular",
         commentTimeNow: "Şimdi",
       },
@@ -246,12 +274,13 @@ function getText(language: Lang) {
 
   return {
     nav: {
-      adminDashboard: "Admin dashboard",
+      adminDashboard: "Admin Dashboard",
       announcements: "Announcements",
       blogManagement: "Blog",
       documents: "Documents",
-      formSubmissions: "Form submissions",
-      socialHubSettings: "Social Hub settings",
+      welcomeOnBoard: "Welcome On Board",
+      formSubmissions: "Form Submissions",
+      socialHubSettings: "Social Hub",
       blog: "Blog",
       socialHub: "Social Hub",
     },
@@ -265,6 +294,7 @@ function getText(language: Lang) {
       blog: { title: "Blog", description: "" },
       publish: { title: "Publish", description: "" },
       documents: { title: "Documents", description: "" },
+      "welcome-on-board": { title: "Welcome On Board", description: "" },
       forms: { title: "Forms", description: "Submission tracking and internal request forms." },
       socialHub: { title: "Social Hub", description: "" },
       socialHubEdit: { title: "Update Social Hub", description: "" },
@@ -364,6 +394,30 @@ function getText(language: Lang) {
     documents: {
       search: "Search documents, forms, guides...",
     },
+    welcomeOnBoard: {
+      usefulLinks: "Useful links",
+      basicProcesses: "Office essentials",
+      expenseTitle: "Expense and purchasing",
+      expenseDesc: "Submit expenses, manage purchasing flows, upload receipts, and track approvals.",
+      itTitle: "IT ticket site",
+      itDesc: "Create requests for laptop, access, equipment, and tech support.",
+      hrTitle: "HR self service",
+      hrDesc: "Access personal details, payroll, and employee information.",
+      printerTitle: "How to use the company printer",
+      printerDesc: "Connect to the printer, enter your secure print code, and collect your pages.",
+      wifiTitle: "Company Wi‑Fi networks",
+      wifiDesc: "Office-Employee for staff, Office-Guest for visitors, plus connection details.",
+      idCardTitle: "Company ID card",
+      idCardDesc: "Request a new card, report a lost card, and review office access steps.",
+      add: "Add",
+      edit: "Edit",
+      delete: "Delete",
+      save: "Save",
+      cancel: "Cancel",
+      itemTitle: "Title",
+      itemDescription: "Description",
+      itemLink: "Link",
+    },
     forms: {
       eyebrow: "Forms",
       tracking: "Submission tracking",
@@ -381,12 +435,13 @@ function getText(language: Lang) {
     },
     socialHub: {
       admin: "Admin",
-      openInfo: "Open social information",
-      manage: "Manage social activities",
-      benefits: "Social benefits",
+      openInfo: "Open Social Information",
+      manage: "Social Hub",
+      benefits: "Social Benefits",
       clubs: "Clubs",
       multiSportTitle: "MultiSport",
       dieticianTitle: "Dietician",
+      camblyTitle: "Cambly",
       rowingTitle: "Rowing Club",
       footballTitle: "Football Team",
       readingTitle: "Reading Club",
@@ -394,6 +449,7 @@ function getText(language: Lang) {
       haliSahaTitle: "Halı Saha Group",
       multiSport: "Employees can use MultiSport for partner gyms and wellness locations with company-supported access.",
       dietician: "Employees can get guidance on nutrition, healthy routines, and personal wellness planning through the company dietician support option.",
+      cambly: "Employees can use Cambly for language practice and access company-supported speaking sessions.",
       rowing: "Our rowing team trains at the Golden Horn Water Sports Club and prepares for corporate competitions. For more information, you can contact Murat Yalçın.",
       football: "Weekly training sessions and company matches for employees who want to join the squad.",
       reading: "Monthly book selections and small discussion meetups with teammates from different departments.",
@@ -409,7 +465,7 @@ function getText(language: Lang) {
     common: {
       search: "Search",
       notifications: "Notifications",
-      createAnnouncement: "Create announcement",
+      createAnnouncement: "Create Announcement",
       adminDashboard: "Admin Dashboard",
       announcements: "Announcements",
       commentTimeNow: "Just now",
@@ -461,6 +517,33 @@ function ButtonLink({
     >
       {children}
     </Link>
+  );
+}
+
+function RoleToggle({ pathname, role, language }: { pathname: string; role: Role; language: Lang }) {
+  return (
+    <div className="rounded-3xl border border-white/10 bg-white/5 p-1.5">
+      <div className="grid grid-cols-2 gap-1">
+        {(["employee", "admin"] as Role[]).map((option) => {
+          const active = role === option;
+
+          return (
+            <Link
+              key={option}
+              href={getRoleHref(pathname, option)}
+              aria-current={active ? "page" : undefined}
+              className={`flex items-center justify-center rounded-2xl px-4 py-3 text-sm font-semibold transition ${
+                active
+                  ? "bg-sky-500 text-white shadow-sm"
+                  : "text-slate-200 hover:bg-white/10 hover:text-white"
+              }`}
+            >
+              {roleLabel(option, language)}
+            </Link>
+          );
+        })}
+      </div>
+    </div>
   );
 }
 
@@ -1180,6 +1263,214 @@ function DocumentsPage({ role, language }: { role: Role; language: Lang }) {
   );
 }
 
+function WelcomeOnBoardPage({ role, language }: { role: Role; language: Lang }) {
+  return <WelcomeOnBoardContent key={language} role={role} language={language} />;
+}
+
+function WelcomeOnBoardContent({ role, language }: { role: Role; language: Lang }) {
+  const t = getText(language);
+  const isAdmin = role === "admin";
+  const defaultLinks = [
+    {
+      id: "expense",
+      title: t.welcomeOnBoard.expenseTitle,
+      description: t.welcomeOnBoard.expenseDesc,
+      href: "https://t-flow.tokeninc.com/Default.aspx#596AE49D-77EB-4BF6-9D8B-5E9472670E9F/views/",
+    },
+    {
+      id: "it",
+      title: t.welcomeOnBoard.itTitle,
+      description: t.welcomeOnBoard.itDesc,
+      href: "https://t-hub.tokeninc.com/",
+    },
+    {
+      id: "hr",
+      title: t.welcomeOnBoard.hrTitle,
+      description: t.welcomeOnBoard.hrDesc,
+      href: "https://token.orchestra-bu.com/Account?ReturnUrl=%2F#/home",
+    },
+  ];
+  const defaultProcesses = [
+    { id: "printer", title: t.welcomeOnBoard.printerTitle, description: t.welcomeOnBoard.printerDesc },
+    { id: "wifi", title: t.welcomeOnBoard.wifiTitle, description: t.welcomeOnBoard.wifiDesc },
+    { id: "id-card", title: t.welcomeOnBoard.idCardTitle, description: t.welcomeOnBoard.idCardDesc },
+  ];
+  const [links, setLinks] = useState<Array<{ id: string; title: string; description: string; href?: string }>>(defaultLinks);
+  const [processes, setProcesses] = useState<Array<{ id: string; title: string; description: string; href?: string }>>(defaultProcesses);
+  const [editor, setEditor] = useState<{
+    section: "links" | "processes";
+    itemId?: string;
+    title: string;
+    description: string;
+    href: string;
+  } | null>(null);
+
+  const getShortUrl = (href?: string) => {
+    if (!href) return "";
+    try {
+      return new URL(href).hostname.replace(/^www\./, "");
+    } catch {
+      return href;
+    }
+  };
+
+  const openEditor = (section: "links" | "processes", item?: { id: string; title: string; description: string; href?: string }) => {
+    setEditor({
+      section,
+      itemId: item?.id,
+      title: item?.title ?? "",
+      description: item?.description ?? "",
+      href: item?.href ?? "",
+    });
+  };
+
+  const closeEditor = () => setEditor(null);
+
+  const saveEditor = () => {
+    if (!editor) return;
+
+    const nextItem = {
+      id: editor.itemId ?? `${editor.section}-${Date.now()}`,
+      title: editor.title,
+      description: editor.description,
+      href: editor.section === "links" ? editor.href : undefined,
+    };
+
+    if (editor.section === "links") {
+      setLinks((current) =>
+        editor.itemId
+          ? current.map((item) => (item.id === editor.itemId ? nextItem : item))
+          : [...current, nextItem],
+      );
+    } else {
+      setProcesses((current) =>
+        editor.itemId
+          ? current.map((item) => (item.id === editor.itemId ? nextItem : item))
+          : [...current, nextItem],
+      );
+    }
+
+    closeEditor();
+  };
+
+  const deleteItem = (section: "links" | "processes", itemId: string) => {
+    if (section === "links") {
+      setLinks((current) => current.filter((item) => item.id !== itemId));
+      return;
+    }
+
+    setProcesses((current) => current.filter((item) => item.id !== itemId));
+  };
+
+  const renderSection = (
+    section: "links" | "processes",
+    title: string,
+    items: Array<{ id: string; title: string; description: string; href?: string }>,
+  ) => (
+    <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="flex items-center justify-between gap-3">
+        <SectionTitle title={title} description="" />
+        {isAdmin ? (
+          <button
+            type="button"
+            onClick={() => openEditor(section)}
+            className="rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-900 shadow-sm"
+          >
+            {t.welcomeOnBoard.add}
+          </button>
+        ) : null}
+      </div>
+
+      {isAdmin && editor?.section === section ? (
+        <div className="mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+          <div className="space-y-3">
+            <input
+              value={editor.title}
+              onChange={(event) => setEditor((current) => (current ? { ...current, title: event.target.value } : current))}
+              className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none"
+              placeholder={t.welcomeOnBoard.itemTitle}
+            />
+            <textarea
+              value={editor.description}
+              onChange={(event) => setEditor((current) => (current ? { ...current, description: event.target.value } : current))}
+              className="h-28 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none"
+              placeholder={t.welcomeOnBoard.itemDescription}
+            />
+            {section === "links" ? (
+              <input
+                value={editor.href}
+                onChange={(event) => setEditor((current) => (current ? { ...current, href: event.target.value } : current))}
+                className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none"
+                placeholder={t.welcomeOnBoard.itemLink}
+              />
+            ) : null}
+            <div className="flex flex-wrap gap-3">
+              <button
+                type="button"
+                onClick={saveEditor}
+                className="rounded-2xl bg-sky-700 px-4 py-3 text-sm font-medium text-white shadow-sm"
+              >
+                {t.welcomeOnBoard.save}
+              </button>
+              <button
+                type="button"
+                onClick={closeEditor}
+                className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm font-medium text-slate-900 shadow-sm"
+              >
+                {t.welcomeOnBoard.cancel}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      <div className="mt-6 space-y-3">
+        {items.map((item) => (
+          <div key={item.id} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h3 className="font-medium text-slate-900">{item.title}</h3>
+                <p className="mt-1 text-sm text-slate-500">{item.description}</p>
+                {item.href ? (
+                  <a
+                    href={item.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="mt-2 inline-flex text-xs font-medium text-sky-700 hover:text-sky-800"
+                  >
+                    {getShortUrl(item.href)}
+                  </a>
+                ) : null}
+              </div>
+
+              {isAdmin ? (
+                <div className="flex shrink-0 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => openEditor(section, item)}
+                    className="rounded-full border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-900 shadow-sm"
+                  >
+                    {t.welcomeOnBoard.edit}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => deleteItem(section, item.id)}
+                    className="rounded-full border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-medium text-red-700 shadow-sm"
+                  >
+                    {t.welcomeOnBoard.delete}
+                  </button>
+                </div>
+              ) : null}
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+
+  return <div className="grid gap-6 xl:grid-cols-2">{renderSection("links", t.welcomeOnBoard.usefulLinks, links)}{renderSection("processes", t.welcomeOnBoard.basicProcesses, processes)}</div>;
+}
+
 function FormsPage({ role, language }: { role: Role; language: Lang }) {
   const isAdmin = role === "admin";
   const t = getText(language);
@@ -1299,6 +1590,14 @@ function SocialHubPage({ role, language }: { role: Role; language: Lang }) {
               title={t.socialHub.dieticianTitle}
               content={t.socialHub.dietician}
               editHref={withRole("/social-hub/edit?section=benefits&item=dietician", role)}
+              isAdmin={isAdmin}
+              editLabel={t.socialHub.edit}
+            />
+
+            <ExpandableSocialItem
+              title={t.socialHub.camblyTitle}
+              content={t.socialHub.cambly}
+              editHref={withRole("/social-hub/edit?section=benefits&item=cambly", role)}
               isAdmin={isAdmin}
               editLabel={t.socialHub.edit}
             />
@@ -1436,6 +1735,8 @@ function renderPage(
       return <PublishPage role={role} language={language} />;
     case "documents":
       return <DocumentsPage role={role} language={language} />;
+    case "welcome-on-board":
+      return <WelcomeOnBoardPage role={role} language={language} />;
     case "forms":
       return role === "admin"
         ? <AnnouncementsPage role={role} language={language} />
@@ -1476,12 +1777,14 @@ export default function PortalShell({
         { label: t.nav.blogManagement, href: "/blog" },
         { label: t.nav.documents, href: "/documents" },
         { label: t.nav.socialHubSettings, href: "/social-hub" },
+        { label: t.nav.welcomeOnBoard, href: "/welcome-on-board" },
       ]
     : [
         { label: t.nav.announcements, href: "/announcements" },
         { label: t.nav.blog, href: "/blog" },
         { label: t.nav.documents, href: "/documents" },
         { label: t.nav.socialHub, href: "/social-hub" },
+        { label: t.nav.welcomeOnBoard, href: "/welcome-on-board" },
       ];
   const heading =
     page === "dashboard"
@@ -1506,7 +1809,7 @@ export default function PortalShell({
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top,_#eff6ff,_#f8fafc_40%,_#eef2ff_100%)] text-slate-900">
       <div className="mx-auto flex min-h-screen max-w-[1600px]">
-        <aside className="hidden w-72 flex-col border-r border-white/60 bg-slate-950 px-6 py-8 text-slate-100 shadow-2xl lg:flex">
+        <aside className="sticky top-0 hidden h-screen w-72 flex-col border-r border-white/60 bg-slate-950 px-6 py-8 text-slate-100 shadow-2xl lg:flex">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.3em] text-sky-300">
               Token Hub
@@ -1533,20 +1836,8 @@ export default function PortalShell({
             })}
           </nav>
 
-          <div className="mt-auto rounded-full border border-white/10 bg-white/5 p-1">
-            {(["employee", "admin"] as Role[]).map((option) => (
-              <Link
-                key={option}
-                href={getRoleHref(pathname, option)}
-                className={`inline-flex rounded-full px-4 py-2 text-sm font-medium transition ${
-                  role === option
-                    ? "bg-white text-slate-950 shadow-sm"
-                    : "text-slate-300 hover:text-white"
-                }`}
-              >
-                {roleLabel(option, language)}
-              </Link>
-            ))}
+          <div className="mt-auto pt-4">
+            <RoleToggle pathname={pathname} role={role} language={language} />
           </div>
         </aside>
 

@@ -10,6 +10,7 @@ export type PortalPage =
   | "blog"
   | "publish"
   | "documents"
+  | "welcome-on-board"
   | "forms"
   | "social-hub"
   | "social-hub-edit";
