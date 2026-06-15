@@ -82,6 +82,17 @@ const announcementBase = [
     publishedAt: "June 6, 2026 · 14:20",
     hasForm: true,
   },
+  {
+    slug: "concert-ticket-gift",
+    title: "Concert Ticket Gift",
+    detail: "Enter the draw for the company concert ticket gift.",
+    body: [
+      "We are gifting concert tickets to a limited number of employees as part of our summer social activities.",
+      "Please fill out the form below with your details and concert preference so we can include you in the draw.",
+    ],
+    publishedAt: "June 10, 2026 · 10:15",
+    hasForm: true,
+  },
 ] as const satisfies Announcement[];
 
 const announcementTr: Record<string, Omit<Announcement, "slug" | "hasForm">> = {
@@ -123,6 +134,15 @@ const announcementTr: Record<string, Omit<Announcement, "slug" | "hasForm">> = {
       "Paketinizi doğru hazırlayabilmemiz için lütfen aşağıdaki formu e-posta, ad ve beden bilgilerinizle doldurun.",
     ],
     publishedAt: "6 Haziran 2026 · 14:20",
+  },
+  "concert-ticket-gift": {
+    title: "Konser Bileti Hediyesi",
+    detail: "Şirket konser bileti hediyesi çekilişi için bilgilerinizi girin.",
+    body: [
+      "Yaz sosyal etkinlikleri kapsamında sınırlı sayıda çalışanımıza konser bileti hediye ediyoruz.",
+      "Sizi çekilişe dahil edebilmemiz için lütfen aşağıdaki formu bilgileriniz ve konser tercihinizle doldurun.",
+    ],
+    publishedAt: "10 Haziran 2026 · 10:15",
   },
 };
 

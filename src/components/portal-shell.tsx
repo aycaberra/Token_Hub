@@ -393,10 +393,12 @@ function getText(language: Lang) {
         requests: "Talepler",
         back: "Geri",
         notFound: "Duyuru bulunamadı",
-        tshirtForm: "Tişört formu",
-        employeeEmail: "Çalışan e-postası",
+        tshirtForm: "Tişört Formu",
+        concertForm: "Konser Bileti Formu",
+        employeeEmail: "Çalışan E-Postası",
         name: "Ad",
         size: "Beden",
+        concertPreference: "Konser Tercihi",
         submit: "Gönder",
         requestTitle: "Bir duyuru talebi paylaş",
         requestsTitle: "Duyuru talepleri",
@@ -483,6 +485,7 @@ function getText(language: Lang) {
         itemTitle: "Başlık",
         itemDescription: "Açıklama",
         itemLink: "Link",
+        itemContent: "İçerik",
         },
       forms: {
         eyebrow: "Formlar",
@@ -597,10 +600,12 @@ function getText(language: Lang) {
       requests: "Requests",
       back: "Back",
       notFound: "Announcement not found",
-      tshirtForm: "Tshirt form",
-      employeeEmail: "Employee email",
+      tshirtForm: "Tshirt Form",
+      concertForm: "Concert Ticket Form",
+      employeeEmail: "Employee Email",
       name: "Name",
       size: "Size",
+      concertPreference: "Concert Preference",
       submit: "Submit",
       requestTitle: "Share an announcement request",
       requestsTitle: "Announcement requests",
@@ -687,6 +692,7 @@ function getText(language: Lang) {
       itemTitle: "Title",
       itemDescription: "Description",
       itemLink: "Link",
+      itemContent: "Content",
     },
     forms: {
       eyebrow: "Forms",
@@ -975,6 +981,8 @@ function AnnouncementDetailPage({ role, slug, language }: { role: Role; slug: st
     );
   }
 
+  const isConcertGift = announcement.slug === "concert-ticket-gift";
+
   return (
     <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -1014,7 +1022,7 @@ function AnnouncementDetailPage({ role, slug, language }: { role: Role; slug: st
 
       {announcement.hasForm ? (
         <div className="mt-8 rounded-3xl border border-slate-200 bg-slate-50 p-5">
-          <SectionTitle title={t.announcements.tshirtForm} description="" />
+          <SectionTitle title={isConcertGift ? t.announcements.concertForm : t.announcements.tshirtForm} description="" />
           <div className="mt-4 space-y-3">
             <div className="rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-500">
               {t.announcements.employeeEmail}
@@ -1023,7 +1031,7 @@ function AnnouncementDetailPage({ role, slug, language }: { role: Role; slug: st
               {t.announcements.name}
             </div>
             <div className="rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-500">
-              {t.announcements.size}
+              {isConcertGift ? t.announcements.concertPreference : t.announcements.size}
             </div>
             <button
               type="button"
@@ -2019,16 +2027,10 @@ function WelcomeOnBoardDetailPage({ role, language, slug }: { role: Role; langua
               placeholder={t.welcomeOnBoard.itemTitle}
             />
             <textarea
-              value={item.description}
-              onChange={(event) => setItem((current) => (current ? { ...current, description: event.target.value } : current))}
-              className="h-24 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none"
-              placeholder={t.welcomeOnBoard.itemDescription}
-            />
-            <textarea
               value={item.body.join("\n\n")}
               onChange={(event) => setItem((current) => (current ? { ...current, body: event.target.value.split("\n\n") } : current))}
               className="h-40 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none"
-              placeholder={t.welcomeOnBoard.itemDescription}
+              placeholder={t.welcomeOnBoard.itemContent}
             />
             {item.href ? (
               <input
@@ -2156,8 +2158,8 @@ function ExpandableSocialItem({
     : "bg-emerald-50 text-emerald-700 ring-emerald-100";
 
   return (
-    <div className="flex items-start gap-3">
-      <div className="flex-1 rounded-2xl bg-white p-4 ring-1 ring-slate-200 transition hover:ring-slate-300">
+    <div className={isAdmin ? "grid grid-cols-[minmax(0,1fr)_88px] items-start gap-3" : "block"}>
+      <div className="rounded-2xl bg-white p-4 ring-1 ring-slate-200 transition hover:ring-slate-300">
         <button
           type="button"
           onClick={() => onToggle(id)}
@@ -2177,9 +2179,12 @@ function ExpandableSocialItem({
       </div>
 
       {isAdmin ? (
-        <ButtonLink href={editHref} variant="outline">
+        <Link
+          href={editHref}
+          className="inline-flex h-[52px] w-full items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-900 shadow-sm transition hover:border-sky-200 hover:text-sky-800"
+        >
           {editLabel}
-        </ButtonLink>
+        </Link>
       ) : null}
     </div>
   );
