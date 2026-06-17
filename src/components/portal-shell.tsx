@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import {
   getAdminStats,
@@ -28,10 +28,20 @@ type PortalShellProps = {
   selectedAnnouncementSlug?: string;
   selectedAnnouncementRequestSlug?: string;
   selectedDocumentSlug?: string;
+  selectedCourseSlug?: string;
   selectedWelcomeOnBoardSlug?: string;
   selectedSocialHubSection?: "benefits" | "clubs";
   selectedSocialHubItem?: string;
   isAnnouncementEdit?: boolean;
+};
+
+type CourseItem = {
+  id: string;
+  title: string;
+  description: string;
+  mandatory: boolean;
+  dueDate?: string;
+  audience: string;
 };
 
 type NotificationItem = {
@@ -243,6 +253,23 @@ function FileIcon({ className = "h-4 w-4" }: { className?: string }) {
   );
 }
 
+function CourseIcon({ className = "h-4 w-4" }: { className?: string }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      className={className}
+      aria-hidden="true"
+    >
+      <path strokeLinecap="round" strokeLinejoin="round" d="M3 7.5 12 4l9 3.5-9 3.5L3 7.5Z" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M7 10.5V15c0 1.7 2.2 3 5 3s5-1.3 5-3v-4.5" />
+    </svg>
+  );
+}
+
 function UsersIcon({ className = "h-4 w-4" }: { className?: string }) {
   return (
     <svg
@@ -324,6 +351,8 @@ function NavItemIcon({ href, className = "h-4 w-4" }: { href: string; className?
     );
   }
 
+  if (href.startsWith("/courses")) return <CourseIcon className={className} />;
+
   if (href.startsWith("/welcome-on-board")) return <BrandIcon className={className} />;
 
   return (
@@ -341,6 +370,7 @@ function getText(language: Lang) {
         announcements: "Duyurular",
         blogManagement: "Blog",
         documents: "Dokümanlar",
+        courses: "Kurslar",
         welcomeOnBoard: "Welcome On Board",
         formSubmissions: "Form Gönderimleri",
         socialHubSettings: "Social Hub",
@@ -357,6 +387,7 @@ function getText(language: Lang) {
         blog: { title: "Blog", description: "" },
         publish: { title: "Yayınla", description: "" },
         documents: { title: "Dokümanlar", description: "" },
+        courses: { title: "Kurslar", description: "" },
         "welcome-on-board": { title: "Welcome On Board", description: "" },
         forms: { title: "Formlar", description: "Form gönderimleri ve şirket içi talepler." },
         socialHub: { title: "Social Hub", description: "" },
@@ -462,6 +493,26 @@ function getText(language: Lang) {
         notFound: "Doküman bulunamadı",
         mostUsed: "En Çok Kullanılan Dokümanlar",
       },
+      courses: {
+        title: "Kurslar",
+        mandatory: "Zorunlu",
+        optional: "İsteğe Bağlı",
+        due: "Son Tarih",
+        audience: "Kitle",
+        newHire: "Yeni Çalışanlar",
+        firstMonth: "İlk Ay İçinde Tamamlanmalı",
+        add: "Ekle",
+        edit: "Düzenle",
+        delete: "Sil",
+        save: "Kaydet",
+        cancel: "İptal",
+        courseTitle: "Kurs Başlığı",
+        courseDescription: "Kurs Açıklaması",
+        dueDate: "Bitiş Tarihi",
+        notFound: "Kurs Bulunamadı",
+        videoPreview: "Video Önizleme",
+        play: "Oynat",
+      },
       welcomeOnBoard: {
         usefulLinks: "Faydalı Linkler",
         basicProcesses: "Ofis Başlangıç Bilgileri",
@@ -548,6 +599,7 @@ function getText(language: Lang) {
       announcements: "Announcements",
       blogManagement: "Blog",
       documents: "Documents",
+      courses: "Courses",
       welcomeOnBoard: "Welcome On Board",
       formSubmissions: "Form Submissions",
       socialHubSettings: "Social Hub",
@@ -564,6 +616,7 @@ function getText(language: Lang) {
       blog: { title: "Blog", description: "" },
       publish: { title: "Publish", description: "" },
       documents: { title: "Documents", description: "" },
+      courses: { title: "Courses", description: "" },
       "welcome-on-board": { title: "Welcome On Board", description: "" },
       forms: { title: "Forms", description: "Submission tracking and internal request forms." },
       socialHub: { title: "Social Hub", description: "" },
@@ -668,6 +721,26 @@ function getText(language: Lang) {
       search: "Search documents, forms, guides...",
       notFound: "Document not found",
       mostUsed: "Most Used Documents",
+    },
+    courses: {
+      title: "Courses",
+      mandatory: "Mandatory",
+      optional: "Optional",
+      due: "Due",
+      audience: "Audience",
+      newHire: "New Hires",
+      firstMonth: "Complete Within First Month",
+      add: "Add",
+      edit: "Edit",
+      delete: "Delete",
+      save: "Save",
+      cancel: "Cancel",
+      courseTitle: "Course Title",
+      courseDescription: "Course Description",
+      dueDate: "Due Date",
+      notFound: "Course Not Found",
+      videoPreview: "Video Preview",
+      play: "Play",
     },
     welcomeOnBoard: {
       usefulLinks: "Useful Links",
@@ -1514,6 +1587,96 @@ function PublishPage({ role, language }: { role: Role; language: Lang }) {
   );
 }
 
+function addDays(date: Date, days: number) {
+  const next = new Date(date);
+  next.setDate(next.getDate() + days);
+  return next;
+}
+
+function formatCourseDate(date: Date, language: Lang) {
+  return new Intl.DateTimeFormat(language === "tr" ? "tr-TR" : "en-US", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }).format(date);
+}
+
+function getCourseItems(language: Lang): CourseItem[] {
+  const newHireStartDate = new Date("2026-06-09T09:00:00");
+  const firstMonthDueDate = formatCourseDate(addDays(newHireStartDate, 30), language);
+  const securityDueDate = formatCourseDate(new Date("2026-07-15T09:00:00"), language);
+
+  return language === "tr"
+    ? [
+        {
+          id: "welcome-to-token",
+          title: "Welcome To Token",
+          description: "Şirket kültürü, temel araçlar ve ilk hafta beklentileri için başlangıç kursu.",
+          mandatory: true,
+          dueDate: firstMonthDueDate,
+          audience: "Yeni Çalışanlar",
+        },
+        {
+          id: "security-basics",
+          title: "Bilgi Güvenliği Temelleri",
+          description: "Şifre hijyeni, cihaz güvenliği ve şirket verilerinin korunmasına dair temel eğitim.",
+          mandatory: true,
+          dueDate: securityDueDate,
+          audience: "Tüm Çalışanlar",
+        },
+        {
+          id: "expense-purchasing",
+          title: "Masraf Ve Satın Alma Akışı",
+          description: "Masraf gönderimi, fiş yükleme ve satın alma süreçlerinde izlenecek adımlar.",
+          mandatory: true,
+          dueDate: firstMonthDueDate,
+          audience: "Yeni Çalışanlar",
+        },
+        {
+          id: "wellbeing-social",
+          title: "İyi Yaşam Ve Social Hub Tanıtımı",
+          description: "Yan haklar, kulüpler ve çalışan deneyimini destekleyen sosyal alanların kısa tanıtımı.",
+          mandatory: false,
+          dueDate: undefined,
+          audience: "Tüm Çalışanlar",
+        },
+      ]
+    : [
+        {
+          id: "welcome-to-token",
+          title: "Welcome To Token",
+          description: "Starter course for company culture, core tools, and first-week expectations.",
+          mandatory: true,
+          dueDate: firstMonthDueDate,
+          audience: "New Hires",
+        },
+        {
+          id: "security-basics",
+          title: "Information Security Basics",
+          description: "Core training on password hygiene, device safety, and protecting company data.",
+          mandatory: true,
+          dueDate: securityDueDate,
+          audience: "All Employees",
+        },
+        {
+          id: "expense-purchasing",
+          title: "Expense And Purchasing Flow",
+          description: "How to submit expenses, upload receipts, and follow purchasing workflows.",
+          mandatory: true,
+          dueDate: firstMonthDueDate,
+          audience: "New Hires",
+        },
+        {
+          id: "wellbeing-social",
+          title: "Wellbeing And Social Hub Introduction",
+          description: "A short introduction to benefits, clubs, and social spaces that support employee experience.",
+          mandatory: false,
+          dueDate: undefined,
+          audience: "All Employees",
+        },
+      ];
+}
+
 function DocumentsPage({ role, language }: { role: Role; language: Lang }) {
   const t = getText(language);
   const documentItems = getDocuments(language);
@@ -1552,6 +1715,268 @@ function DocumentsPage({ role, language }: { role: Role; language: Lang }) {
             </span>
           </Link>
         ))}
+      </div>
+    </div>
+  );
+}
+
+function CoursesPage({ role, language, slug }: { role: Role; language: Lang; slug?: string }) {
+  if (slug) {
+    return <CourseDetailPage role={role} language={language} slug={slug} />;
+  }
+
+  return <CoursesContent key={language} role={role} language={language} />;
+}
+
+function CoursesContent({ role, language }: { role: Role; language: Lang }) {
+  const router = useRouter();
+  const isAdmin = role === "admin";
+  const t = getText(language);
+  const [courses, setCourses] = useState(getCourseItems(language));
+  const [editor, setEditor] = useState<null | {
+    id?: string;
+    title: string;
+    description: string;
+    dueDate: string;
+    mandatory: boolean;
+  }>(null);
+
+  const saveCourse = () => {
+    if (!editor) return;
+
+    const nextCourse = {
+      id: editor.id ?? `course-${Date.now()}`,
+      title: editor.title,
+      description: editor.description,
+      dueDate: editor.dueDate,
+      mandatory: editor.mandatory,
+      audience: editor.mandatory ? t.courses.newHire : language === "tr" ? "Tüm Çalışanlar" : "All Employees",
+    };
+
+    setCourses((current) =>
+      editor.id ? current.map((course) => (course.id === editor.id ? nextCourse : course)) : [nextCourse, ...current],
+    );
+    setEditor(null);
+  };
+
+  return (
+    <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <SectionTitle title={t.courses.title} description="" />
+        {isAdmin ? (
+          <button
+            type="button"
+            onClick={() => setEditor({ title: "", description: "", dueDate: "", mandatory: true })}
+            className="rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-900 shadow-sm"
+          >
+            {t.courses.add}
+          </button>
+        ) : null}
+      </div>
+
+      {isAdmin && editor ? (
+        <div className="mt-6 rounded-2xl bg-slate-50 p-4 ring-1 ring-slate-200">
+          <div className="space-y-3">
+            <input
+              value={editor.title}
+              onChange={(event) => setEditor((current) => (current ? { ...current, title: event.target.value } : current))}
+              className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none"
+              placeholder={t.courses.courseTitle}
+            />
+            <textarea
+              value={editor.description}
+              onChange={(event) => setEditor((current) => (current ? { ...current, description: event.target.value } : current))}
+              className="h-28 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none"
+              placeholder={t.courses.courseDescription}
+            />
+            <input
+              value={editor.dueDate}
+              onChange={(event) => setEditor((current) => (current ? { ...current, dueDate: event.target.value } : current))}
+              className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none"
+              placeholder={t.courses.dueDate}
+            />
+            <label className="inline-flex items-center gap-2 text-sm text-slate-700">
+              <input
+                type="checkbox"
+                checked={editor.mandatory}
+                onChange={(event) => setEditor((current) => (current ? { ...current, mandatory: event.target.checked } : current))}
+              />
+              {t.courses.mandatory}
+            </label>
+            <div className="flex flex-wrap gap-3">
+              <button type="button" onClick={saveCourse} className="rounded-2xl bg-sky-700 px-4 py-3 text-sm font-medium text-white shadow-sm">
+                {t.courses.save}
+              </button>
+              <button type="button" onClick={() => setEditor(null)} className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm font-medium text-slate-900 shadow-sm">
+                {t.courses.cancel}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        {courses.map((course) => (
+          <div
+            key={course.id}
+            onClick={() => router.push(withRole(`/courses/${course.id}`, role))}
+            className="group relative cursor-pointer rounded-2xl bg-slate-50 p-4 ring-1 ring-slate-200 transition hover:bg-sky-50/70 hover:ring-sky-200"
+          >
+            <div className="flex items-start justify-between gap-3 pr-14">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-white text-sky-700 ring-1 ring-sky-100">
+                <CourseIcon className="h-4 w-4" />
+              </span>
+              <div className="flex items-center gap-2">
+                <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${course.mandatory ? "bg-rose-100 text-rose-700" : "bg-slate-200 text-slate-700"}`}>
+                  {course.mandatory ? t.courses.mandatory : t.courses.optional}
+                </span>
+              </div>
+            </div>
+            <h3 className="mt-3 pr-14 font-medium text-slate-950">{course.title}</h3>
+            <p className="mt-2 pr-14 text-sm leading-6 text-slate-500">{course.description}</p>
+            <div className="mt-4 space-y-1 pr-14 text-xs text-slate-500">
+              {course.dueDate ? <p><span className="font-medium text-slate-700">{t.courses.due}:</span> {course.dueDate}</p> : null}
+              <p><span className="font-medium text-slate-700">{t.courses.audience}:</span> {course.audience}</p>
+            </div>
+            <span className="absolute bottom-4 right-4 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 shadow-sm transition group-hover:border-sky-200 group-hover:text-sky-700">
+              <ArrowRightIcon className="h-5 w-5" />
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function CourseDetailPage({ role, language, slug }: { role: Role; language: Lang; slug: string }) {
+  const isAdmin = role === "admin";
+  const t = getText(language);
+  const initialCourse = getCourseItems(language).find((item) => item.id === slug);
+  const [course, setCourse] = useState(initialCourse);
+  const [isEditing, setIsEditing] = useState(false);
+  const [isDeleted, setIsDeleted] = useState(false);
+
+  if (!course || isDeleted) {
+    return (
+      <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+        <SectionTitle title={t.courses.notFound} description="" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <Link
+          href={withRole("/courses", role)}
+          className="inline-flex rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-900"
+        >
+          ← {t.announcements.back}
+        </Link>
+
+        {isAdmin ? (
+          <button
+            type="button"
+            onClick={() => setIsEditing((current) => !current)}
+            className="rounded-2xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-900 shadow-sm"
+          >
+            {t.courses.edit}
+          </button>
+        ) : null}
+      </div>
+
+      <div className="mt-6 flex items-start gap-4">
+        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-sky-50 text-sky-700 ring-1 ring-sky-100">
+          <CourseIcon className="h-5 w-5" />
+        </span>
+        <div>
+          <div className="flex flex-wrap items-center gap-3">
+            <h2 className="text-2xl font-semibold text-sky-800">{course.title}</h2>
+            <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${course.mandatory ? "bg-rose-100 text-rose-700" : "bg-slate-200 text-slate-700"}`}>
+              {course.mandatory ? t.courses.mandatory : t.courses.optional}
+            </span>
+          </div>
+          {course.dueDate ? (
+            <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-500">
+              <ClockIcon className="h-3.5 w-3.5" />
+              {t.courses.due}: {course.dueDate}
+            </div>
+          ) : null}
+        </div>
+      </div>
+
+      {isEditing ? (
+        <div className="mt-6 rounded-2xl bg-slate-50 p-4 ring-1 ring-slate-200">
+          <div className="space-y-3">
+            <input
+              value={course.title}
+              onChange={(event) => setCourse((current) => (current ? { ...current, title: event.target.value } : current))}
+              className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none"
+              placeholder={t.courses.courseTitle}
+            />
+            <textarea
+              value={course.description}
+              onChange={(event) => setCourse((current) => (current ? { ...current, description: event.target.value } : current))}
+              className="h-28 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none"
+              placeholder={t.courses.courseDescription}
+            />
+            <input
+              value={course.dueDate ?? ""}
+              onChange={(event) => setCourse((current) => (current ? { ...current, dueDate: event.target.value || undefined } : current))}
+              className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none"
+              placeholder={t.courses.dueDate}
+            />
+            <label className="inline-flex items-center gap-2 text-sm text-slate-700">
+              <input
+                type="checkbox"
+                checked={course.mandatory}
+                onChange={(event) => setCourse((current) => (current ? { ...current, mandatory: event.target.checked, dueDate: event.target.checked ? current.dueDate : undefined } : current))}
+              />
+              {t.courses.mandatory}
+            </label>
+            <div className="flex flex-wrap gap-3">
+              <button
+                type="button"
+                onClick={() => setIsEditing(false)}
+                className="rounded-2xl bg-sky-700 px-4 py-3 text-sm font-medium text-white shadow-sm"
+              >
+                {t.courses.save}
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsDeleted(true)}
+                className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700 shadow-sm"
+              >
+                {t.courses.delete}
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsEditing(false)}
+                className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm font-medium text-slate-900 shadow-sm"
+              >
+                {t.courses.cancel}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      <p className="mt-6 text-sm leading-6 text-slate-600">{course.description}</p>
+      <div className="mt-3 text-sm text-slate-500">
+        <span className="font-medium text-slate-700">{t.courses.audience}:</span> {course.audience}
+      </div>
+
+      <div className="mt-8 rounded-3xl border border-slate-200 bg-slate-50 p-5">
+        <SectionTitle title={t.courses.videoPreview} description="" />
+        <div className="mt-4 flex h-64 items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-white">
+          <button
+            type="button"
+            className="inline-flex items-center gap-2 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-medium !text-white shadow-sm"
+          >
+            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10">▶</span>
+            {t.courses.play}
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -2374,6 +2799,7 @@ function renderPage(
   selectedAnnouncementSlug?: string,
   selectedAnnouncementRequestSlug?: string,
   selectedDocumentSlug?: string,
+  selectedCourseSlug?: string,
   selectedWelcomeOnBoardSlug?: string,
   selectedSocialHubSection?: "benefits" | "clubs",
   selectedSocialHubItem?: string,
@@ -2405,6 +2831,8 @@ function renderPage(
       return selectedDocumentSlug
         ? <DocumentDetailPage role={role} slug={selectedDocumentSlug} language={language} />
         : <DocumentsPage role={role} language={language} />;
+    case "courses":
+      return <CoursesPage role={role} language={language} slug={selectedCourseSlug} />;
     case "welcome-on-board":
       return <WelcomeOnBoardPage role={role} language={language} slug={selectedWelcomeOnBoardSlug} />;
     case "forms":
@@ -2429,6 +2857,7 @@ export default function PortalShell({
   selectedAnnouncementSlug,
   selectedAnnouncementRequestSlug,
   selectedDocumentSlug,
+  selectedCourseSlug,
   selectedWelcomeOnBoardSlug,
   selectedSocialHubSection,
   selectedSocialHubItem,
@@ -2448,6 +2877,7 @@ export default function PortalShell({
         { label: t.nav.announcements, href: "/announcements" },
         { label: t.nav.blogManagement, href: "/blog" },
         { label: t.nav.documents, href: "/documents" },
+        { label: t.nav.courses, href: "/courses" },
         { label: t.nav.socialHubSettings, href: "/social-hub" },
         { label: t.nav.welcomeOnBoard, href: "/welcome-on-board" },
       ]
@@ -2455,6 +2885,7 @@ export default function PortalShell({
         { label: t.nav.announcements, href: "/announcements" },
         { label: t.nav.blog, href: "/blog" },
         { label: t.nav.documents, href: "/documents" },
+        { label: t.nav.courses, href: "/courses" },
         { label: t.nav.socialHub, href: "/social-hub" },
         { label: t.nav.welcomeOnBoard, href: "/welcome-on-board" },
       ];
@@ -2630,7 +3061,7 @@ export default function PortalShell({
           </header>
 
           <main className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
-            {renderPage(page, role, language, selectedPostSlug, selectedAnnouncementSlug, selectedAnnouncementRequestSlug, selectedDocumentSlug, selectedWelcomeOnBoardSlug, selectedSocialHubSection, selectedSocialHubItem)}
+            {renderPage(page, role, language, selectedPostSlug, selectedAnnouncementSlug, selectedAnnouncementRequestSlug, selectedDocumentSlug, selectedCourseSlug, selectedWelcomeOnBoardSlug, selectedSocialHubSection, selectedSocialHubItem)}
           </main>
         </div>
       </div>
