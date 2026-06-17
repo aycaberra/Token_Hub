@@ -466,27 +466,29 @@ export function getSubmissions(lang: Lang) {
 export function getEmployeeStats(lang: Lang) {
   return lang === "tr"
     ? [
-        { label: "Okunmamış duyurular", value: "3", helper: "2 yüksek öncelik" },
-        { label: "Mevcut dokümanlar", value: "24", helper: "6 kategoride" },
-        { label: "Gönderilen formlar", value: "7", helper: "Son 30 gün" },
-        { label: "Social Hub", value: "6 grup", helper: "MultiSport dahil" },
+        { label: "Okunmamış Duyurular", value: "3", helper: "2 Yüksek Öncelik" },
+        { label: "Mevcut Dokümanlar", value: "24", helper: "6 Kategoride" },
+        { label: "Gönderilen Formlar", value: "7", helper: "Son 30 Gün" },
+        { label: "Social Hub", value: "6 Grup", helper: "MultiSport Dahil" },
       ]
     : [
-        { label: "Unread announcements", value: "3", helper: "2 high priority" },
-        { label: "Available documents", value: "24", helper: "Across 6 categories" },
-        { label: "Forms submitted", value: "7", helper: "Last 30 days" },
-        { label: "Social Hub", value: "6 groups", helper: "MultiSport included" },
+        { label: "Unread Announcements", value: "3", helper: "2 High Priority" },
+        { label: "Available Documents", value: "24", helper: "Across 6 Categories" },
+        { label: "Forms Submitted", value: "7", helper: "Last 30 Days" },
+        { label: "Social Hub", value: "6 Groups", helper: "MultiSport Included" },
       ];
 }
 
 export function getAdminStats(lang: Lang) {
   return lang === "tr"
     ? [
-        { label: "Form gönderimleri", value: "126", helper: "Dışa aktarıma hazır" },
-        { label: "Portal girişleri", value: "1,284", helper: "Bu ay toplam giriş" },
+        { label: "Form Gönderimleri", value: "126", helper: "Dışa Aktarıma Hazır" },
+        { label: "Portal Girişleri", value: "1,284", helper: "Bu Ay Toplam Giriş" },
+        { label: "Duyuru Talepleri", value: "18", helper: "" },
       ]
     : [
-        { label: "Form submissions", value: "126", helper: "Export ready" },
-        { label: "Portal logins", value: "1,284", helper: "Total this month" },
+        { label: "Form Submissions", value: "126", helper: "Export Ready" },
+        { label: "Portal Logins", value: "1,284", helper: "Total This Month" },
+        { label: "Announcement Requests", value: "18", helper: "" },
       ];
 }

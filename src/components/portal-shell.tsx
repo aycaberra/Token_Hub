@@ -417,24 +417,28 @@ function getText(language: Lang) {
         hero: "Şirket güncellemeleri, İK dokümanları, iç formlar ve sosyal aktiviteler için tek yer.",
         openAnnouncements: "Duyuruları Aç",
         openHrHub: "İK Hub'ını Aç",
-        quickSnapshot: "Hızlı görünüm",
+        quickSnapshot: "Hızlı Görünüm",
         adminPriorities: "",
-        todayAtGlance: "Bugünün özeti",
+        todayAtGlance: "Bugünün Özeti",
         contentSubmissionsActivity: "",
-        updatesDocumentsActions: "Güncellemeler, dokümanlar ve işlemler",
+        updatesDocumentsActions: "Güncellemeler, Dokümanlar ve İşlemler",
         blog: "Blog",
-        reviewPosts: "Blog gönderilerini incele",
-        employeePosts: "Çalışan paylaşımları",
+        reviewPosts: "Blog Gönderilerini İncele",
+        employeePosts: "Çalışan Paylaşımları",
         moderatePosts: "Çalışan paylaşımlarını düzenli şekilde yönet.",
         coworkerSharing: "Çalışanların paylaştığı ilanları ve talepleri gör.",
         forms: "Formlar",
-        trackSubmissions: "Gönderimleri takip et",
-        openForms: "Formları aç",
+        trackSubmissions: "Gönderimleri Takip Et",
+        openForms: "Formları Aç",
         reviewExport: "Yanıtları incele ve dışa aktar.",
         completeRequests: "Şirket içi talepleri ve anketleri doldur.",
         social: "Sosyal",
         socialHubTitle: "Social Hub",
         socialHubDesc: "Kulüpler, aktiviteler ve MultiSport seçeneklerini görüntüle.",
+        announcementRequests: "Duyuru Talepleri",
+        total: "Toplam",
+        accepted: "Onaylanan",
+        rejected: "Reddedilen",
         monthly: "Aylık",
         weekly: "Haftalık",
         daily: "Günlük",
@@ -540,7 +544,7 @@ function getText(language: Lang) {
         contractStatus: "Aktif",
         contractType: "Belirsiz Süreli İş Sözleşmesi",
         contractUpdated: "Son Güncelleme",
-        todos: "Platformdaki Yapılacaklarım",
+        todos: "Yapılacaklar Listem",
         openContract: "Sözleşmeyi Aç",
         employeeName: "Ayça Berra",
         adminName: "Merve A.",
@@ -630,6 +634,7 @@ function getText(language: Lang) {
         announcements: "Duyurular",
         archive: "Arşivle",
         archived: "Arşivlendi",
+        delete: "Sil",
         commentTimeNow: "Şimdi",
       },
     };
@@ -668,26 +673,30 @@ function getText(language: Lang) {
     },
     dashboard: {
       hero: "One place for company updates, HR documents, internal forms, and social activities.",
-      openAnnouncements: "Open announcements",
+      openAnnouncements: "Open Announcements",
       openHrHub: "Open HR Hub",
-      quickSnapshot: "Quick snapshot",
+      quickSnapshot: "Quick Snapshot",
       adminPriorities: "",
-      todayAtGlance: "Today at a glance",
+      todayAtGlance: "Today At A Glance",
       contentSubmissionsActivity: "",
-      updatesDocumentsActions: "Updates, documents, and actions",
+      updatesDocumentsActions: "Updates, Documents, And Actions",
       blog: "Blog",
-      reviewPosts: "Review posts",
-      employeePosts: "Employee posts",
+      reviewPosts: "Review Posts",
+      employeePosts: "Employee Posts",
       moderatePosts: "Moderate employee posts and keep the board organized.",
       coworkerSharing: "See what coworkers are sharing, selling, or asking about.",
       forms: "Forms",
-      trackSubmissions: "Track submissions",
-      openForms: "Open forms",
+      trackSubmissions: "Track Submissions",
+      openForms: "Open Forms",
       reviewExport: "Review and export responses.",
       completeRequests: "Complete internal requests and surveys.",
       social: "Social",
       socialHubTitle: "Social Hub",
       socialHubDesc: "View clubs, activities, and MultiSport options.",
+      announcementRequests: "Announcement Requests",
+      total: "Total",
+      accepted: "Accepted",
+      rejected: "Rejected",
       monthly: "Monthly",
       weekly: "Weekly",
       daily: "Daily",
@@ -793,7 +802,7 @@ function getText(language: Lang) {
       contractStatus: "Active",
       contractType: "Open-Ended Employment Contract",
       contractUpdated: "Last Updated",
-      todos: "My To-Dos In The Platform",
+      todos: "My To-Do List",
       openContract: "Open Contract",
       employeeName: "Ayça Berra",
       adminName: "Merve A.",
@@ -883,6 +892,7 @@ function getText(language: Lang) {
       announcements: "Announcements",
       archive: "Archive",
       archived: "Archived",
+      delete: "Delete",
       commentTimeNow: "Just now",
     },
   };
@@ -979,13 +989,14 @@ function DashboardPage({ role, language }: { role: Role; language: Lang }) {
         ) : null}
         <div className={`${isAdmin ? "grid gap-3 sm:grid-cols-2" : "mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-1"}`}>
           {stats.map((stat) => {
-            const isPortalLogins = stat.label === "Portal logins" || stat.label === "Portal girişleri";
+            const isPortalLogins = stat.label === "Portal Logins" || stat.label === "Portal Girişleri";
+            const isAnnouncementRequests = stat.label === "Announcement Requests" || stat.label === "Duyuru Talepleri";
 
             return (
               <div key={stat.label} className="rounded-2xl bg-slate-50 p-4">
                 <p className="text-sm text-slate-500">{stat.label}</p>
                 <p className="mt-2 text-2xl font-semibold text-slate-950">{stat.value}</p>
-                <p className="mt-1 text-sm text-slate-500">{stat.helper}</p>
+                {stat.helper ? <p className="mt-1 text-sm text-slate-500">{stat.helper}</p> : null}
                 {isPortalLogins ? (
                   <div className="mt-4 grid grid-cols-3 gap-2 text-center">
                     <div className="rounded-xl bg-white px-2 py-2">
@@ -999,6 +1010,18 @@ function DashboardPage({ role, language }: { role: Role; language: Lang }) {
                     <div className="rounded-xl bg-white px-2 py-2">
                       <p className="text-[11px] text-slate-500">{t.dashboard.daily}</p>
                       <p className="mt-1 text-sm font-semibold text-slate-950">47</p>
+                    </div>
+                  </div>
+                ) : null}
+                {isAnnouncementRequests ? (
+                  <div className="mt-4 grid grid-cols-2 gap-2 text-center">
+                    <div className="rounded-xl bg-white px-2 py-2">
+                      <p className="text-[11px] text-slate-500">{t.dashboard.accepted}</p>
+                      <p className="mt-1 text-sm font-semibold text-emerald-700">11</p>
+                    </div>
+                    <div className="rounded-xl bg-white px-2 py-2">
+                      <p className="text-[11px] text-slate-500">{t.dashboard.rejected}</p>
+                      <p className="mt-1 text-sm font-semibold text-rose-700">7</p>
                     </div>
                   </div>
                 ) : null}
@@ -2804,6 +2827,12 @@ function ExpandableSocialItem({
   editHref,
   isAdmin,
   editLabel,
+  deleteLabel,
+  archiveLabel,
+  archivedLabel,
+  archived,
+  onDelete,
+  onArchive,
   open,
   onToggle,
   kind,
@@ -2814,6 +2843,12 @@ function ExpandableSocialItem({
   editHref: string;
   isAdmin: boolean;
   editLabel: string;
+  deleteLabel: string;
+  archiveLabel: string;
+  archivedLabel: string;
+  archived: boolean;
+  onDelete: () => void;
+  onArchive: () => void;
   open: boolean;
   onToggle: (id: string) => void;
   kind: "benefit" | "club";
@@ -2840,7 +2875,35 @@ function ExpandableSocialItem({
             <ArrowRightIcon className="h-5 w-5" />
           </span>
         </button>
-        {open ? <p className="mt-4 pl-[3.75rem] text-sm leading-6 text-slate-600">{content}</p> : null}
+        {open ? (
+          <div className="mt-4 pl-[3.75rem]">
+            <p className="text-sm leading-6 text-slate-600">{content}</p>
+            {isAdmin ? (
+              <div className="mt-4 flex flex-wrap items-center gap-2">
+                <Link
+                  href={editHref}
+                  className="inline-flex h-10 items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 text-sm font-medium text-slate-900 shadow-sm transition hover:border-sky-200 hover:text-sky-800"
+                >
+                  {editLabel}
+                </Link>
+                <button
+                  type="button"
+                  onClick={onDelete}
+                  className="inline-flex h-10 items-center justify-center rounded-2xl border border-rose-200 bg-white px-4 text-sm font-medium text-rose-700 shadow-sm transition hover:bg-rose-50"
+                >
+                  {deleteLabel}
+                </button>
+                <button
+                  type="button"
+                  onClick={onArchive}
+                  className={`inline-flex h-10 items-center justify-center rounded-2xl border px-4 text-sm font-medium shadow-sm transition ${archived ? "border-amber-200 bg-amber-50 text-amber-800" : "border-slate-200 bg-white text-slate-900 hover:border-amber-200 hover:text-amber-800"}`}
+                >
+                  {archived ? archivedLabel : archiveLabel}
+                </button>
+              </div>
+            ) : null}
+          </div>
+        ) : null}
       </div>
 
       {isAdmin ? (
@@ -2859,6 +2922,19 @@ function SocialHubPage({ role, language }: { role: Role; language: Lang }) {
   const isAdmin = role === "admin";
   const t = getText(language);
   const [openItem, setOpenItem] = useState<string | null>(null);
+  const [archivedItems, setArchivedItems] = useState<string[]>([]);
+  const [deletedItems, setDeletedItems] = useState<string[]>([]);
+
+  const toggleOpenItem = (id: string) => setOpenItem((current) => (current === id ? null : id));
+  const handleArchiveItem = (id: string) => {
+    setArchivedItems((current) => (current.includes(id) ? current.filter((item) => item !== id) : [...current, id]));
+  };
+  const handleDeleteItem = (id: string) => {
+    setDeletedItems((current) => (current.includes(id) ? current : [...current, id]));
+    setOpenItem((current) => (current === id ? null : current));
+  };
+  const isArchivedItem = (id: string) => archivedItems.includes(id);
+  const isDeletedItem = (id: string) => deletedItems.includes(id);
 
   return (
     <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
@@ -2878,41 +2954,65 @@ function SocialHubPage({ role, language }: { role: Role; language: Lang }) {
             ) : null}
           </div>
           <div className="mt-4 space-y-3">
-            <ExpandableSocialItem
-              id="multisport"
-              title={t.socialHub.multiSportTitle}
-              content={t.socialHub.multiSport}
-              editHref={withRole("/social-hub/edit?section=benefits&item=multisport", role)}
-              isAdmin={isAdmin}
-              editLabel={t.socialHub.edit}
-              open={openItem === "multisport"}
-              onToggle={(id) => setOpenItem((current) => (current === id ? null : id))}
-              kind="benefit"
-            />
+            {!isDeletedItem("multisport") ? (
+              <ExpandableSocialItem
+                id="multisport"
+                title={t.socialHub.multiSportTitle}
+                content={t.socialHub.multiSport}
+                editHref={withRole("/social-hub/edit?section=benefits&item=multisport", role)}
+                isAdmin={isAdmin}
+                editLabel={t.socialHub.edit}
+                deleteLabel={t.common.delete}
+                archiveLabel={t.common.archive}
+                archivedLabel={t.common.archived}
+                archived={isArchivedItem("multisport")}
+                onDelete={() => handleDeleteItem("multisport")}
+                onArchive={() => handleArchiveItem("multisport")}
+                open={openItem === "multisport"}
+                onToggle={toggleOpenItem}
+                kind="benefit"
+              />
+            ) : null}
 
-            <ExpandableSocialItem
-              id="dietician"
-              title={t.socialHub.dieticianTitle}
-              content={t.socialHub.dietician}
-              editHref={withRole("/social-hub/edit?section=benefits&item=dietician", role)}
-              isAdmin={isAdmin}
-              editLabel={t.socialHub.edit}
-              open={openItem === "dietician"}
-              onToggle={(id) => setOpenItem((current) => (current === id ? null : id))}
-              kind="benefit"
-            />
+            {!isDeletedItem("dietician") ? (
+              <ExpandableSocialItem
+                id="dietician"
+                title={t.socialHub.dieticianTitle}
+                content={t.socialHub.dietician}
+                editHref={withRole("/social-hub/edit?section=benefits&item=dietician", role)}
+                isAdmin={isAdmin}
+                editLabel={t.socialHub.edit}
+                deleteLabel={t.common.delete}
+                archiveLabel={t.common.archive}
+                archivedLabel={t.common.archived}
+                archived={isArchivedItem("dietician")}
+                onDelete={() => handleDeleteItem("dietician")}
+                onArchive={() => handleArchiveItem("dietician")}
+                open={openItem === "dietician"}
+                onToggle={toggleOpenItem}
+                kind="benefit"
+              />
+            ) : null}
 
-            <ExpandableSocialItem
-              id="cambly"
-              title={t.socialHub.camblyTitle}
-              content={t.socialHub.cambly}
-              editHref={withRole("/social-hub/edit?section=benefits&item=cambly", role)}
-              isAdmin={isAdmin}
-              editLabel={t.socialHub.edit}
-              open={openItem === "cambly"}
-              onToggle={(id) => setOpenItem((current) => (current === id ? null : id))}
-              kind="benefit"
-            />
+            {!isDeletedItem("cambly") ? (
+              <ExpandableSocialItem
+                id="cambly"
+                title={t.socialHub.camblyTitle}
+                content={t.socialHub.cambly}
+                editHref={withRole("/social-hub/edit?section=benefits&item=cambly", role)}
+                isAdmin={isAdmin}
+                editLabel={t.socialHub.edit}
+                deleteLabel={t.common.delete}
+                archiveLabel={t.common.archive}
+                archivedLabel={t.common.archived}
+                archived={isArchivedItem("cambly")}
+                onDelete={() => handleDeleteItem("cambly")}
+                onArchive={() => handleArchiveItem("cambly")}
+                open={openItem === "cambly"}
+                onToggle={toggleOpenItem}
+                kind="benefit"
+              />
+            ) : null}
           </div>
         </section>
 
@@ -2926,65 +3026,105 @@ function SocialHubPage({ role, language }: { role: Role; language: Lang }) {
             ) : null}
           </div>
           <div className="mt-4 space-y-3">
-            <ExpandableSocialItem
-              id="rowing"
-              title={t.socialHub.rowingTitle}
-              content={t.socialHub.rowing}
-              editHref={withRole("/social-hub/edit?section=clubs&item=rowing", role)}
-              isAdmin={isAdmin}
-              editLabel={t.socialHub.edit}
-              open={openItem === "rowing"}
-              onToggle={(id) => setOpenItem((current) => (current === id ? null : id))}
-              kind="club"
-            />
+            {!isDeletedItem("rowing") ? (
+              <ExpandableSocialItem
+                id="rowing"
+                title={t.socialHub.rowingTitle}
+                content={t.socialHub.rowing}
+                editHref={withRole("/social-hub/edit?section=clubs&item=rowing", role)}
+                isAdmin={isAdmin}
+                editLabel={t.socialHub.edit}
+                deleteLabel={t.common.delete}
+                archiveLabel={t.common.archive}
+                archivedLabel={t.common.archived}
+                archived={isArchivedItem("rowing")}
+                onDelete={() => handleDeleteItem("rowing")}
+                onArchive={() => handleArchiveItem("rowing")}
+                open={openItem === "rowing"}
+                onToggle={toggleOpenItem}
+                kind="club"
+              />
+            ) : null}
 
-            <ExpandableSocialItem
-              id="football"
-              title={t.socialHub.footballTitle}
-              content={t.socialHub.football}
-              editHref={withRole("/social-hub/edit?section=clubs&item=football", role)}
-              isAdmin={isAdmin}
-              editLabel={t.socialHub.edit}
-              open={openItem === "football"}
-              onToggle={(id) => setOpenItem((current) => (current === id ? null : id))}
-              kind="club"
-            />
+            {!isDeletedItem("football") ? (
+              <ExpandableSocialItem
+                id="football"
+                title={t.socialHub.footballTitle}
+                content={t.socialHub.football}
+                editHref={withRole("/social-hub/edit?section=clubs&item=football", role)}
+                isAdmin={isAdmin}
+                editLabel={t.socialHub.edit}
+                deleteLabel={t.common.delete}
+                archiveLabel={t.common.archive}
+                archivedLabel={t.common.archived}
+                archived={isArchivedItem("football")}
+                onDelete={() => handleDeleteItem("football")}
+                onArchive={() => handleArchiveItem("football")}
+                open={openItem === "football"}
+                onToggle={toggleOpenItem}
+                kind="club"
+              />
+            ) : null}
 
-            <ExpandableSocialItem
-              id="reading"
-              title={t.socialHub.readingTitle}
-              content={t.socialHub.reading}
-              editHref={withRole("/social-hub/edit?section=clubs&item=reading", role)}
-              isAdmin={isAdmin}
-              editLabel={t.socialHub.edit}
-              open={openItem === "reading"}
-              onToggle={(id) => setOpenItem((current) => (current === id ? null : id))}
-              kind="club"
-            />
+            {!isDeletedItem("reading") ? (
+              <ExpandableSocialItem
+                id="reading"
+                title={t.socialHub.readingTitle}
+                content={t.socialHub.reading}
+                editHref={withRole("/social-hub/edit?section=clubs&item=reading", role)}
+                isAdmin={isAdmin}
+                editLabel={t.socialHub.edit}
+                deleteLabel={t.common.delete}
+                archiveLabel={t.common.archive}
+                archivedLabel={t.common.archived}
+                archived={isArchivedItem("reading")}
+                onDelete={() => handleDeleteItem("reading")}
+                onArchive={() => handleArchiveItem("reading")}
+                open={openItem === "reading"}
+                onToggle={toggleOpenItem}
+                kind="club"
+              />
+            ) : null}
 
-            <ExpandableSocialItem
-              id="foodie"
-              title={t.socialHub.foodieTitle}
-              content={t.socialHub.foodie}
-              editHref={withRole("/social-hub/edit?section=clubs&item=foodie", role)}
-              isAdmin={isAdmin}
-              editLabel={t.socialHub.edit}
-              open={openItem === "foodie"}
-              onToggle={(id) => setOpenItem((current) => (current === id ? null : id))}
-              kind="club"
-            />
+            {!isDeletedItem("foodie") ? (
+              <ExpandableSocialItem
+                id="foodie"
+                title={t.socialHub.foodieTitle}
+                content={t.socialHub.foodie}
+                editHref={withRole("/social-hub/edit?section=clubs&item=foodie", role)}
+                isAdmin={isAdmin}
+                editLabel={t.socialHub.edit}
+                deleteLabel={t.common.delete}
+                archiveLabel={t.common.archive}
+                archivedLabel={t.common.archived}
+                archived={isArchivedItem("foodie")}
+                onDelete={() => handleDeleteItem("foodie")}
+                onArchive={() => handleArchiveItem("foodie")}
+                open={openItem === "foodie"}
+                onToggle={toggleOpenItem}
+                kind="club"
+              />
+            ) : null}
 
-            <ExpandableSocialItem
-              id="hali-saha"
-              title={t.socialHub.haliSahaTitle}
-              content={t.socialHub.haliSaha}
-              editHref={withRole("/social-hub/edit?section=clubs&item=hali-saha", role)}
-              isAdmin={isAdmin}
-              editLabel={t.socialHub.edit}
-              open={openItem === "hali-saha"}
-              onToggle={(id) => setOpenItem((current) => (current === id ? null : id))}
-              kind="club"
-            />
+            {!isDeletedItem("hali-saha") ? (
+              <ExpandableSocialItem
+                id="hali-saha"
+                title={t.socialHub.haliSahaTitle}
+                content={t.socialHub.haliSaha}
+                editHref={withRole("/social-hub/edit?section=clubs&item=hali-saha", role)}
+                isAdmin={isAdmin}
+                editLabel={t.socialHub.edit}
+                deleteLabel={t.common.delete}
+                archiveLabel={t.common.archive}
+                archivedLabel={t.common.archived}
+                archived={isArchivedItem("hali-saha")}
+                onDelete={() => handleDeleteItem("hali-saha")}
+                onArchive={() => handleArchiveItem("hali-saha")}
+                open={openItem === "hali-saha"}
+                onToggle={toggleOpenItem}
+                kind="club"
+              />
+            ) : null}
           </div>
         </section>
       </div>
