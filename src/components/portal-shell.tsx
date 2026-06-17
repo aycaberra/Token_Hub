@@ -29,6 +29,7 @@ type PortalShellProps = {
   selectedAnnouncementRequestSlug?: string;
   selectedDocumentSlug?: string;
   selectedCourseSlug?: string;
+  selectedMyPageSlug?: string;
   selectedWelcomeOnBoardSlug?: string;
   selectedSocialHubSection?: "benefits" | "clubs";
   selectedSocialHubItem?: string;
@@ -68,7 +69,7 @@ function getNotifications(language: Lang, role: Role): NotificationItem[] {
       ? [
           { type: "like", text: "İkinci el telefon ilanına 4 yeni beğeni geldi.", href: "/blog/selling-iphone-13", time: "2 dk" },
           { type: "comment", text: "Kiralık ev paylaşımına 2 yeni yorum geldi.", href: "/blog/seeking-rental-near-office", time: "12 dk" },
-          { type: "publish", text: "Yeni sprint demosu duyurusu yayınlandı.", href: "/announcements/new-sprint-demo", time: "25 dk" },
+          { type: "publish", text: "Yeni sprint demosu duyuru talebi değerlendirme için hazır.", href: "/announcements/requests/product-sprint-demo", time: "25 dk" },
         ]
       : [
           { type: "comment", text: "Kiralık ev paylaşımına 3 yeni yorum geldi.", href: "/blog/seeking-rental-near-office", time: "5 dk" },
@@ -81,7 +82,7 @@ function getNotifications(language: Lang, role: Role): NotificationItem[] {
     ? [
         { type: "like", text: "Your second-hand phone post received 4 new likes.", href: "/blog/selling-iphone-13", time: "2 min" },
         { type: "comment", text: "Your rental post received 2 new comments.", href: "/blog/seeking-rental-near-office", time: "12 min" },
-        { type: "publish", text: "The new sprint demo announcement was published.", href: "/announcements/new-sprint-demo", time: "25 min" },
+        { type: "publish", text: "The new sprint demo announcement request is ready for review.", href: "/announcements/requests/product-sprint-demo", time: "25 min" },
       ]
     : [
         { type: "comment", text: "Your rental post received 3 new comments.", href: "/blog/seeking-rental-near-office", time: "5 min" },
@@ -253,6 +254,23 @@ function FileIcon({ className = "h-4 w-4" }: { className?: string }) {
   );
 }
 
+function FormIcon({ className = "h-4 w-4" }: { className?: string }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      className={className}
+      aria-hidden="true"
+    >
+      <rect x="5" y="3" width="14" height="18" rx="2" />
+      <path strokeLinecap="round" d="M8 8h8M8 12h8M8 16h5" />
+    </svg>
+  );
+}
+
 function CourseIcon({ className = "h-4 w-4" }: { className?: string }) {
   return (
     <svg
@@ -370,8 +388,9 @@ function getText(language: Lang) {
         announcements: "Duyurular",
         blogManagement: "Blog",
         documents: "Dokümanlar",
-        courses: "Kurslar",
-        welcomeOnBoard: "Welcome On Board",
+        courses: "Growth O'Clock",
+        myPage: "Benim Sayfam",
+        welcomeOnBoard: "Aramıza Hoş Geldin",
         formSubmissions: "Form Gönderimleri",
         socialHubSettings: "Social Hub",
         blog: "Blog",
@@ -387,16 +406,17 @@ function getText(language: Lang) {
         blog: { title: "Blog", description: "" },
         publish: { title: "Yayınla", description: "" },
         documents: { title: "Dokümanlar", description: "" },
-        courses: { title: "Kurslar", description: "" },
-        "welcome-on-board": { title: "Welcome On Board", description: "" },
-        forms: { title: "Formlar", description: "Form gönderimleri ve şirket içi talepler." },
+        courses: { title: "Growth O'Clock", description: "" },
+        "my-page": { title: "Benim Sayfam", description: "" },
+        "welcome-on-board": { title: "Aramıza Hoş Geldin", description: "" },
+        forms: { title: "Formlar", description: "Form Gönderimleri ve Şirket İçi Talepler." },
         socialHub: { title: "Social Hub", description: "" },
-        socialHubEdit: { title: "Social Hub Güncelle", description: "" },
+        socialHubEdit: { title: "Social Hub'ı Güncelle", description: "" },
       },
       dashboard: {
-        hero: "Şirket güncellemeleri, HR dokümanları, iç formlar ve sosyal aktiviteler için tek yer.",
-        openAnnouncements: "Duyuruları aç",
-        openHrHub: "HR Hub'ı aç",
+        hero: "Şirket güncellemeleri, İK dokümanları, iç formlar ve sosyal aktiviteler için tek yer.",
+        openAnnouncements: "Duyuruları Aç",
+        openHrHub: "İK Hub'ını Aç",
         quickSnapshot: "Hızlı görünüm",
         adminPriorities: "",
         todayAtGlance: "Bugünün özeti",
@@ -431,27 +451,27 @@ function getText(language: Lang) {
         size: "Beden",
         concertPreference: "Konser Tercihi",
         submit: "Gönder",
-        requestTitle: "Bir duyuru talebi paylaş",
-        requestsTitle: "Duyuru talepleri",
+        requestTitle: "Bir Duyuru Talebi Paylaş",
+        requestsTitle: "Duyuru Talepleri",
         recentTitle: "Son Duyurular",
-        createTitle: "Yeni duyuru oluştur",
-        addForm: "Form ekle",
-        formTemplate: "Form şablonu",
-        attachment: "Ek dosya ekle (görsel, video)",
-        requestOwner: "Talep sahibi",
+        createTitle: "Yeni Duyuru Oluştur",
+        addForm: "Form Ekle",
+        formTemplate: "Form Şablonu",
+        attachment: "Ek Dosya Ekle (Görsel, Video)",
+        requestOwner: "Talep Sahibi",
         requestTeam: "Ekip",
         approve: "Onayla",
         reject: "Reddet",
-        teamName: "Ekip adı",
-        announcementTitle: "Duyuru başlığı",
-        announcementContent: "Duyuru içeriği",
-        sendToAdmin: "Yöneticiye gönder",
+        teamName: "Ekip Adı",
+        announcementTitle: "Duyuru Başlığı",
+        announcementContent: "Duyuru İçeriği",
+        sendToAdmin: "Yöneticiye Gönder",
         edit: "Düzenle",
-        editTitle: "Duyuruyu düzenle",
+        editTitle: "Duyuruyu Düzenle",
         save: "Değişiklikleri kaydet",
         delete: "Duyuruyu sil",
-        detail: "Kısa açıklama",
-        body: "Detay içeriği",
+        detail: "Kısa Açıklama",
+        body: "Detay İçeriği",
       },
       blog: {
         postModeration: "Paylaşım moderasyonu",
@@ -494,11 +514,11 @@ function getText(language: Lang) {
         mostUsed: "En Çok Kullanılan Dokümanlar",
       },
       courses: {
-        title: "Kurslar",
+        title: "Growth O'Clock",
         mandatory: "Zorunlu",
         optional: "İsteğe Bağlı",
         due: "Son Tarih",
-        audience: "Kitle",
+        audience: "Hedef Kitle",
         newHire: "Yeni Çalışanlar",
         firstMonth: "İlk Ay İçinde Tamamlanmalı",
         add: "Ekle",
@@ -513,14 +533,34 @@ function getText(language: Lang) {
         videoPreview: "Video Önizleme",
         play: "Oynat",
       },
+      myPage: {
+        title: "Benim Sayfam",
+        companyEmail: "Şirket E-Postam",
+        contract: "Sözleşmem",
+        contractStatus: "Aktif",
+        contractType: "Belirsiz Süreli İş Sözleşmesi",
+        contractUpdated: "Son Güncelleme",
+        todos: "Platformdaki Yapılacaklarım",
+        openContract: "Sözleşmeyi Aç",
+        employeeName: "Ayça Berra",
+        adminName: "Merve A.",
+        employeeEmailAddress: "ayca.berra@token.com.tr",
+        adminEmailAddress: "merve.a@token.com.tr",
+        employeeRole: "Ürün Uzmanı",
+        adminRole: "People & Culture Yöneticisi",
+        employeeTeam: "Ürün",
+        adminTeam: "People & Culture",
+        todoItemsEmployee: ["Welcome To Token kursunu tamamla", "Konser Bileti Hediyesi formunu doldur", "Şirket Wi‑Fi bilgilerini gözden geçir"],
+        todoItemsAdmin: ["Duyuru taleplerini değerlendir", "Growth O'Clock kurslarını güncelle", "Aramıza Hoş Geldin içeriklerini gözden geçir"],
+      },
       welcomeOnBoard: {
-        usefulLinks: "Faydalı Linkler",
-        basicProcesses: "Ofis Başlangıç Bilgileri",
+        usefulLinks: "Faydalı Bağlantılar",
+        basicProcesses: "Ofis Temelleri",
         expenseTitle: "Masraf Ve Satın Alma",
         expenseDesc: "Masraf girişleri, satın alma süreçleri, fiş yükleme ve onay takibi.",
         itTitle: "IT Destek Talepleri",
         itDesc: "Laptop, erişim, ekipman ve teknik destek kayıtları.",
-        hrTitle: "İK Self Servis",
+        hrTitle: "İK Öz Servis",
         hrDesc: "Kişisel bilgiler, bordro ve çalışan bilgileri.",
         printerTitle: "Şirket Yazıcısı Nasıl Kullanılır?",
         printerDesc: "Yazıcıya bağlan, güvenli baskı kodunu gir ve çıktını teslim al.",
@@ -535,13 +575,13 @@ function getText(language: Lang) {
         cancel: "İptal",
         itemTitle: "Başlık",
         itemDescription: "Açıklama",
-        itemLink: "Link",
+        itemLink: "Bağlantı",
         itemContent: "İçerik",
         },
       forms: {
         eyebrow: "Formlar",
-        tracking: "Gönderim takibi",
-        interactive: "Etkileşimli şirket formları",
+        tracking: "Gönderim Takibi",
+        interactive: "Etkileşimli Şirket Formları",
         monitor: "Kullanımı izle, kayıtları incele ve dışa aktar.",
         complete: "Geri bildirim, talep ve anketleri portalda doldur.",
         actions: "İşlemler",
@@ -550,8 +590,8 @@ function getText(language: Lang) {
         chooseForm: "Bir form seç",
         keepRecords: "Kayıtları düzenli tut ve rapora hazırla.",
         startRequest: "Birkaç tıkla talep başlat veya geri bildirim ver.",
-        adminItems: ["Gönderimleri dışa aktar", "HR formlarını aç", "Geri bildirimi incele", "Bekleyen talepleri takip et"],
-        employeeItems: ["İzin talebi", "Masraf formu", "Geri bildirim formu", "Onboarding kontrol listesi"],
+        adminItems: ["Gönderimleri Dışa Aktar", "İK Formlarını Aç", "Geri Bildirimi İncele", "Bekleyen Talepleri Takip Et"],
+        employeeItems: ["İzin Talebi", "Masraf Formu", "Geri Bildirim Formu", "Onboarding Kontrol Listesi"],
       },
       socialHub: {
         admin: "Yönetici",
@@ -565,7 +605,7 @@ function getText(language: Lang) {
         rowingTitle: "Kürek Kulübü",
         footballTitle: "Futbol Takımı",
         readingTitle: "Kitap Kulübü",
-        foodieTitle: "Foodie Club",
+        foodieTitle: "Lezzet Kulübü",
         haliSahaTitle: "Halı Saha Grubu",
         multiSport: "Çalışanlar şirket destekli erişim ile anlaşmalı spor salonları ve wellness noktalarında MultiSport kullanabilir.",
         dietician: "Çalışanlar şirket diyetisyen desteği ile beslenme, sağlıklı rutinler ve kişisel iyi yaşam planlaması konusunda yönlendirme alabilir.",
@@ -578,8 +618,8 @@ function getText(language: Lang) {
         update: "Ekle",
         edit: "Düzenle",
         updateBenefits: "Ekle",
-        updateTitle: "Social Hub güncelle",
-        updateSectionBenefits: "Sosyal haklar",
+        updateTitle: "Social Hub'ı Güncelle",
+        updateSectionBenefits: "Sosyal Haklar",
         updateSectionClubs: "Kulüpler",
       },
       common: {
@@ -588,6 +628,8 @@ function getText(language: Lang) {
         createAnnouncement: "Duyuru Oluştur",
         adminDashboard: "Yönetici Paneli",
         announcements: "Duyurular",
+        archive: "Arşivle",
+        archived: "Arşivlendi",
         commentTimeNow: "Şimdi",
       },
     };
@@ -599,7 +641,8 @@ function getText(language: Lang) {
       announcements: "Announcements",
       blogManagement: "Blog",
       documents: "Documents",
-      courses: "Courses",
+      courses: "Growth O'Clock",
+      myPage: "My Page",
       welcomeOnBoard: "Welcome On Board",
       formSubmissions: "Form Submissions",
       socialHubSettings: "Social Hub",
@@ -616,7 +659,8 @@ function getText(language: Lang) {
       blog: { title: "Blog", description: "" },
       publish: { title: "Publish", description: "" },
       documents: { title: "Documents", description: "" },
-      courses: { title: "Courses", description: "" },
+      courses: { title: "Growth O'Clock", description: "" },
+      "my-page": { title: "My Page", description: "" },
       "welcome-on-board": { title: "Welcome On Board", description: "" },
       forms: { title: "Forms", description: "Submission tracking and internal request forms." },
       socialHub: { title: "Social Hub", description: "" },
@@ -723,7 +767,7 @@ function getText(language: Lang) {
       mostUsed: "Most Used Documents",
     },
     courses: {
-      title: "Courses",
+      title: "Growth O'Clock",
       mandatory: "Mandatory",
       optional: "Optional",
       due: "Due",
@@ -741,6 +785,26 @@ function getText(language: Lang) {
       notFound: "Course Not Found",
       videoPreview: "Video Preview",
       play: "Play",
+    },
+    myPage: {
+      title: "My Page",
+      companyEmail: "My Company Email",
+      contract: "My Contract",
+      contractStatus: "Active",
+      contractType: "Open-Ended Employment Contract",
+      contractUpdated: "Last Updated",
+      todos: "My To-Dos In The Platform",
+      openContract: "Open Contract",
+      employeeName: "Ayça Berra",
+      adminName: "Merve A.",
+      employeeEmailAddress: "ayca.berra@token.com.tr",
+      adminEmailAddress: "merve.a@token.com.tr",
+      employeeRole: "Product Specialist",
+      adminRole: "People & Culture Manager",
+      employeeTeam: "Product",
+      adminTeam: "People & Culture",
+      todoItemsEmployee: ["Complete the Welcome To Token course", "Fill out the Concert Ticket Gift form", "Review the company Wi‑Fi details"],
+      todoItemsAdmin: ["Review announcement requests", "Update Growth O'Clock courses", "Review Welcome On Board content"],
     },
     welcomeOnBoard: {
       usefulLinks: "Useful Links",
@@ -817,6 +881,8 @@ function getText(language: Lang) {
       createAnnouncement: "Create Announcement",
       adminDashboard: "Admin Dashboard",
       announcements: "Announcements",
+      archive: "Archive",
+      archived: "Archived",
       commentTimeNow: "Just now",
     },
   };
@@ -1017,8 +1083,8 @@ function AnnouncementsPage({ role, language }: { role: Role; language: Lang }) {
             href={withRole(`/announcements/${item.slug}`, role)}
             className="group flex items-center gap-4 rounded-2xl bg-slate-50 p-4 transition hover:bg-sky-50"
           >
-            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white text-sky-700 ring-1 ring-sky-100">
-              <MegaphoneIcon className="h-4 w-4" />
+            <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white ring-1 ${item.hasForm ? "text-violet-700 ring-violet-100" : "text-sky-700 ring-sky-100"}`}>
+              {item.hasForm ? <FormIcon className="h-4 w-4" /> : <MegaphoneIcon className="h-4 w-4" />}
             </span>
 
             <div className="min-w-0 flex-1">
@@ -1045,6 +1111,7 @@ function AnnouncementsPage({ role, language }: { role: Role; language: Lang }) {
 function AnnouncementDetailPage({ role, slug, language }: { role: Role; slug: string; language: Lang }) {
   const t = getText(language);
   const announcement = getAnnouncementBySlug(slug, language);
+  const [isArchived, setIsArchived] = useState(false);
 
   if (!announcement) {
     return (
@@ -1067,12 +1134,24 @@ function AnnouncementDetailPage({ role, slug, language }: { role: Role; slug: st
         </Link>
 
         {role === "admin" ? (
-          <ButtonLink href={withRole(`/announcements/${slug}/edit`, role)} variant="outline">
-            {t.announcements.edit}
-          </ButtonLink>
+          <div className="flex flex-wrap gap-3">
+            <button
+              type="button"
+              onClick={() => setIsArchived(true)}
+              className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-2 text-sm font-medium text-amber-700 shadow-sm"
+            >
+              {isArchived ? t.common.archived : t.common.archive}
+            </button>
+            <ButtonLink href={withRole(`/announcements/${slug}/edit`, role)} variant="outline">
+              {t.announcements.edit}
+            </ButtonLink>
+          </div>
         ) : null}
       </div>
-      <h2 className="mt-6 text-2xl font-semibold text-sky-800">{announcement.title}</h2>
+      <div className="mt-6 flex flex-wrap items-center gap-3">
+        <h2 className="text-2xl font-semibold text-sky-800">{announcement.title}</h2>
+        {isArchived ? <span className="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-medium text-amber-800">{t.common.archived}</span> : null}
+      </div>
       <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-500">
         <ClockIcon className="h-3.5 w-3.5" />
         {announcement.publishedAt}
@@ -1444,6 +1523,7 @@ function BlogPostPage({ role, slug, language }: { role: Role; slug: string; lang
   const t = getText(language);
   const post = getPostBySlug(slug, language);
   const [liked, setLiked] = useState(false);
+  const [isArchived, setIsArchived] = useState(false);
   const [likes, setLikes] = useState(post?.likes ?? 0);
   const [commentText, setCommentText] = useState("");
   const [comments, setComments] = useState(post?.comments ?? []);
@@ -1468,15 +1548,27 @@ function BlogPostPage({ role, slug, language }: { role: Role; slug: string; lang
           </Link>
 
           {role === "admin" ? (
-            <button
-              type="button"
-              className="rounded-full border border-red-200 bg-red-50 px-4 py-2 text-sm font-medium text-red-700 shadow-sm"
-            >
-              {t.blog.delete}
-            </button>
+            <div className="flex flex-wrap gap-3">
+              <button
+                type="button"
+                onClick={() => setIsArchived(true)}
+                className="rounded-full border border-amber-200 bg-amber-50 px-4 py-2 text-sm font-medium text-amber-700 shadow-sm"
+              >
+                {isArchived ? t.common.archived : t.common.archive}
+              </button>
+              <button
+                type="button"
+                className="rounded-full border border-red-200 bg-red-50 px-4 py-2 text-sm font-medium text-red-700 shadow-sm"
+              >
+                {t.blog.delete}
+              </button>
+            </div>
           ) : null}
         </div>
-        <h2 className="mt-6 text-2xl font-semibold text-sky-800">{post.title}</h2>
+        <div className="mt-6 flex flex-wrap items-center gap-3">
+          <h2 className="text-2xl font-semibold text-sky-800">{post.title}</h2>
+          {isArchived ? <span className="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-medium text-amber-800">{t.common.archived}</span> : null}
+        </div>
         <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-slate-500">
           <span>{t.blog.sharedBy} {post.author}</span>
           <span className="h-1 w-1 rounded-full bg-slate-300" />
@@ -1610,7 +1702,7 @@ function getCourseItems(language: Lang): CourseItem[] {
     ? [
         {
           id: "welcome-to-token",
-          title: "Welcome To Token",
+          title: "Token'a Hoş Geldin",
           description: "Şirket kültürü, temel araçlar ve ilk hafta beklentileri için başlangıç kursu.",
           mandatory: true,
           dueDate: firstMonthDueDate,
@@ -1634,7 +1726,7 @@ function getCourseItems(language: Lang): CourseItem[] {
         },
         {
           id: "wellbeing-social",
-          title: "İyi Yaşam Ve Social Hub Tanıtımı",
+          title: "İyi Yaşam ve Social Hub Tanıtımı",
           description: "Yan haklar, kulüpler ve çalışan deneyimini destekleyen sosyal alanların kısa tanıtımı.",
           mandatory: false,
           dueDate: undefined,
@@ -1855,6 +1947,7 @@ function CourseDetailPage({ role, language, slug }: { role: Role; language: Lang
   const [course, setCourse] = useState(initialCourse);
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleted, setIsDeleted] = useState(false);
+  const [isArchived, setIsArchived] = useState(false);
 
   if (!course || isDeleted) {
     return (
@@ -1875,13 +1968,22 @@ function CourseDetailPage({ role, language, slug }: { role: Role; language: Lang
         </Link>
 
         {isAdmin ? (
-          <button
-            type="button"
-            onClick={() => setIsEditing((current) => !current)}
-            className="rounded-2xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-900 shadow-sm"
-          >
-            {t.courses.edit}
-          </button>
+          <div className="flex flex-wrap gap-3">
+            <button
+              type="button"
+              onClick={() => setIsArchived(true)}
+              className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-2.5 text-sm font-medium text-amber-700 shadow-sm"
+            >
+              {isArchived ? t.common.archived : t.common.archive}
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsEditing((current) => !current)}
+              className="rounded-2xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-900 shadow-sm"
+            >
+              {t.courses.edit}
+            </button>
+          </div>
         ) : null}
       </div>
 
@@ -1895,6 +1997,7 @@ function CourseDetailPage({ role, language, slug }: { role: Role; language: Lang
             <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${course.mandatory ? "bg-rose-100 text-rose-700" : "bg-slate-200 text-slate-700"}`}>
               {course.mandatory ? t.courses.mandatory : t.courses.optional}
             </span>
+            {isArchived ? <span className="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-medium text-amber-800">{t.common.archived}</span> : null}
           </div>
           {course.dueDate ? (
             <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-500">
@@ -1985,6 +2088,7 @@ function CourseDetailPage({ role, language, slug }: { role: Role; language: Lang
 function DocumentDetailPage({ role, slug, language }: { role: Role; slug: string; language: Lang }) {
   const t = getText(language);
   const document = getDocumentBySlug(slug, language);
+  const [isArchived, setIsArchived] = useState(false);
 
   if (!document) {
     return (
@@ -1996,19 +2100,34 @@ function DocumentDetailPage({ role, slug, language }: { role: Role; slug: string
 
   return (
     <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-      <Link
-        href={withRole("/documents", role)}
-        className="inline-flex rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-900"
-      >
-        ← {t.announcements.back}
-      </Link>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <Link
+          href={withRole("/documents", role)}
+          className="inline-flex rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-900"
+        >
+          ← {t.announcements.back}
+        </Link>
+
+        {role === "admin" ? (
+          <button
+            type="button"
+            onClick={() => setIsArchived(true)}
+            className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-2 text-sm font-medium text-amber-700 shadow-sm"
+          >
+            {isArchived ? t.common.archived : t.common.archive}
+          </button>
+        ) : null}
+      </div>
 
       <div className="mt-6 flex items-start gap-4">
         <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-sky-50 text-sky-700 ring-1 ring-sky-100">
           <FileIcon className="h-5 w-5" />
         </span>
         <div>
-          <h2 className="text-2xl font-semibold text-sky-800">{document.name}</h2>
+          <div className="flex flex-wrap items-center gap-3">
+            <h2 className="text-2xl font-semibold text-sky-800">{document.name}</h2>
+            {isArchived ? <span className="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-medium text-amber-800">{t.common.archived}</span> : null}
+          </div>
           <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-500">
             <ClockIcon className="h-3.5 w-3.5" />
             {document.updatedAt}
@@ -2021,6 +2140,116 @@ function DocumentDetailPage({ role, slug, language }: { role: Role; slug: string
         {document.body.map((paragraph) => (
           <p key={paragraph}>{paragraph}</p>
         ))}
+      </div>
+    </div>
+  );
+}
+
+function MyPage({ role, language, slug }: { role: Role; language: Lang; slug?: string }) {
+  if (slug) {
+    return <MyPageDetailPage role={role} language={language} slug={slug} />;
+  }
+
+  const t = getText(language);
+  const isAdmin = role === "admin";
+  const name = isAdmin ? t.myPage.adminName : t.myPage.employeeName;
+  const email = isAdmin ? t.myPage.adminEmailAddress : t.myPage.employeeEmailAddress;
+  const jobTitle = isAdmin ? t.myPage.adminRole : t.myPage.employeeRole;
+  const team = isAdmin ? t.myPage.adminTeam : t.myPage.employeeTeam;
+  const todoItems = isAdmin ? t.myPage.todoItemsAdmin : t.myPage.todoItemsEmployee;
+  const contractUpdated = language === "tr" ? "3 Haziran 2026" : "June 3, 2026";
+
+  return (
+    <div className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
+      <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div>
+          <h2 className="text-2xl font-semibold text-sky-800">{name}</h2>
+          <p className="mt-1 text-sm text-slate-500">{jobTitle} · {team}</p>
+          <p className="mt-1 text-sm text-slate-500">{email}</p>
+        </div>
+
+        <Link
+          href={withRole("/my-page/contract", role)}
+          className="group relative mt-6 block rounded-3xl bg-slate-50 p-5 ring-1 ring-slate-200 transition hover:bg-sky-50/70 hover:ring-sky-200"
+        >
+          <SectionTitle title={t.myPage.contract} description="" />
+          <div className="mt-3 inline-flex items-center gap-1.5 text-xs text-slate-400">
+            <ClockIcon className="h-3.5 w-3.5" />
+            {t.myPage.contractUpdated}: {contractUpdated}
+          </div>
+          <span className="absolute bottom-5 right-5 flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 shadow-sm transition group-hover:border-sky-200 group-hover:text-sky-700">
+            <ArrowRightIcon className="h-5 w-5" />
+          </span>
+        </Link>
+      </section>
+
+      <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+        <SectionTitle title={t.myPage.todos} description="" />
+        <div className="mt-6 space-y-3">
+          {todoItems.map((item: string) => (
+            <div key={item} className="flex items-start gap-3 rounded-2xl bg-slate-50 p-4 ring-1 ring-slate-200">
+              <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-sky-100 text-xs font-semibold text-sky-800">
+                ✓
+              </span>
+              <p className="text-sm leading-6 text-slate-700">{item}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function MyPageDetailPage({ role, language, slug }: { role: Role; language: Lang; slug: string }) {
+  const t = getText(language);
+  const isAdmin = role === "admin";
+  const name = isAdmin ? t.myPage.adminName : t.myPage.employeeName;
+  const jobTitle = isAdmin ? t.myPage.adminRole : t.myPage.employeeRole;
+  const team = isAdmin ? t.myPage.adminTeam : t.myPage.employeeTeam;
+
+  if (slug !== "contract") {
+    return (
+      <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+        <SectionTitle title={t.documents.notFound} description="" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      <Link
+        href={withRole("/my-page", role)}
+        className="inline-flex rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-900"
+      >
+        ← {t.announcements.back}
+      </Link>
+
+      <div className="mt-6 flex items-start gap-4">
+        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-sky-50 text-sky-700 ring-1 ring-sky-100">
+          <FileIcon className="h-5 w-5" />
+        </span>
+        <div>
+          <h2 className="text-2xl font-semibold text-sky-800">{t.myPage.contract}</h2>
+          <p className="mt-1 text-sm text-slate-500">{name} · {jobTitle} · {team}</p>
+          <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-500">
+            <ClockIcon className="h-3.5 w-3.5" />
+            {t.myPage.contractUpdated}: {language === "tr" ? "3 Haziran 2026" : "June 3, 2026"}
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-6 space-y-4 text-sm leading-7 text-slate-700">
+        {language === "tr" ? (
+          <>
+            <p>Bu demo sözleşme sayfası, çalışanın kişisel sözleşme detaylarını platform içinde görüntüleyebileceği alanı temsil eder.</p>
+            <p>Sözleşme tipi, başlangıç tarihi, temel çalışma koşulları ve ilgili şirket yükümlülükleri burada sade bir özet halinde sunulabilir.</p>
+          </>
+        ) : (
+          <>
+            <p>This demo contract page represents the area where an employee can review personal contract details inside the platform.</p>
+            <p>Contract type, start date, core working terms, and related company commitments can be shown here in a simple summary format.</p>
+          </>
+        )}
       </div>
     </div>
   );
@@ -2079,7 +2308,7 @@ function WelcomeOnBoardContent({ role, language }: { role: Role; language: Lang 
       body: language === "tr"
         ? [
             "Çalışanlar için Office-Employee ağı kullanılmalıdır; misafirler için ayrı olarak Office-Guest ağı mevcuttur.",
-            "Bağlantı sorunu yaşarsanız IT ekibi ile iletişime geçebilir veya Welcome On Board sayfasındaki ilgili linklerden destek isteyebilirsiniz.",
+            "Bağlantı sorunu yaşarsanız IT ekibi ile iletişime geçebilir veya Aramıza Hoş Geldin sayfasındaki ilgili bağlantılardan destek isteyebilirsiniz.",
           ]
         : [
             "Employees should use the Office-Employee network, while Office-Guest is available for visitors.",
@@ -2364,7 +2593,7 @@ function WelcomeOnBoardDetailPage({ role, language, slug }: { role: Role; langua
       body: language === "tr"
         ? [
             "Çalışanlar için Office-Employee ağı kullanılmalıdır; misafirler için ayrı olarak Office-Guest ağı mevcuttur.",
-            "Bağlantı sorunu yaşarsanız IT ekibi ile iletişime geçebilir veya Welcome On Board sayfasındaki ilgili linklerden destek isteyebilirsiniz.",
+            "Bağlantı sorunu yaşarsanız IT ekibi ile iletişime geçebilir veya Aramıza Hoş Geldin sayfasındaki ilgili bağlantılardan destek isteyebilirsiniz.",
           ]
         : [
             "Employees should use the Office-Employee network, while Office-Guest is available for visitors.",
@@ -2390,6 +2619,7 @@ function WelcomeOnBoardDetailPage({ role, language, slug }: { role: Role; langua
   const [item, setItem] = useState(initialItem);
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleted, setIsDeleted] = useState(false);
+  const [isArchived, setIsArchived] = useState(false);
 
   if (!item || isDeleted) {
     return (
@@ -2413,6 +2643,13 @@ function WelcomeOnBoardDetailPage({ role, language, slug }: { role: Role; langua
           <div className="flex flex-wrap gap-3">
             <button
               type="button"
+              onClick={() => setIsArchived(true)}
+              className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-2.5 text-sm font-medium text-amber-700 shadow-sm"
+            >
+              {isArchived ? t.common.archived : t.common.archive}
+            </button>
+            <button
+              type="button"
               onClick={() => setIsEditing((current) => !current)}
               className="rounded-2xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-900 shadow-sm"
             >
@@ -2434,7 +2671,10 @@ function WelcomeOnBoardDetailPage({ role, language, slug }: { role: Role; langua
           {item.href ? <BrandIcon className="h-5 w-5" /> : <FileIcon className="h-5 w-5" />}
         </span>
         <div>
-          <h2 className="text-2xl font-semibold text-sky-800">{item.title}</h2>
+          <div className="flex flex-wrap items-center gap-3">
+            <h2 className="text-2xl font-semibold text-sky-800">{item.title}</h2>
+            {isArchived ? <span className="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-medium text-amber-800">{t.common.archived}</span> : null}
+          </div>
           <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-500">
             <ClockIcon className="h-3.5 w-3.5" />
             {language === "tr" ? "Son Güncelleme: 9 Haziran 2026 · 10:00" : "Last Updated: June 9, 2026 · 10:00"}
@@ -2800,6 +3040,7 @@ function renderPage(
   selectedAnnouncementRequestSlug?: string,
   selectedDocumentSlug?: string,
   selectedCourseSlug?: string,
+  selectedMyPageSlug?: string,
   selectedWelcomeOnBoardSlug?: string,
   selectedSocialHubSection?: "benefits" | "clubs",
   selectedSocialHubItem?: string,
@@ -2831,6 +3072,8 @@ function renderPage(
       return selectedDocumentSlug
         ? <DocumentDetailPage role={role} slug={selectedDocumentSlug} language={language} />
         : <DocumentsPage role={role} language={language} />;
+    case "my-page":
+      return <MyPage role={role} language={language} slug={selectedMyPageSlug} />;
     case "courses":
       return <CoursesPage role={role} language={language} slug={selectedCourseSlug} />;
     case "welcome-on-board":
@@ -2858,6 +3101,7 @@ export default function PortalShell({
   selectedAnnouncementRequestSlug,
   selectedDocumentSlug,
   selectedCourseSlug,
+  selectedMyPageSlug,
   selectedWelcomeOnBoardSlug,
   selectedSocialHubSection,
   selectedSocialHubItem,
@@ -2871,9 +3115,11 @@ export default function PortalShell({
 
   const t = getText(language);
   const notifications = getNotifications(language, role);
+  const myPageTodoCount = (role === "admin" ? t.myPage.todoItemsAdmin : t.myPage.todoItemsEmployee).length;
   const navLinks = role === "admin"
     ? [
         { label: t.nav.adminDashboard, href: "/" },
+        { label: t.nav.myPage, href: "/my-page", badge: myPageTodoCount },
         { label: t.nav.announcements, href: "/announcements" },
         { label: t.nav.blogManagement, href: "/blog" },
         { label: t.nav.documents, href: "/documents" },
@@ -2882,6 +3128,7 @@ export default function PortalShell({
         { label: t.nav.welcomeOnBoard, href: "/welcome-on-board" },
       ]
     : [
+        { label: t.nav.myPage, href: "/my-page", badge: myPageTodoCount },
         { label: t.nav.announcements, href: "/announcements" },
         { label: t.nav.blog, href: "/blog" },
         { label: t.nav.documents, href: "/documents" },
@@ -2932,7 +3179,12 @@ export default function PortalShell({
                   <span className={`flex h-9 w-9 items-center justify-center rounded-xl ${active ? "bg-white/10 !text-white" : "bg-slate-100 text-slate-500 group-hover:bg-white group-hover:text-slate-900"}`}>
                     <NavItemIcon href={item.href} />
                   </span>
-                  <span>{item.label}</span>
+                  <span className="flex-1">{item.label}</span>
+                  {item.badge ? (
+                    <span className={`inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-[11px] font-semibold ${active ? "bg-white/15 text-white" : "bg-sky-100 text-sky-700"}`}>
+                      {item.badge}
+                    </span>
+                  ) : null}
                 </Link>
               );
             })}
@@ -3053,6 +3305,11 @@ export default function PortalShell({
                     >
                       <NavItemIcon href={item.href} className="h-4 w-4" />
                       {item.label}
+                      {item.badge ? (
+                        <span className={`inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-[11px] font-semibold ${active ? "bg-white/15 text-white" : "bg-sky-100 text-sky-700"}`}>
+                          {item.badge}
+                        </span>
+                      ) : null}
                     </Link>
                   );
                 })}
@@ -3061,7 +3318,7 @@ export default function PortalShell({
           </header>
 
           <main className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
-            {renderPage(page, role, language, selectedPostSlug, selectedAnnouncementSlug, selectedAnnouncementRequestSlug, selectedDocumentSlug, selectedCourseSlug, selectedWelcomeOnBoardSlug, selectedSocialHubSection, selectedSocialHubItem)}
+            {renderPage(page, role, language, selectedPostSlug, selectedAnnouncementSlug, selectedAnnouncementRequestSlug, selectedDocumentSlug, selectedCourseSlug, selectedMyPageSlug, selectedWelcomeOnBoardSlug, selectedSocialHubSection, selectedSocialHubItem)}
           </main>
         </div>
       </div>

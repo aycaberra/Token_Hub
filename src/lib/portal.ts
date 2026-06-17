@@ -11,6 +11,7 @@ export type PortalPage =
   | "publish"
   | "documents"
   | "courses"
+  | "my-page"
   | "welcome-on-board"
   | "forms"
   | "social-hub"
