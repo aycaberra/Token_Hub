@@ -169,8 +169,11 @@ export type PostComment = {
   time: string;
 };
 
+export type BlogCategory = "main" | "sports" | "foodie" | "art";
+
 export type Post = {
   slug: string;
+  category: BlogCategory;
   title: string;
   summary: string;
   author: string;
@@ -183,9 +186,10 @@ export type Post = {
 const postBase = [
   {
     slug: "selling-iphone-13",
+    category: "main",
     title: "Selling My iPhone 13 Second-Hand, Message Me If Interested",
     summary: "",
-    author: "Selin A.",
+    author: "Ayça Berra",
     publishedAt: "June 9, 2026 · 10:30",
     body: [
       "I’m selling my iPhone 13 because I recently upgraded. The phone is in good condition and has no repair history.",
@@ -207,6 +211,7 @@ const postBase = [
   },
   {
     slug: "middle-school-advice",
+    category: "main",
     title: "Need Advice For Choosing A Middle School In Beşiktaş",
     summary: "",
     author: "Ece T.",
@@ -226,6 +231,7 @@ const postBase = [
   },
   {
     slug: "seeking-rental-near-office",
+    category: "main",
     title: "Seeking A Rental Close To The Office Area",
     summary: "",
     author: "Bora N.",
@@ -248,13 +254,73 @@ const postBase = [
       },
     ],
   },
+  {
+    slug: "weekend-run-route",
+    category: "sports",
+    title: "Looking For A Weekend Running Group Around Maçka",
+    summary: "",
+    author: "Deniz P.",
+    publishedAt: "June 9, 2026 · 08:20",
+    body: [
+      "I usually run alone on weekends but would love to join coworkers who already have a regular route around Maçka or Beşiktaş.",
+      "If anyone is planning a casual morning run this weekend, I’d be happy to join and match the group pace.",
+    ],
+    likes: 9,
+    comments: [
+      {
+        author: "Can A.",
+        text: "We have a small group on Saturdays, I can add you.",
+        time: "12 min ago",
+      },
+    ],
+  },
+  {
+    slug: "best-salad-near-office",
+    category: "foodie",
+    title: "Best Healthy Lunch Spots Near The Office?",
+    summary: "",
+    author: "Melis R.",
+    publishedAt: "June 8, 2026 · 12:25",
+    body: [
+      "I’m trying to collect a few reliable lunch spots near the office with lighter options like bowls, salads, and grilled meals.",
+      "If you have a favorite place that is quick, tasty, and office-friendly, please share it here.",
+    ],
+    likes: 14,
+    comments: [
+      {
+        author: "Ece T.",
+        text: "There is a very good place two streets away, I’ll send the name.",
+        time: "9 min ago",
+      },
+    ],
+  },
+  {
+    slug: "weekend-exhibition-picks",
+    category: "art",
+    title: "Any Good Exhibition Recommendations For This Weekend?",
+    summary: "",
+    author: "Merve A.",
+    publishedAt: "June 7, 2026 · 17:05",
+    body: [
+      "I’m planning a museum or gallery visit this weekend and would love to hear if anyone has recently seen an exhibition worth recommending.",
+      "Modern art, photography, illustration, or smaller local galleries are all welcome suggestions.",
+    ],
+    likes: 11,
+    comments: [
+      {
+        author: "Selin A.",
+        text: "I saw a great photography exhibition last week, I’ll drop the details.",
+        time: "16 min ago",
+      },
+    ],
+  },
 ] as const satisfies Post[];
 
-const postTr: Record<string, Omit<Post, "slug" | "likes">> = {
+const postTr: Record<string, Omit<Post, "slug" | "category" | "likes">> = {
   "selling-iphone-13": {
     title: "İkinci El iPhone 13 Satıyorum, İlgilenen Yazabilir",
     summary: "",
-    author: "Selin A.",
+    author: "Ayça Berra",
     publishedAt: "9 Haziran 2026 · 10:30",
     body: [
       "Yakın zamanda telefonumu yenilediğim için iPhone 13 cihazımı satıyorum. Cihaz iyi durumda ve herhangi bir tamir geçmişi yok.",
@@ -312,6 +378,57 @@ const postTr: Record<string, Omit<Post, "slug" | "likes">> = {
       },
     ],
   },
+  "weekend-run-route": {
+    title: "Maçka Çevresinde Hafta Sonu Koşu Grubu Arıyorum",
+    summary: "",
+    author: "Deniz P.",
+    publishedAt: "9 Haziran 2026 · 08:20",
+    body: [
+      "Hafta sonları genelde tek başıma koşuyorum ama Maçka veya Beşiktaş çevresinde düzenli rota yapan çalışma arkadaşlarına katılmak isterim.",
+      "Bu hafta sonu rahat tempolu bir sabah koşusu planlayan varsa memnuniyetle katılırım.",
+    ],
+    comments: [
+      {
+        author: "Can A.",
+        text: "Cumartesi küçük bir grubumuz var, seni ekleyebilirim.",
+        time: "12 dk önce",
+      },
+    ],
+  },
+  "best-salad-near-office": {
+    title: "Ofis Yakınında En İyi Sağlıklı Öğle Yemeği Nerede?",
+    summary: "",
+    author: "Melis R.",
+    publishedAt: "8 Haziran 2026 · 12:25",
+    body: [
+      "Ofis yakınında bowl, salata ve ızgara gibi daha hafif seçenekleri olan güvenilir birkaç öğle yemeği yeri toplamak istiyorum.",
+      "Hızlı, lezzetli ve ofis günleri için uygun bir favoriniz varsa burada paylaşabilir misiniz?",
+    ],
+    comments: [
+      {
+        author: "Ece T.",
+        text: "İki sokak ötede çok iyi bir yer var, adını paylaşırım.",
+        time: "9 dk önce",
+      },
+    ],
+  },
+  "weekend-exhibition-picks": {
+    title: "Bu Hafta Sonu İçin Güzel Sergi Önerisi Var Mı?",
+    summary: "",
+    author: "Merve A.",
+    publishedAt: "7 Haziran 2026 · 17:05",
+    body: [
+      "Bu hafta sonu bir müze ya da galeri ziyareti planlıyorum. Yakın zamanda görülmeye değer bir sergi gezen varsa önerilerini duymak isterim.",
+      "Modern sanat, fotoğraf, illüstrasyon ya da daha küçük yerel galeriler dahil tüm önerilere açığım.",
+    ],
+    comments: [
+      {
+        author: "Selin A.",
+        text: "Geçen hafta çok iyi bir fotoğraf sergisi gördüm, detayları paylaşırım.",
+        time: "16 dk önce",
+      },
+    ],
+  },
 };
 
 export const posts: Post[] = postBase.map((item) => ({ ...item }));
@@ -343,93 +460,93 @@ export type DocumentItem = {
 const documentBase = [
   {
     slug: "employee-handbook-2026",
-    name: "Employee Handbook 2026",
+    name: "Vacation & Time Off Guide",
     action: "Open",
     href: "/documents/employee-handbook-2026",
-    description: "Company culture, policies, benefits, and everyday working principles.",
+    description: "A simple overview of annual leave, personal leave, public holidays, and planning expectations.",
     updatedAt: "June 5, 2026 · 09:30",
     body: [
-      "This handbook brings together the core policies, benefits information, and day-to-day working principles used across Token.",
-      "Employees can use it as a quick reference for leave rules, workplace expectations, communication norms, and people processes.",
+      "This guide helps employees understand how vacation days, personal leave, and official holidays are handled across the company.",
+      "It also explains planning expectations, handover reminders, and how to make time off feel smooth both for employees and their teams.",
     ],
   },
   {
     slug: "leave-request-template",
-    name: "Leave Request Template",
+    name: "Career Growth & Promotion Framework",
     action: "Open",
     href: "/documents/leave-request-template",
-    description: "Standard request format for annual leave, personal leave, and manager approval.",
+    description: "How growth paths, promotion timing, expectations, and evaluation principles are communicated at Token.",
     updatedAt: "June 4, 2026 · 14:10",
     body: [
-      "Use this template when preparing a leave request that needs a documented format before submission in the internal systems.",
-      "It includes the dates, leave type, handover notes, and approval fields expected by managers and HR.",
+      "This framework outlines how employees can grow in their roles, what promotion discussions look like, and which behaviours and contributions are valued.",
+      "It is designed to make career development more transparent, fair, and encouraging for people across different teams.",
     ],
   },
   {
     slug: "expense-reimbursement-guide",
-    name: "Expense Reimbursement Guide",
+    name: "Benefits & Wellbeing Overview",
     action: "Open",
     href: "/documents/expense-reimbursement-guide",
-    description: "Steps for submitting expenses, uploading receipts, and tracking reimbursement status.",
+    description: "A summary of wellbeing support, learning opportunities, and employee benefit highlights.",
     updatedAt: "June 3, 2026 · 11:45",
     body: [
-      "This guide explains how employees can submit expense claims, upload receipts correctly, and follow the approval flow.",
-      "It also outlines the reimbursement timing, required categories, and common mistakes to avoid during submission.",
+      "This document brings together the most important employee benefits, including wellbeing support, social programs, and learning-related opportunities.",
+      "It gives teams a clear snapshot of what is available and where to go for more detailed help when they want to make use of these offerings.",
     ],
   },
   {
     slug: "new-hire-onboarding-checklist",
-    name: "New Hire Onboarding Checklist",
+    name: "Performance & Feedback Principles",
     action: "Open",
     href: "/documents/new-hire-onboarding-checklist",
-    description: "Starter checklist for first-week setup, introductions, tools, and access needs.",
+    description: "Shared principles for feedback culture, goal setting, development conversations, and recognition.",
     updatedAt: "June 2, 2026 · 16:00",
     body: [
-      "The onboarding checklist helps new joiners and managers track first-week setup items, introductions, and required access steps.",
-      "It is designed to keep the onboarding experience clear, welcoming, and consistent across teams.",
+      "This document explains the company approach to performance conversations, regular feedback, and development check-ins.",
+      "Its purpose is to support a healthy culture where expectations are clearer, achievements are recognized, and growth conversations happen consistently.",
     ],
   },
 ] as const satisfies DocumentItem[];
 
 const documentTr: Record<string, Omit<DocumentItem, "slug" | "href">> = {
   "employee-handbook-2026": {
-    name: "Çalışan El Kitabı 2026",
+    name: "İzin ve Tatil Rehberi",
     action: "Aç",
-    description: "Şirket kültürü, politikalar, yan haklar ve günlük çalışma prensipleri.",
+    description: "Yıllık izin, mazeret izni, resmi tatiller ve planlama beklentileri için sade bir özet.",
     updatedAt: "5 Haziran 2026 · 09:30",
     body: [
-      "Bu el kitabı, Token genelinde kullanılan temel politikaları, yan hak bilgilerini ve günlük çalışma prensiplerini bir araya getirir.",
-      "Çalışanlar bunu izin kuralları, işyeri beklentileri, iletişim normları ve insan süreçleri için hızlı bir referans olarak kullanabilir.",
+      "Bu rehber, çalışanların yıllık izin günlerinin, mazeret izinlerinin ve resmi tatillerin şirket genelinde nasıl ele alındığını anlamasına yardımcı olur.",
+      "Ayrıca izin planlama beklentilerini, devir hatırlatmalarını ve izin sürecinin hem çalışanlar hem de ekipler için nasıl daha rahat yönetilebileceğini açıklar.",
     ],
   },
   "leave-request-template": {
-    name: "İzin Talep Şablonu",
+    name: "Kariyer Gelişimi ve Terfi Çerçevesi",
     action: "Aç",
-    description: "Yıllık izin, mazeret izni ve yönetici onayı için standart talep formatı.",
+    description: "Gelişim yolları, terfi zamanlaması, beklentiler ve değerlendirme prensiplerinin Token'da nasıl paylaşıldığı.",
     updatedAt: "4 Haziran 2026 · 14:10",
     body: [
-      "Bu şablonu, iç sistemlerde gönderim öncesinde belgeli format gerektiren izin taleplerinde kullanabilirsiniz.",
-      "Yönetici ve İK tarafından beklenen tarih, izin türü, devir notları ve onay alanlarını içerir.",
+      "Bu çerçeve, çalışanların rollerinde nasıl gelişebileceğini, terfi görüşmelerinin nasıl ilerlediğini ve hangi davranışlarla katkıların değerli görüldüğünü açıklar.",
+      "Amaç, farklı ekiplerdeki çalışanlar için kariyer gelişimini daha şeffaf, adil ve motive edici hale getirmektir.",
     ],
   },
   "expense-reimbursement-guide": {
-    name: "Masraf Geri Ödeme Rehberi",
+    name: "Yan Haklar ve İyi Yaşam Özeti",
     action: "Aç",
-    description: "Masraf gönderme, fiş yükleme ve geri ödeme durumunu takip etme adımları.",
+    description: "İyi yaşam desteği, öğrenme fırsatları ve çalışan yan hakları için sıcak bir özet.",
     updatedAt: "3 Haziran 2026 · 11:45",
     body: [
-      "Bu rehber, çalışanların masraf taleplerini nasıl oluşturacağını, fişleri doğru biçimde nasıl yükleyeceğini ve onay akışını nasıl takip edeceğini açıklar.",
-      "Ayrıca geri ödeme zamanlamasını, gerekli kategorileri ve gönderim sırasında kaçınılması gereken yaygın hataları özetler.",
+      "Bu doküman, iyi yaşam desteği, sosyal programlar ve öğrenme fırsatları dahil olmak üzere en önemli çalışan yan haklarını bir araya getirir.",
+      "Çalışanlara nelerin sunulduğunu net biçimde gösterir ve bu imkanlardan yararlanmak istediklerinde nereye başvurabileceklerini özetler.",
     ],
   },
   "new-hire-onboarding-checklist": {
-    name: "Yeni Başlayan Kontrol Listesi",
+    name: "Performans ve Geri Bildirim Prensipleri",
     action: "Aç",
-    description: "İlk hafta kurulumları, tanışmalar, araçlar ve erişim ihtiyaçları için başlangıç listesi.",
+    description: "Geri bildirim kültürü, hedef belirleme, gelişim görüşmeleri ve takdir yaklaşımı için ortak prensipler.",
     updatedAt: "2 Haziran 2026 · 16:00",
     body: [
-      "Onboarding kontrol listesi, yeni başlayanların ve yöneticilerin ilk hafta kurulumlarını, tanışmalarını ve gerekli erişim adımlarını takip etmesine yardımcı olur.",
-      "Tüm ekiplerde onboarding deneyimini daha net, sıcak ve tutarlı hale getirmek için hazırlanmıştır.",
+      "Bu doküman, şirketin performans görüşmelerine, düzenli geri bildirime ve gelişim odaklı değerlendirme buluşmalarına nasıl yaklaştığını açıklar.",
+      "Amacı, beklentilerin daha net olduğu, başarıların görünür kılındığı ve gelişim konuşmalarının süreklilik kazandığı sağlıklı bir kültürü desteklemektir.",
     ],
   },
 };

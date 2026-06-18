@@ -16,6 +16,7 @@ import {
   getPosts,
   getSubmissions,
   roleLabel,
+  type BlogCategory,
   type Lang,
   type PortalPage,
   type Role,
@@ -25,6 +26,8 @@ type PortalShellProps = {
   role: Role;
   page: PortalPage;
   selectedPostSlug?: string;
+  selectedBlogCategory?: BlogCategory;
+  isBlogRequestView?: boolean;
   selectedAnnouncementSlug?: string;
   selectedAnnouncementRequestSlug?: string;
   selectedDocumentSlug?: string;
@@ -52,7 +55,7 @@ type NotificationItem = {
   time: string;
 };
 function withRole(href: string, role: Role) {
-  return `${href}?role=${role}`;
+  return `${href}${href.includes("?") ? "&" : "?"}role=${role}`;
 }
 
 function getRoleHref(pathname: string, role: Role) {
@@ -460,7 +463,21 @@ function getText(language: Lang) {
         recentTitle: "Son Duyurular",
         createTitle: "Yeni Duyuru Oluştur",
         addForm: "Form Ekle",
-        formTemplate: "Form Şablonu",
+        formTemplate: "Form Oluşturucu",
+        formQuestions: "Sorular",
+        questionLabel: "Soru",
+        addQuestion: "Soru Ekle",
+        questionTitle: "Soru Metni",
+        questionStyle: "Soru Tipi",
+        openEnded: "Açık Uçlu",
+        multipleChoice: "Çoktan Seçmeli",
+        answerOptions: "Yanıt Seçenekleri",
+        addOption: "Seçenek Ekle",
+        removeQuestion: "Soruyu Sil",
+        removeOption: "Seçeneği Sil",
+        questionPlaceholder: "Sorunuzu Yazın",
+        optionPlaceholder: "Seçenek Yazın",
+        formPreview: "Form Önizlemesi",
         attachment: "Ek Dosya Ekle (Görsel, Video)",
         requestOwner: "Talep Sahibi",
         requestTeam: "Ekip",
@@ -482,12 +499,34 @@ function getText(language: Lang) {
         recentPosts: "Son paylaşımlar",
         reviewEmployeePosts: "Çalışan paylaşımlarını yayın öncesi veya sonrası incele.",
         publish: "Yayınla",
-        todaysBirthdays: "Bugünün doğum günleri",
+        todaysBirthdays: "Bugünün Doğum Günleri",
+        spaces: "Blog Alanları",
+        mainBlog: "Ana Blog",
+        sportsBlog: "Spor Blogu",
+        foodieBlog: "Foodie Blog",
+        artBlog: "Sanat Blogu",
+        mainBlogDesc: "Şirket içi genel paylaşımlar, öneriler ve günlük konular.",
+        sportsBlogDesc: "Koşu, maç, takım etkinlikleri ve aktif yaşam paylaşımları.",
+        foodieBlogDesc: "Lezzet önerileri, öğle yemeği keşifleri ve mekan tavsiyeleri.",
+        artBlogDesc: "Sergi, film, konser ve yaratıcı etkinlik önerileri.",
+        requestBlog: "Blog Konusu Talebi",
+        requestBlogDesc: "Yeni bir alt blog alanı öner veya mevcut alan için ihtiyaç paylaş.",
+        requestOwner: "Talep Sahibi",
+        requestTopic: "Blog Adı",
+        requestReason: "Neden Gerekli?",
+        sendRequest: "Talebi Gönder",
+        reviewRequests: "Blog Talepleri",
+        pendingReview: "İnceleniyor",
+        requestedBy: "Talep Sahibi",
+        publishIn: "Yayınlanacak Blog",
         postNotFound: "Paylaşım bulunamadı",
         backToPosts: "Geri",
         sharedBy: "Paylaşan",
         unlike: "Beğenmekten vazgeç",
         like: "Beğen",
+        edit: "Düzenle",
+        save: "Kaydet",
+        cancel: "İptal",
         delete: "Sil",
         views: "Görüntülenme",
         comments: "Yorumlar",
@@ -516,6 +555,19 @@ function getText(language: Lang) {
         search: "Doküman, form, rehber ara...",
         notFound: "Doküman bulunamadı",
         mostUsed: "En Çok Kullanılan Dokümanlar",
+        preview: "Önizleme",
+        download: "İndir",
+        edit: "Düzenle",
+        save: "Kaydet",
+        delete: "Sil",
+        cancel: "İptal",
+        requestDocument: "Doküman Talebi",
+        requestDocumentTitle: "Doküman Talebi Oluştur",
+        requestDocumentPlaceholder: "İhtiyaç duyduğunuz dokümanı kısaca yazın...",
+        sendRequest: "Talebi Gönder",
+        documentTitle: "Doküman Başlığı",
+        documentDescription: "Doküman Açıklaması",
+        documentContent: "Doküman İçeriği",
       },
       courses: {
         title: "Growth O'Clock",
@@ -717,8 +769,22 @@ function getText(language: Lang) {
       requestsTitle: "Announcement requests",
       recentTitle: "Recent Announcements",
       createTitle: "Create a new announcement",
-      addForm: "Add form",
-      formTemplate: "Form template",
+      addForm: "Add Form",
+      formTemplate: "Form Builder",
+      formQuestions: "Questions",
+      questionLabel: "Question",
+      addQuestion: "Add Question",
+      questionTitle: "Question Text",
+      questionStyle: "Question Type",
+      openEnded: "Open-Ended",
+      multipleChoice: "Multiple Choice",
+      answerOptions: "Answer Options",
+      addOption: "Add Option",
+      removeQuestion: "Delete Question",
+      removeOption: "Delete Option",
+      questionPlaceholder: "Write Your Question",
+      optionPlaceholder: "Write An Option",
+      formPreview: "Form Preview",
       attachment: "Add attachment (image, video)",
       requestOwner: "Request owner",
       requestTeam: "Team",
@@ -740,12 +806,34 @@ function getText(language: Lang) {
       recentPosts: "Recent posts",
       reviewEmployeePosts: "Review employee posts before or after publishing.",
       publish: "Publish",
-      todaysBirthdays: "Today's birthdays",
+      todaysBirthdays: "Today's Birthdays",
+      spaces: "Blog Spaces",
+      mainBlog: "Main Blog",
+      sportsBlog: "Sports Blog",
+      foodieBlog: "Foodie Blog",
+      artBlog: "Art Blog",
+      mainBlogDesc: "General internal sharing, recommendations, and everyday topics.",
+      sportsBlogDesc: "Running, matches, team activities, and active lifestyle sharing.",
+      foodieBlogDesc: "Food recommendations, lunch discoveries, and place suggestions.",
+      artBlogDesc: "Exhibitions, films, concerts, and creative event recommendations.",
+      requestBlog: "Request A Blog Subject",
+      requestBlogDesc: "Suggest a new sub-blog space or share a need for an existing one.",
+      requestOwner: "Request Owner",
+      requestTopic: "Blog Name",
+      requestReason: "Why Is It Needed?",
+      sendRequest: "Send Request",
+      reviewRequests: "Blog Requests",
+      pendingReview: "Pending Review",
+      requestedBy: "Requested By",
+      publishIn: "Publishing To",
       postNotFound: "Post not found",
       backToPosts: "Back",
       sharedBy: "Shared by",
       unlike: "Unlike",
       like: "Like",
+      edit: "Edit",
+      save: "Save",
+      cancel: "Cancel",
       delete: "Delete",
       views: "Views",
       comments: "Comments",
@@ -774,6 +862,19 @@ function getText(language: Lang) {
       search: "Search documents, forms, guides...",
       notFound: "Document not found",
       mostUsed: "Most Used Documents",
+      preview: "Preview",
+      download: "Download",
+      edit: "Edit",
+      save: "Save",
+      delete: "Delete",
+      cancel: "Cancel",
+      requestDocument: "Request A Document",
+      requestDocumentTitle: "Create A Document Request",
+      requestDocumentPlaceholder: "Briefly describe the document you need...",
+      sendRequest: "Send Request",
+      documentTitle: "Document Title",
+      documentDescription: "Document Description",
+      documentContent: "Document Content",
     },
     courses: {
       title: "Growth O'Clock",
@@ -920,6 +1021,21 @@ function SectionTitle({
   );
 }
 
+function getActionButtonClass(
+  variant: "primary" | "secondary" | "danger" | "warning",
+  extraClassName = "",
+) {
+  const base = "inline-flex items-center justify-center rounded-2xl px-4 py-2.5 text-sm font-medium shadow-sm transition hover:-translate-y-0.5 focus:outline-none focus:ring-2";
+  const styles = {
+    primary: "bg-sky-700 !text-white hover:bg-sky-800 focus:ring-sky-200",
+    secondary: "border border-slate-300 bg-white text-slate-900 hover:border-sky-200 hover:text-sky-800 focus:ring-slate-200",
+    danger: "border border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100 focus:ring-rose-100",
+    warning: "border border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100 focus:ring-amber-100",
+  };
+
+  return `${base} ${styles[variant]} ${extraClassName}`.trim();
+}
+
 function ButtonLink({
   href,
   children,
@@ -930,16 +1046,13 @@ function ButtonLink({
   variant?: "dark" | "light" | "outline";
 }) {
   const styles = {
-    dark: "bg-slate-950 !text-white shadow-sm shadow-slate-200/80",
-    light: "bg-white !text-slate-950 shadow-sm",
-    outline: "border border-slate-200 bg-white !text-slate-950 shadow-sm",
+    dark: getActionButtonClass("primary"),
+    light: "inline-flex items-center justify-center rounded-2xl px-4 py-2.5 text-sm font-medium bg-white !text-slate-950 shadow-sm transition hover:-translate-y-0.5 hover:opacity-95",
+    outline: getActionButtonClass("secondary"),
   };
 
   return (
-    <Link
-      href={href}
-      className={`inline-flex items-center justify-center rounded-2xl px-4 py-2.5 text-sm font-medium transition hover:-translate-y-0.5 hover:opacity-95 ${styles[variant]}`}
-    >
+    <Link href={href} className={styles[variant]}>
       {children}
     </Link>
   );
@@ -1161,7 +1274,7 @@ function AnnouncementDetailPage({ role, slug, language }: { role: Role; slug: st
             <button
               type="button"
               onClick={() => setIsArchived(true)}
-              className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-2 text-sm font-medium text-amber-700 shadow-sm"
+              className={getActionButtonClass("warning")}
             >
               {isArchived ? t.common.archived : t.common.archive}
             </button>
@@ -1210,7 +1323,7 @@ function AnnouncementDetailPage({ role, slug, language }: { role: Role; slug: st
             </div>
             <button
               type="button"
-              className="rounded-2xl bg-sky-700 px-4 py-3 text-sm font-medium text-white shadow-sm"
+              className={getActionButtonClass("primary")}
             >
               {t.announcements.submit}
             </button>
@@ -1312,13 +1425,13 @@ function AnnouncementRequestDetailPage({ role, slug, language }: { role: Role; s
       <div className="mt-6 flex flex-wrap gap-3">
         <button
           type="button"
-          className="rounded-2xl bg-sky-700 px-4 py-2 text-sm font-medium text-white shadow-sm"
+          className={getActionButtonClass("primary")}
         >
           {t.announcements.approve}
         </button>
         <button
           type="button"
-          className="rounded-2xl border border-red-200 bg-red-50 px-4 py-2 text-sm font-medium text-red-700 shadow-sm"
+          className={getActionButtonClass("danger")}
         >
           {t.announcements.reject}
         </button>
@@ -1333,6 +1446,48 @@ function AnnouncementCreatePage({ language }: { role: Role; language: Lang }) {
   const [detail, setDetail] = useState("");
   const [body, setBody] = useState("");
   const [formAdded, setFormAdded] = useState(false);
+  const [formQuestions, setFormQuestions] = useState<Array<{
+    id: string;
+    title: string;
+    type: "open-ended" | "multiple-choice";
+    options: string[];
+  }>>([]);
+
+  const addQuestion = () => {
+    setFormQuestions((current) => [
+      ...current,
+      {
+        id: `${Date.now()}-${current.length}`,
+        title: "",
+        type: "open-ended",
+        options: ["", ""],
+      },
+    ]);
+  };
+
+  const updateQuestion = (
+    questionId: string,
+    updater: (question: { id: string; title: string; type: "open-ended" | "multiple-choice"; options: string[] }) => {
+      id: string;
+      title: string;
+      type: "open-ended" | "multiple-choice";
+      options: string[];
+    },
+  ) => {
+    setFormQuestions((current) => current.map((item) => item.id === questionId ? updater(item) : item));
+  };
+
+  const openFormBuilder = () => {
+    setFormAdded(true);
+    setFormQuestions((current) => current.length ? current : [
+      {
+        id: "question-1",
+        title: "",
+        type: "open-ended",
+        options: ["", ""],
+      },
+    ]);
+  };
 
   return (
     <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
@@ -1363,23 +1518,145 @@ function AnnouncementCreatePage({ language }: { role: Role; language: Lang }) {
 
         {formAdded ? (
           <div className="rounded-3xl border border-slate-200 bg-slate-50 p-5">
-            <SectionTitle title={t.announcements.formTemplate} description="" />
-            <div className="mt-4 space-y-3">
-              <div className="rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-500">
-                {t.announcements.employeeEmail}
-              </div>
-              <div className="rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-500">
-                {t.announcements.name}
-              </div>
-              <div className="rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-500">
-                {t.announcements.size}
-              </div>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <SectionTitle title={t.announcements.formTemplate} description="" />
               <button
                 type="button"
-                className="rounded-2xl bg-sky-700 px-4 py-3 text-sm font-medium text-white shadow-sm"
+                onClick={addQuestion}
+                className={getActionButtonClass("secondary", "px-3 py-2 text-xs")}
               >
-                {t.announcements.submit}
+                {t.announcements.addQuestion}
               </button>
+            </div>
+
+            <div className="mt-5 space-y-4">
+              {formQuestions.map((question, index) => (
+                <div key={question.id} className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <p className="text-sm font-semibold text-slate-900">{t.announcements.questionLabel} {index + 1}</p>
+                    <button
+                      type="button"
+                      onClick={() => setFormQuestions((current) => current.filter((item) => item.id !== question.id))}
+                      className={getActionButtonClass("danger", "px-3 py-2 text-xs")}
+                    >
+                      {t.announcements.removeQuestion}
+                    </button>
+                  </div>
+
+                  <div className="mt-4 grid gap-3 lg:grid-cols-[minmax(0,1fr)_220px]">
+                    <div>
+                      <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">{t.announcements.questionTitle}</p>
+                      <input
+                        value={question.title}
+                        onChange={(event) => updateQuestion(question.id, (item) => ({ ...item, title: event.target.value }))}
+                        className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
+                        placeholder={t.announcements.questionPlaceholder}
+                      />
+                    </div>
+                    <div>
+                      <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">{t.announcements.questionStyle}</p>
+                      <select
+                        value={question.type}
+                        onChange={(event) => updateQuestion(question.id, (item) => ({
+                          ...item,
+                          type: event.target.value as "open-ended" | "multiple-choice",
+                          options: event.target.value === "multiple-choice"
+                            ? item.options.length >= 2
+                              ? item.options
+                              : [item.options[0] ?? "", ""]
+                            : item.options,
+                        }))}
+                        className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
+                      >
+                        <option value="open-ended">{t.announcements.openEnded}</option>
+                        <option value="multiple-choice">{t.announcements.multipleChoice}</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {question.type === "multiple-choice" ? (
+                    <div className="mt-4 rounded-2xl bg-slate-50 p-4 ring-1 ring-slate-200">
+                      <div className="flex flex-wrap items-center justify-between gap-3">
+                        <p className="text-sm font-medium text-slate-900">{t.announcements.answerOptions}</p>
+                        <button
+                          type="button"
+                          onClick={() => updateQuestion(question.id, (item) => ({ ...item, options: [...item.options, ""] }))}
+                          className={getActionButtonClass("secondary", "px-3 py-2 text-xs")}
+                        >
+                          {t.announcements.addOption}
+                        </button>
+                      </div>
+                      <div className="mt-3 space-y-2">
+                        {question.options.map((option, optionIndex) => (
+                          <div key={`${question.id}-${optionIndex}`} className="grid grid-cols-[72px_minmax(0,1fr)_auto] items-center gap-3">
+                            <span className="text-xs font-medium text-slate-400">
+                              {language === "tr" ? `Seçenek ${optionIndex + 1}` : `Option ${optionIndex + 1}`}
+                            </span>
+                            <input
+                              value={option}
+                              onChange={(event) => updateQuestion(question.id, (item) => ({
+                                ...item,
+                                options: item.options.map((entry, entryIndex) => entryIndex === optionIndex ? event.target.value : entry),
+                              }))}
+                              className="min-w-0 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none"
+                              placeholder={`${t.announcements.optionPlaceholder} ${optionIndex + 1}`}
+                            />
+                            {optionIndex > 0 ? (
+                              <button
+                                type="button"
+                                onClick={() => updateQuestion(question.id, (item) => ({
+                                  ...item,
+                                  options: item.options.filter((_, entryIndex) => entryIndex !== optionIndex),
+                                }))}
+                                className={getActionButtonClass("danger", "px-3 py-2 text-xs whitespace-nowrap")}
+                              >
+                                {t.announcements.removeOption}
+                              </button>
+                            ) : (
+                              <div className="w-[92px]" />
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ) : null}
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-5 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+              <SectionTitle title={t.announcements.formPreview} description="" />
+              <div className="mt-4 space-y-4">
+                {formQuestions.map((question) => (
+                  <div key={`${question.id}-preview`} className="rounded-2xl bg-slate-50 p-4 ring-1 ring-slate-200">
+                    <p className="text-sm font-medium text-slate-900">{question.title || t.announcements.questionPlaceholder}</p>
+                    {question.type === "open-ended" ? (
+                      <div className="mt-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-400">
+                        {t.announcements.openEnded}
+                      </div>
+                    ) : (
+                      <div className="mt-3 space-y-2">
+                        {question.options.filter(Boolean).length ? question.options.filter(Boolean).map((option, optionIndex) => (
+                          <div key={`${question.id}-preview-${optionIndex}`} className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600">
+                            <span className="h-4 w-4 rounded-full border border-slate-300 bg-white" />
+                            {option}
+                          </div>
+                        )) : (
+                          <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-400">
+                            {t.announcements.addOption}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  className={getActionButtonClass("primary")}
+                >
+                  {t.announcements.submit}
+                </button>
+              </div>
             </div>
           </div>
         ) : null}
@@ -1388,14 +1665,14 @@ function AnnouncementCreatePage({ language }: { role: Role; language: Lang }) {
       <div className="mt-6 flex flex-wrap gap-3">
         <button
           type="button"
-          onClick={() => setFormAdded(true)}
-          className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm font-medium text-slate-900 shadow-sm"
+          onClick={openFormBuilder}
+          className={getActionButtonClass("secondary")}
         >
           {t.announcements.addForm}
         </button>
         <button
           type="button"
-          className="rounded-2xl bg-sky-700 px-4 py-3 text-sm font-medium text-white shadow-sm"
+          className={getActionButtonClass("primary")}
         >
           {t.announcements.save}
         </button>
@@ -1455,13 +1732,13 @@ function AnnouncementEditPage({ role, slug, language }: { role: Role; slug: stri
       <div className="mt-6 flex flex-wrap gap-3">
         <button
           type="button"
-          className="rounded-2xl bg-sky-700 px-4 py-3 text-sm font-medium text-white shadow-sm"
+          className={getActionButtonClass("primary")}
         >
           {t.announcements.save}
         </button>
         <button
           type="button"
-          className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700 shadow-sm"
+          className={getActionButtonClass("danger")}
         >
           {t.announcements.delete}
         </button>
@@ -1492,64 +1769,235 @@ function AnnouncementRequestPage({ role, language }: { role: Role; language: Lan
   );
 }
 
-function BlogPage({ role, language }: { role: Role; language: Lang }) {
+function BlogPage({ role, language, category, requestView }: { role: Role; language: Lang; category?: BlogCategory; requestView?: boolean }) {
   const isAdmin = role === "admin";
   const t = getText(language);
   const postItems = getPosts(language);
+  const [publishOpen, setPublishOpen] = useState(false);
+  const [publishTopic, setPublishTopic] = useState("");
+  const [publishSummary, setPublishSummary] = useState("");
+  const [publishContent, setPublishContent] = useState("");
+  const birthdays = language === "tr"
+    ? [
+        { name: "Selin K.", team: "Pazarlama" },
+        { name: "Can A.", team: "Ürün" },
+        { name: "İrem D.", team: "Finans" },
+      ]
+    : [
+        { name: "Selin K.", team: "Marketing" },
+        { name: "Can A.", team: "Product" },
+        { name: "İrem D.", team: "Finance" },
+      ];
+  const blogSpaces: Array<{ id: BlogCategory; title: string; description: string }> = [
+    { id: "main", title: t.blog.mainBlog, description: t.blog.mainBlogDesc },
+    { id: "sports", title: t.blog.sportsBlog, description: t.blog.sportsBlogDesc },
+    { id: "foodie", title: t.blog.foodieBlog, description: t.blog.foodieBlogDesc },
+    { id: "art", title: t.blog.artBlog, description: t.blog.artBlogDesc },
+  ];
+  const selectedSpace = blogSpaces.find((item) => item.id === category);
+  const filteredPosts = category ? postItems.filter((post) => post.category === category) : postItems;
+  const blogRequests = language === "tr"
+    ? [
+        { topic: "Aile ve Ebeveynlik Blogu", owner: "Ece T." },
+        { topic: "Seyahat Blogu", owner: "Bora N." },
+      ]
+    : [
+        { topic: "Family & Parenting Blog", owner: "Ece T." },
+        { topic: "Travel Blog", owner: "Bora N." },
+      ];
 
   return (
-    <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <SectionTitle
-          title={isAdmin ? t.blog.postModeration : t.blog.recentPosts}
-          description={isAdmin ? t.blog.reviewEmployeePosts : ""}
-        />
-        <ButtonLink href={withRole("/publish", role)}>
-          {t.blog.publish}
-        </ButtonLink>
-      </div>
-      <div className="mt-6 space-y-4">
-        {postItems.map((post) => (
-          <Link
-            key={post.slug}
-            href={withRole(`/blog/${post.slug}`, role)}
-            className="group flex items-center gap-4 rounded-2xl bg-slate-50 p-4 transition hover:bg-sky-50"
-          >
-            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white text-sky-700 ring-1 ring-sky-100">
-              <CommentIcon className="h-4 w-4" />
-            </span>
+    <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_280px]">
+      <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <SectionTitle
+            title={requestView ? (isAdmin ? t.blog.reviewRequests : t.blog.requestBlog) : category ? selectedSpace?.title : t.blog.spaces}
+            description={requestView ? t.blog.requestBlogDesc : category ? selectedSpace?.description : ""}
+          />
+          <div className="flex flex-wrap gap-3">
+            {(requestView || category) ? (
+              <ButtonLink href={withRole("/blog", role)} variant="outline">
+                {t.blog.backToPosts}
+              </ButtonLink>
+            ) : null}
+            {category ? (
+              <button
+                type="button"
+                onClick={() => setPublishOpen(true)}
+                className={getActionButtonClass("primary")}
+              >
+                {t.blog.publish}
+              </button>
+            ) : null}
+            {!requestView && !category ? (
+              <ButtonLink href={withRole(`/blog?request=true`, role)}>
+                {isAdmin ? t.blog.reviewRequests : t.blog.requestBlog}
+              </ButtonLink>
+            ) : null}
+          </div>
+        </div>
 
-            <div className="min-w-0 flex-1">
-              <h3 className="font-medium text-slate-950 transition group-hover:text-sky-900">{post.title}</h3>
-              <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-400">
-                <span>{post.author}</span>
-                <span className="h-1 w-1 rounded-full bg-slate-300" />
-                <span className="inline-flex items-center gap-1.5">
-                  <ClockIcon className="h-3.5 w-3.5" />
-                  {post.publishedAt}
-                </span>
-              </div>
-              {post.summary ? <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-500">{post.summary}</p> : null}
+        {requestView ? (
+          isAdmin ? (
+            <div className="mt-6 space-y-3">
+              {blogRequests.map((request) => (
+                <div key={request.topic} className="rounded-2xl bg-slate-50 p-4 ring-1 ring-slate-200">
+                  <div className="flex items-center justify-between gap-3">
+                    <h3 className="font-medium text-slate-950">{request.topic}</h3>
+                    <span className="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-medium text-amber-800">{t.blog.pendingReview}</span>
+                  </div>
+                  <p className="mt-2 text-sm text-slate-500">{t.blog.requestedBy}: {request.owner}</p>
+                </div>
+              ))}
             </div>
+          ) : (
+            <div className="mt-6 space-y-4">
+              <input className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none" placeholder={t.blog.requestOwner} />
+              <input className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none" placeholder={t.blog.requestTopic} />
+              <textarea className="h-40 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none" placeholder={t.blog.requestReason} />
+              <button type="button" className={getActionButtonClass("primary")}>{t.blog.sendRequest}</button>
+            </div>
+          )
+        ) : category ? (
+          <div className="mt-6 space-y-4">
+            {filteredPosts.map((post) => (
+              <Link
+                key={post.slug}
+                href={withRole(`/blog/${post.slug}`, role)}
+                className="group flex items-center gap-4 rounded-2xl bg-slate-50 p-4 transition hover:bg-sky-50"
+              >
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white text-sky-700 ring-1 ring-sky-100">
+                  <CommentIcon className="h-4 w-4" />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <h3 className="font-medium text-slate-950 transition group-hover:text-sky-900">{post.title}</h3>
+                  <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-400">
+                    <span>{post.author}</span>
+                    <span className="h-1 w-1 rounded-full bg-slate-300" />
+                    <span className="inline-flex items-center gap-1.5">
+                      <ClockIcon className="h-3.5 w-3.5" />
+                      {post.publishedAt}
+                    </span>
+                  </div>
+                </div>
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 shadow-sm transition group-hover:border-sky-200 group-hover:text-sky-700">
+                  <ArrowRightIcon className="h-5 w-5" />
+                </span>
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <div className="mt-6 grid gap-4 md:grid-cols-2">
+            {blogSpaces.map((space) => {
+              const count = postItems.filter((post) => post.category === space.id).length;
 
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 shadow-sm transition group-hover:border-sky-200 group-hover:text-sky-700">
-              <ArrowRightIcon className="h-5 w-5" />
-            </span>
-          </Link>
-        ))}
+              return (
+                <Link
+                  key={space.id}
+                  href={withRole(`/blog?category=${space.id}`, role)}
+                  className="group relative rounded-3xl bg-slate-50 p-5 ring-1 ring-slate-200 transition hover:bg-sky-50 hover:ring-sky-200"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <h3 className="text-lg font-semibold text-slate-950 group-hover:text-sky-900">{space.title}</h3>
+                      <p className="mt-2 text-sm leading-6 text-slate-500">{space.description}</p>
+                    </div>
+                    <span className="rounded-full bg-white px-2.5 py-1 text-xs font-medium text-slate-500 ring-1 ring-slate-200">{count}</span>
+                  </div>
+                  <span className="mt-5 flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 shadow-sm transition group-hover:border-sky-200 group-hover:text-sky-700">
+                    <ArrowRightIcon className="h-5 w-5" />
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
+        )}
       </div>
+
+      <aside className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+        <SectionTitle title={t.blog.todaysBirthdays} description="" />
+        <div className="mt-4 space-y-3">
+          {birthdays.map((person) => (
+            <div key={person.name} className="flex items-center gap-3 rounded-2xl bg-slate-50 p-4 ring-1 ring-slate-200">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-rose-50 text-rose-700 ring-1 ring-rose-100">
+                <UsersIcon className="h-4 w-4" />
+              </span>
+              <div className="min-w-0">
+                <p className="font-medium text-slate-950">{person.name}</p>
+                <p className="text-sm text-slate-500">{person.team}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </aside>
+
+      {publishOpen && category && selectedSpace ? (
+        <div className="fixed inset-0 z-40 flex items-center justify-center bg-slate-950/30 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-2xl rounded-3xl border border-slate-200 bg-white p-6 shadow-xl">
+            <SectionTitle title={t.blog.publish} description="" />
+            <div className="mt-4 rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-600 ring-1 ring-slate-200">
+              <span className="font-medium text-slate-900">{t.blog.publishIn}:</span> {selectedSpace.title}
+            </div>
+            <div className="mt-4 space-y-4">
+              <input
+                value={publishTopic}
+                onChange={(event) => setPublishTopic(event.target.value)}
+                className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
+                placeholder={t.publish.topic}
+              />
+              <input
+                value={publishSummary}
+                onChange={(event) => setPublishSummary(event.target.value)}
+                className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
+                placeholder={t.publish.summary}
+              />
+              <textarea
+                value={publishContent}
+                onChange={(event) => setPublishContent(event.target.value)}
+                className="h-40 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
+                placeholder={t.publish.content}
+              />
+            </div>
+            <div className="mt-5 flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setPublishOpen(false)}
+                className={getActionButtonClass("secondary")}
+              >
+                {t.blog.cancel}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setPublishOpen(false);
+                  setPublishTopic("");
+                  setPublishSummary("");
+                  setPublishContent("");
+                }}
+                className={getActionButtonClass("primary")}
+              >
+                {t.publish.sendForReview}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
 
 function BlogPostPage({ role, slug, language }: { role: Role; slug: string; language: Lang }) {
   const t = getText(language);
-  const post = getPostBySlug(slug, language);
+  const initialPost = getPostBySlug(slug, language);
+  const [post, setPost] = useState(initialPost);
   const [liked, setLiked] = useState(false);
   const [isArchived, setIsArchived] = useState(false);
-  const [likes, setLikes] = useState(post?.likes ?? 0);
+  const [isEditing, setIsEditing] = useState(false);
+  const [likes, setLikes] = useState(initialPost?.likes ?? 0);
   const [commentText, setCommentText] = useState("");
-  const [comments, setComments] = useState(post?.comments ?? []);
+  const [comments, setComments] = useState(initialPost?.comments ?? []);
+  const currentUserName = role === "admin" ? getText(language).myPage.adminName : getText(language).myPage.employeeName;
+  const isOwner = post?.author === currentUserName;
 
   if (!post) {
     return (
@@ -1570,21 +2018,34 @@ function BlogPostPage({ role, slug, language }: { role: Role; slug: string; lang
             ← {t.blog.backToPosts}
           </Link>
 
-          {role === "admin" ? (
+          {role === "admin" || isOwner ? (
             <div className="flex flex-wrap gap-3">
-              <button
-                type="button"
-                onClick={() => setIsArchived(true)}
-                className="rounded-full border border-amber-200 bg-amber-50 px-4 py-2 text-sm font-medium text-amber-700 shadow-sm"
-              >
-                {isArchived ? t.common.archived : t.common.archive}
-              </button>
-              <button
-                type="button"
-                className="rounded-full border border-red-200 bg-red-50 px-4 py-2 text-sm font-medium text-red-700 shadow-sm"
-              >
-                {t.blog.delete}
-              </button>
+              {role === "admin" ? (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => setIsArchived(true)}
+                    className={getActionButtonClass("warning")}
+                  >
+                    {isArchived ? t.common.archived : t.common.archive}
+                  </button>
+                  <button
+                    type="button"
+                    className={getActionButtonClass("danger")}
+                  >
+                    {t.blog.delete}
+                  </button>
+                </>
+              ) : null}
+              {isOwner ? (
+                <button
+                  type="button"
+                  onClick={() => setIsEditing((current) => !current)}
+                  className={getActionButtonClass("secondary")}
+                >
+                  {t.blog.edit}
+                </button>
+              ) : null}
             </div>
           ) : null}
         </div>
@@ -1600,6 +2061,41 @@ function BlogPostPage({ role, slug, language }: { role: Role; slug: string; lang
             {post.publishedAt}
           </span>
         </div>
+
+        {isEditing ? (
+          <div className="mt-6 rounded-2xl bg-slate-50 p-4 ring-1 ring-slate-200">
+            <div className="space-y-3">
+              <input
+                value={post.title}
+                onChange={(event) => setPost((current) => (current ? { ...current, title: event.target.value } : current))}
+                className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none"
+                placeholder={t.publish.topic}
+              />
+              <textarea
+                value={post.body.join("\n\n")}
+                onChange={(event) => setPost((current) => (current ? { ...current, body: event.target.value.split("\n\n").filter(Boolean) } : current))}
+                className="h-40 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none"
+                placeholder={t.publish.content}
+              />
+              <div className="flex flex-wrap gap-3">
+                <button
+                  type="button"
+                  onClick={() => setIsEditing(false)}
+                  className={getActionButtonClass("primary")}
+                >
+                  {t.blog.save}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsEditing(false)}
+                  className={getActionButtonClass("secondary")}
+                >
+                  {t.blog.cancel}
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : null}
 
         <div className="mt-6 space-y-4 text-sm leading-7 text-slate-700">
           {post.body.map((paragraph) => (
@@ -1666,7 +2162,7 @@ function BlogPostPage({ role, slug, language }: { role: Role; slug: string; lang
               ]);
               setCommentText("");
             }}
-            className="w-full rounded-2xl bg-sky-700 px-4 py-3 text-sm font-medium text-white shadow-sm"
+            className={getActionButtonClass("primary", "w-full")}
           >
             {t.blog.postComment}
           </button>
@@ -1795,43 +2291,92 @@ function getCourseItems(language: Lang): CourseItem[] {
 function DocumentsPage({ role, language }: { role: Role; language: Lang }) {
   const t = getText(language);
   const documentItems = getDocuments(language);
+  const isAdmin = role === "admin";
+  const [requestOpen, setRequestOpen] = useState(false);
+  const [requestText, setRequestText] = useState("");
 
   return (
-    <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-      <SectionTitle title={t.documents.mostUsed} description="" />
+    <>
+      <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <SectionTitle title={t.documents.mostUsed} description="" />
+          {!isAdmin ? (
+            <button
+              type="button"
+              onClick={() => setRequestOpen(true)}
+              className={getActionButtonClass("secondary")}
+            >
+              {t.documents.requestDocument}
+            </button>
+          ) : null}
+        </div>
 
-      <div className="mt-6 flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-400">
-        <SearchIcon className="h-4 w-4 text-slate-400" />
-        <span>{t.documents.search}</span>
-      </div>
+        <div className="mt-6 flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-400">
+          <SearchIcon className="h-4 w-4 text-slate-400" />
+          <span>{t.documents.search}</span>
+        </div>
 
-      <div className="mt-6 space-y-4">
-        {documentItems.map((document) => (
-          <Link
-            key={document.slug}
-            href={withRole(document.href, role)}
-            className="group flex items-center gap-4 rounded-2xl bg-slate-50 p-4 transition hover:bg-sky-50"
-          >
-            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white text-sky-700 ring-1 ring-sky-100">
-              <FileIcon className="h-4 w-4" />
-            </span>
+        <div className="mt-6 space-y-4">
+          {documentItems.map((document) => (
+            <Link
+              key={document.slug}
+              href={withRole(document.href, role)}
+              className="group flex items-center gap-4 rounded-2xl bg-slate-50 p-4 transition hover:bg-sky-50"
+            >
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white text-sky-700 ring-1 ring-sky-100">
+                <FileIcon className="h-4 w-4" />
+              </span>
 
-            <div className="min-w-0 flex-1">
-              <h3 className="font-medium text-slate-950 transition group-hover:text-sky-900">{document.name}</h3>
-              <div className="mt-2 inline-flex items-center gap-1.5 text-xs text-slate-400">
-                <ClockIcon className="h-3.5 w-3.5" />
-                {document.updatedAt}
+              <div className="min-w-0 flex-1">
+                <h3 className="font-medium text-slate-950 transition group-hover:text-sky-900">{document.name}</h3>
+                <div className="mt-2 inline-flex items-center gap-1.5 text-xs text-slate-400">
+                  <ClockIcon className="h-3.5 w-3.5" />
+                  {document.updatedAt}
+                </div>
+                <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-500">{document.description}</p>
               </div>
-              <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-500">{document.description}</p>
-            </div>
 
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 shadow-sm transition group-hover:border-sky-200 group-hover:text-sky-700">
-              <ArrowRightIcon className="h-5 w-5" />
-            </span>
-          </Link>
-        ))}
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 shadow-sm transition group-hover:border-sky-200 group-hover:text-sky-700">
+                <ArrowRightIcon className="h-5 w-5" />
+              </span>
+            </Link>
+          ))}
+        </div>
       </div>
-    </div>
+
+      {requestOpen ? (
+        <div className="fixed inset-0 z-40 flex items-center justify-center bg-slate-950/30 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-xl rounded-3xl border border-slate-200 bg-white p-6 shadow-xl">
+            <SectionTitle title={t.documents.requestDocumentTitle} description="" />
+            <textarea
+              value={requestText}
+              onChange={(event) => setRequestText(event.target.value)}
+              className="mt-5 h-40 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
+              placeholder={t.documents.requestDocumentPlaceholder}
+            />
+            <div className="mt-5 flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setRequestOpen(false)}
+                className={getActionButtonClass("secondary")}
+              >
+                {t.documents.cancel}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setRequestOpen(false);
+                  setRequestText("");
+                }}
+                className={getActionButtonClass("primary")}
+              >
+                {t.documents.sendRequest}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+    </>
   );
 }
 
@@ -1919,10 +2464,10 @@ function CoursesContent({ role, language }: { role: Role; language: Lang }) {
               {t.courses.mandatory}
             </label>
             <div className="flex flex-wrap gap-3">
-              <button type="button" onClick={saveCourse} className="rounded-2xl bg-sky-700 px-4 py-3 text-sm font-medium text-white shadow-sm">
+              <button type="button" onClick={saveCourse} className={getActionButtonClass("primary")}>
                 {t.courses.save}
               </button>
-              <button type="button" onClick={() => setEditor(null)} className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm font-medium text-slate-900 shadow-sm">
+              <button type="button" onClick={() => setEditor(null)} className={getActionButtonClass("secondary")}>
                 {t.courses.cancel}
               </button>
             </div>
@@ -1995,14 +2540,14 @@ function CourseDetailPage({ role, language, slug }: { role: Role; language: Lang
             <button
               type="button"
               onClick={() => setIsArchived(true)}
-              className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-2.5 text-sm font-medium text-amber-700 shadow-sm"
+              className={getActionButtonClass("warning")}
             >
               {isArchived ? t.common.archived : t.common.archive}
             </button>
             <button
               type="button"
               onClick={() => setIsEditing((current) => !current)}
-              className="rounded-2xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-900 shadow-sm"
+              className={getActionButtonClass("secondary")}
             >
               {t.courses.edit}
             </button>
@@ -2064,21 +2609,21 @@ function CourseDetailPage({ role, language, slug }: { role: Role; language: Lang
               <button
                 type="button"
                 onClick={() => setIsEditing(false)}
-                className="rounded-2xl bg-sky-700 px-4 py-3 text-sm font-medium text-white shadow-sm"
+                className={getActionButtonClass("primary")}
               >
                 {t.courses.save}
               </button>
               <button
                 type="button"
                 onClick={() => setIsDeleted(true)}
-                className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700 shadow-sm"
+                className={getActionButtonClass("danger")}
               >
                 {t.courses.delete}
               </button>
               <button
                 type="button"
                 onClick={() => setIsEditing(false)}
-                className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm font-medium text-slate-900 shadow-sm"
+                className={getActionButtonClass("secondary")}
               >
                 {t.courses.cancel}
               </button>
@@ -2110,10 +2655,23 @@ function CourseDetailPage({ role, language, slug }: { role: Role; language: Lang
 
 function DocumentDetailPage({ role, slug, language }: { role: Role; slug: string; language: Lang }) {
   const t = getText(language);
-  const document = getDocumentBySlug(slug, language);
+  const initialDocument = getDocumentBySlug(slug, language);
+  const [document, setDocument] = useState(initialDocument);
   const [isArchived, setIsArchived] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [isDeleted, setIsDeleted] = useState(false);
+  const downloadHref = document
+    ? `data:text/plain;charset=utf-8,${encodeURIComponent([
+        document.name,
+        document.updatedAt,
+        "",
+        document.description,
+        "",
+        ...document.body,
+      ].join("\n\n"))}`
+    : "#";
 
-  if (!document) {
+  if (!document || isDeleted) {
     return (
       <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
         <SectionTitle title={t.documents.notFound} description="" />
@@ -2132,13 +2690,22 @@ function DocumentDetailPage({ role, slug, language }: { role: Role; slug: string
         </Link>
 
         {role === "admin" ? (
-          <button
-            type="button"
-            onClick={() => setIsArchived(true)}
-            className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-2 text-sm font-medium text-amber-700 shadow-sm"
-          >
-            {isArchived ? t.common.archived : t.common.archive}
-          </button>
+          <div className="flex flex-wrap gap-3">
+            <button
+              type="button"
+              onClick={() => setIsArchived(true)}
+              className={getActionButtonClass("warning")}
+            >
+              {isArchived ? t.common.archived : t.common.archive}
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsEditing((current) => !current)}
+              className={getActionButtonClass("secondary")}
+            >
+              {t.documents.edit}
+            </button>
+          </div>
         ) : null}
       </div>
 
@@ -2158,11 +2725,78 @@ function DocumentDetailPage({ role, slug, language }: { role: Role; slug: string
         </div>
       </div>
 
+      {isEditing ? (
+        <div className="mt-6 rounded-2xl bg-slate-50 p-4 ring-1 ring-slate-200">
+          <div className="space-y-3">
+            <input
+              value={document.name}
+              onChange={(event) => setDocument((current) => (current ? { ...current, name: event.target.value } : current))}
+              className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none"
+              placeholder={t.documents.documentTitle}
+            />
+            <textarea
+              value={document.description}
+              onChange={(event) => setDocument((current) => (current ? { ...current, description: event.target.value } : current))}
+              className="h-24 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none"
+              placeholder={t.documents.documentDescription}
+            />
+            <textarea
+              value={document.body.join("\n\n")}
+              onChange={(event) => setDocument((current) => (current ? { ...current, body: event.target.value.split(/\n\n+/).filter(Boolean) } : current))}
+              className="h-48 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none"
+              placeholder={t.documents.documentContent}
+            />
+            <div className="flex flex-wrap gap-3">
+              <button
+                type="button"
+                onClick={() => setIsEditing(false)}
+                className={getActionButtonClass("primary")}
+              >
+                {t.documents.save}
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsDeleted(true)}
+                className={getActionButtonClass("danger")}
+              >
+                {t.documents.delete}
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsEditing(false)}
+                className={getActionButtonClass("secondary")}
+              >
+                {t.documents.cancel}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
       <p className="mt-6 text-sm leading-6 text-slate-600">{document.description}</p>
-      <div className="mt-6 space-y-4 text-sm leading-7 text-slate-700">
-        {document.body.map((paragraph) => (
-          <p key={paragraph}>{paragraph}</p>
-        ))}
+
+      <div className="mt-6 rounded-3xl bg-slate-50 p-5 ring-1 ring-slate-200">
+        <div className="flex justify-end">
+          <a
+            href={downloadHref}
+            download={`${document.slug}.txt`}
+            className={getActionButtonClass("primary")}
+          >
+            {t.documents.download}
+          </a>
+        </div>
+
+        <div className="mt-5 rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="border-b border-slate-100 pb-4">
+            <h3 className="text-lg font-semibold text-slate-950">{document.name}</h3>
+            <p className="mt-2 text-sm leading-6 text-slate-500">{document.description}</p>
+          </div>
+          <div className="mt-4 space-y-4 text-sm leading-7 text-slate-700">
+            {document.body.map((paragraph) => (
+              <p key={paragraph}>{paragraph}</p>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -2211,9 +2845,7 @@ function MyPage({ role, language, slug }: { role: Role; language: Lang; slug?: s
         <div className="mt-6 space-y-3">
           {todoItems.map((item: string) => (
             <div key={item} className="flex items-start gap-3 rounded-2xl bg-slate-50 p-4 ring-1 ring-slate-200">
-              <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-sky-100 text-xs font-semibold text-sky-800">
-                ✓
-              </span>
+              <span className="mt-1 flex h-5 w-5 shrink-0 rounded-full border-2 border-slate-300 bg-white" />
               <p className="text-sm leading-6 text-slate-700">{item}</p>
             </div>
           ))}
@@ -2462,14 +3094,14 @@ function WelcomeOnBoardContent({ role, language }: { role: Role; language: Lang 
                 <button
                   type="button"
                   onClick={saveEditor}
-                  className="rounded-2xl bg-sky-700 px-4 py-3 text-sm font-medium text-white shadow-sm"
+                  className={getActionButtonClass("primary")}
                 >
                   {t.welcomeOnBoard.save}
                 </button>
                 <button
                   type="button"
                   onClick={closeEditor}
-                  className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm font-medium text-slate-900 shadow-sm"
+                  className={getActionButtonClass("secondary")}
                 >
                   {t.welcomeOnBoard.cancel}
                 </button>
@@ -2667,21 +3299,21 @@ function WelcomeOnBoardDetailPage({ role, language, slug }: { role: Role; langua
             <button
               type="button"
               onClick={() => setIsArchived(true)}
-              className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-2.5 text-sm font-medium text-amber-700 shadow-sm"
+              className={getActionButtonClass("warning")}
             >
               {isArchived ? t.common.archived : t.common.archive}
             </button>
             <button
               type="button"
               onClick={() => setIsEditing((current) => !current)}
-              className="rounded-2xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-900 shadow-sm"
+              className={getActionButtonClass("secondary")}
             >
               {t.welcomeOnBoard.edit}
             </button>
             <button
               type="button"
               onClick={() => setIsDeleted(true)}
-              className="rounded-2xl border border-red-200 bg-red-50 px-4 py-2.5 text-sm font-medium text-red-700 shadow-sm"
+              className={getActionButtonClass("danger")}
             >
               {t.welcomeOnBoard.delete}
             </button>
@@ -2732,14 +3364,14 @@ function WelcomeOnBoardDetailPage({ role, language, slug }: { role: Role; langua
               <button
                 type="button"
                 onClick={() => setIsEditing(false)}
-                className="rounded-2xl bg-sky-700 px-4 py-3 text-sm font-medium text-white shadow-sm"
+                className={getActionButtonClass("primary")}
               >
                 {t.welcomeOnBoard.save}
               </button>
               <button
                 type="button"
                 onClick={() => setIsEditing(false)}
-                className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm font-medium text-slate-900 shadow-sm"
+                className={getActionButtonClass("secondary")}
               >
                 {t.welcomeOnBoard.cancel}
               </button>
@@ -2858,8 +3490,8 @@ function ExpandableSocialItem({
     : "bg-emerald-50 text-emerald-700 ring-emerald-100";
 
   return (
-    <div className={isAdmin ? "grid grid-cols-[minmax(0,1fr)_88px] items-start gap-3" : "block"}>
-      <div className="rounded-2xl bg-white p-4 ring-1 ring-slate-200 transition hover:ring-slate-300">
+    <div className={isAdmin ? "grid grid-cols-[minmax(0,1fr)_72px] items-start gap-3" : "block"}>
+      <div className="min-h-[84px] rounded-2xl bg-white p-4 ring-1 ring-slate-200 transition hover:ring-slate-300">
         <button
           type="button"
           onClick={() => onToggle(id)}
@@ -2882,21 +3514,21 @@ function ExpandableSocialItem({
               <div className="mt-4 flex flex-wrap items-center gap-2">
                 <Link
                   href={editHref}
-                  className="inline-flex h-10 items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 text-sm font-medium text-slate-900 shadow-sm transition hover:border-sky-200 hover:text-sky-800"
+                  className={getActionButtonClass("secondary", "h-10 px-4")}
                 >
                   {editLabel}
                 </Link>
                 <button
                   type="button"
                   onClick={onDelete}
-                  className="inline-flex h-10 items-center justify-center rounded-2xl border border-rose-200 bg-white px-4 text-sm font-medium text-rose-700 shadow-sm transition hover:bg-rose-50"
+                  className={getActionButtonClass("danger", "h-10 px-4")}
                 >
                   {deleteLabel}
                 </button>
                 <button
                   type="button"
                   onClick={onArchive}
-                  className={`inline-flex h-10 items-center justify-center rounded-2xl border px-4 text-sm font-medium shadow-sm transition ${archived ? "border-amber-200 bg-amber-50 text-amber-800" : "border-slate-200 bg-white text-slate-900 hover:border-amber-200 hover:text-amber-800"}`}
+                  className={getActionButtonClass(archived ? "warning" : "secondary", "h-10 px-4")}
                 >
                   {archived ? archivedLabel : archiveLabel}
                 </button>
@@ -2909,7 +3541,7 @@ function ExpandableSocialItem({
       {isAdmin ? (
         <Link
           href={editHref}
-          className="inline-flex h-[52px] w-full items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-900 shadow-sm transition hover:border-sky-200 hover:text-sky-800"
+          className={getActionButtonClass("secondary", "h-10 w-full self-start px-2 text-xs")}
         >
           {editLabel}
         </Link>
@@ -3162,7 +3794,7 @@ function SocialHubEditPage({
         />
         <button
           type="button"
-          className="rounded-2xl bg-sky-700 px-4 py-3 text-sm font-medium text-white shadow-sm"
+          className={getActionButtonClass("primary")}
         >
           {t.announcements.save}
         </button>
@@ -3176,6 +3808,8 @@ function renderPage(
   role: Role,
   language: Lang,
   selectedPostSlug?: string,
+  selectedBlogCategory?: BlogCategory,
+  isBlogRequestView?: boolean,
   selectedAnnouncementSlug?: string,
   selectedAnnouncementRequestSlug?: string,
   selectedDocumentSlug?: string,
@@ -3205,7 +3839,7 @@ function renderPage(
     case "blog":
       return selectedPostSlug
         ? <BlogPostPage role={role} slug={selectedPostSlug} language={language} />
-        : <BlogPage role={role} language={language} />;
+        : <BlogPage role={role} language={language} category={selectedBlogCategory} requestView={isBlogRequestView} />;
     case "publish":
       return <PublishPage role={role} language={language} />;
     case "documents":
@@ -3237,6 +3871,8 @@ export default function PortalShell({
   role,
   page,
   selectedPostSlug,
+  selectedBlogCategory,
+  isBlogRequestView,
   selectedAnnouncementSlug,
   selectedAnnouncementRequestSlug,
   selectedDocumentSlug,
@@ -3458,7 +4094,7 @@ export default function PortalShell({
           </header>
 
           <main className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
-            {renderPage(page, role, language, selectedPostSlug, selectedAnnouncementSlug, selectedAnnouncementRequestSlug, selectedDocumentSlug, selectedCourseSlug, selectedMyPageSlug, selectedWelcomeOnBoardSlug, selectedSocialHubSection, selectedSocialHubItem)}
+            {renderPage(page, role, language, selectedPostSlug, selectedBlogCategory, isBlogRequestView, selectedAnnouncementSlug, selectedAnnouncementRequestSlug, selectedDocumentSlug, selectedCourseSlug, selectedMyPageSlug, selectedWelcomeOnBoardSlug, selectedSocialHubSection, selectedSocialHubItem)}
           </main>
         </div>
       </div>
