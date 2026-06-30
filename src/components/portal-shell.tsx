@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import {
   getAdminStats,
@@ -31,6 +31,7 @@ type PortalShellProps = {
   selectedAnnouncementSlug?: string;
   selectedAnnouncementRequestSlug?: string;
   selectedDocumentSlug?: string;
+  selectedBenefitSlug?: string;
   selectedCourseSlug?: string;
   selectedMyPageSlug?: string;
   selectedWelcomeOnBoardSlug?: string;
@@ -54,6 +55,21 @@ type NotificationItem = {
   href: string;
   time: string;
 };
+
+function getStoredFollowedBlogs(): BlogCategory[] {
+  if (typeof window === "undefined") return [];
+
+  try {
+    const raw = window.localStorage.getItem("token-hub-followed-blogs");
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    const valid = ["main", "sports", "foodie", "art"] as const;
+    return Array.isArray(parsed) ? parsed.filter((item): item is BlogCategory => valid.includes(item)) : [];
+  } catch {
+    return [];
+  }
+}
+
 function withRole(href: string, role: Role) {
   return `${href}${href.includes("?") ? "&" : "?"}role=${role}`;
 }
@@ -372,6 +388,14 @@ function NavItemIcon({ href, className = "h-4 w-4" }: { href: string; className?
     );
   }
 
+  if (href.startsWith("/benefits")) {
+    return (
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={className} aria-hidden="true">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 21s-6.5-4.4-8.4-8A4.8 4.8 0 0 1 8 6.2c1.7 0 3 1 4 2.3 1-1.3 2.3-2.3 4-2.3a4.8 4.8 0 0 1 4.4 6.8C18.5 16.6 12 21 12 21Z" />
+      </svg>
+    );
+  }
+
   if (href.startsWith("/courses")) return <CourseIcon className={className} />;
 
   if (href.startsWith("/welcome-on-board")) return <BrandIcon className={className} />;
@@ -391,8 +415,9 @@ function getText(language: Lang) {
         announcements: "Duyurular",
         blogManagement: "Blog",
         documents: "Dokümanlar",
+        benefits: "Çalışan Ayrıcalıkları",
         courses: "Growth O'Clock",
-        myPage: "Benim Sayfam",
+        myPage: "Ana Sayfa",
         welcomeOnBoard: "Aramıza Hoş Geldin",
         formSubmissions: "Form Gönderimleri",
         socialHubSettings: "Social Hub",
@@ -409,8 +434,9 @@ function getText(language: Lang) {
         blog: { title: "Blog", description: "" },
         publish: { title: "Yayınla", description: "" },
         documents: { title: "Dokümanlar", description: "" },
+        benefits: { title: "Çalışan Ayrıcalıkları", description: "" },
         courses: { title: "Growth O'Clock", description: "" },
-        "my-page": { title: "Benim Sayfam", description: "" },
+        "my-page": { title: "Ana Sayfa", description: "" },
         "welcome-on-board": { title: "Aramıza Hoş Geldin", description: "" },
         forms: { title: "Formlar", description: "Form Gönderimleri ve Şirket İçi Talepler." },
         socialHub: { title: "Social Hub", description: "" },
@@ -438,6 +464,10 @@ function getText(language: Lang) {
         social: "Sosyal",
         socialHubTitle: "Social Hub",
         socialHubDesc: "Kulüpler, aktiviteler ve MultiSport seçeneklerini görüntüle.",
+        adminControls: "Yönetici İşlemleri",
+        addDocument: "Doküman Ekle",
+        addDocumentForEmployee: "Çalışana Doküman Ekle",
+        addBenefit: "Yeni Ayrıcalık Ekle",
         announcementRequests: "Duyuru Talepleri",
         total: "Toplam",
         accepted: "Onaylanan",
@@ -510,7 +540,7 @@ function getText(language: Lang) {
         foodieBlogDesc: "Lezzet önerileri, öğle yemeği keşifleri ve mekan tavsiyeleri.",
         artBlogDesc: "Sergi, film, konser ve yaratıcı etkinlik önerileri.",
         requestBlog: "Blog Konusu Talebi",
-        requestBlogDesc: "Yeni bir alt blog alanı öner veya mevcut alan için ihtiyaç paylaş.",
+        requestBlogDesc: "Yeni bir blog konusu öner veya mevcut alan için ihtiyaç paylaş.",
         requestOwner: "Talep Sahibi",
         requestTopic: "Blog Adı",
         requestReason: "Neden Gerekli?",
@@ -519,6 +549,8 @@ function getText(language: Lang) {
         pendingReview: "İnceleniyor",
         requestedBy: "Talep Sahibi",
         publishIn: "Yayınlanacak Blog",
+        followBlog: "Bu Blogu Takip Et",
+        followingBlog: "Takip Ediliyor",
         postNotFound: "Paylaşım bulunamadı",
         backToPosts: "Geri",
         sharedBy: "Paylaşan",
@@ -564,10 +596,31 @@ function getText(language: Lang) {
         requestDocument: "Doküman Talebi",
         requestDocumentTitle: "Doküman Talebi Oluştur",
         requestDocumentPlaceholder: "İhtiyaç duyduğunuz dokümanı kısaca yazın...",
+        addDocument: "Doküman Ekle",
+        addDocumentTitle: "Yeni Doküman Ekle",
+        addDocumentDescription: "Doküman açıklaması",
+        addDocumentAudience: "Hedef kitle",
+        addDocumentLink: "Doküman bağlantısı",
+        assignDocument: "Çalışana Doküman Ekle",
+        assignDocumentTitle: "Çalışana Doküman Ata",
+        employeeName: "Çalışan adı",
+        employeeEmail: "Çalışan e-postası",
+        assignNote: "Kısa not",
         sendRequest: "Talebi Gönder",
         documentTitle: "Doküman Başlığı",
         documentDescription: "Doküman Açıklaması",
         documentContent: "Doküman İçeriği",
+      },
+      benefits: {
+        title: "Çalışan Ayrıcalıkları",
+        openCampaign: "Kampanyayı Aç",
+        brandWebsite: "Marka Websitesi",
+        addBenefit: "Yeni Ayrıcalık Ekle",
+        addBenefitTitle: "Yeni Ayrıcalık Oluştur",
+        partnerName: "Marka / İş Ortağı",
+        campaignTitle: "Kampanya Başlığı",
+        campaignDescription: "Kampanya Açıklaması",
+        campaignLink: "Kampanya Bağlantısı",
       },
       courses: {
         title: "Growth O'Clock",
@@ -590,8 +643,13 @@ function getText(language: Lang) {
         play: "Oynat",
       },
       myPage: {
-        title: "Benim Sayfam",
+        title: "Ana Sayfa",
+        hello: "Merhaba",
+        personalInfo: "Kişisel Bilgilerim",
         companyEmail: "Şirket E-Postam",
+        buddy: "Buddy'm",
+        buddyEmail: "Buddy E-Postası",
+        documents: "Dokümanlarım",
         contract: "Sözleşmem",
         contractStatus: "Aktif",
         contractType: "Belirsiz Süreli İş Sözleşmesi",
@@ -606,6 +664,10 @@ function getText(language: Lang) {
         adminRole: "People & Culture Yöneticisi",
         employeeTeam: "Ürün",
         adminTeam: "People & Culture",
+        employeeBuddyName: "Deniz Aksoy",
+        adminBuddyName: "Selin Kaya",
+        employeeBuddyEmailAddress: "deniz.aksoy@token.com.tr",
+        adminBuddyEmailAddress: "selin.kaya@token.com.tr",
         todoItemsEmployee: ["Welcome To Token kursunu tamamla", "Konser Bileti Hediyesi formunu doldur", "Şirket Wi‑Fi bilgilerini gözden geçir"],
         todoItemsAdmin: ["Duyuru taleplerini değerlendir", "Growth O'Clock kurslarını güncelle", "Aramıza Hoş Geldin içeriklerini gözden geçir"],
       },
@@ -698,8 +760,9 @@ function getText(language: Lang) {
       announcements: "Announcements",
       blogManagement: "Blog",
       documents: "Documents",
+      benefits: "Employee Benefits",
       courses: "Growth O'Clock",
-      myPage: "My Page",
+      myPage: "Homepage",
       welcomeOnBoard: "Welcome On Board",
       formSubmissions: "Form Submissions",
       socialHubSettings: "Social Hub",
@@ -716,8 +779,9 @@ function getText(language: Lang) {
       blog: { title: "Blog", description: "" },
       publish: { title: "Publish", description: "" },
       documents: { title: "Documents", description: "" },
+      benefits: { title: "Employee Benefits", description: "" },
       courses: { title: "Growth O'Clock", description: "" },
-      "my-page": { title: "My Page", description: "" },
+      "my-page": { title: "Homepage", description: "" },
       "welcome-on-board": { title: "Welcome On Board", description: "" },
       forms: { title: "Forms", description: "Submission tracking and internal request forms." },
       socialHub: { title: "Social Hub", description: "" },
@@ -745,6 +809,10 @@ function getText(language: Lang) {
       social: "Social",
       socialHubTitle: "Social Hub",
       socialHubDesc: "View clubs, activities, and MultiSport options.",
+      adminControls: "Admin Controls",
+      addDocument: "Add Document",
+      addDocumentForEmployee: "Add Document For An Employee",
+      addBenefit: "Add New Benefit",
       announcementRequests: "Announcement Requests",
       total: "Total",
       accepted: "Accepted",
@@ -817,7 +885,7 @@ function getText(language: Lang) {
       foodieBlogDesc: "Food recommendations, lunch discoveries, and place suggestions.",
       artBlogDesc: "Exhibitions, films, concerts, and creative event recommendations.",
       requestBlog: "Request A Blog Subject",
-      requestBlogDesc: "Suggest a new sub-blog space or share a need for an existing one.",
+      requestBlogDesc: "Suggest a new blog subject or share a need for an existing one.",
       requestOwner: "Request Owner",
       requestTopic: "Blog Name",
       requestReason: "Why Is It Needed?",
@@ -826,6 +894,8 @@ function getText(language: Lang) {
       pendingReview: "Pending Review",
       requestedBy: "Requested By",
       publishIn: "Publishing To",
+      followBlog: "Follow This Blog",
+      followingBlog: "Following",
       postNotFound: "Post not found",
       backToPosts: "Back",
       sharedBy: "Shared by",
@@ -871,10 +941,31 @@ function getText(language: Lang) {
       requestDocument: "Request A Document",
       requestDocumentTitle: "Create A Document Request",
       requestDocumentPlaceholder: "Briefly describe the document you need...",
+      addDocument: "Add Document",
+      addDocumentTitle: "Add A New Document",
+      addDocumentDescription: "Document Description",
+      addDocumentAudience: "Audience",
+      addDocumentLink: "Document Link",
+      assignDocument: "Add Document For An Employee",
+      assignDocumentTitle: "Assign Document To Employee",
+      employeeName: "Employee Name",
+      employeeEmail: "Employee Email",
+      assignNote: "Short Note",
       sendRequest: "Send Request",
       documentTitle: "Document Title",
       documentDescription: "Document Description",
       documentContent: "Document Content",
+    },
+    benefits: {
+      title: "Employee Benefits",
+      openCampaign: "Open Campaign",
+      brandWebsite: "Brand Website",
+      addBenefit: "Add New Benefit",
+      addBenefitTitle: "Create A New Benefit",
+      partnerName: "Partner / Brand",
+      campaignTitle: "Campaign Title",
+      campaignDescription: "Campaign Description",
+      campaignLink: "Campaign Link",
     },
     courses: {
       title: "Growth O'Clock",
@@ -897,8 +988,13 @@ function getText(language: Lang) {
       play: "Play",
     },
     myPage: {
-      title: "My Page",
+      title: "Homepage",
+      hello: "Hello",
+      personalInfo: "Personal Info",
       companyEmail: "My Company Email",
+      buddy: "My Buddy",
+      buddyEmail: "Buddy Email",
+      documents: "My Documents",
       contract: "My Contract",
       contractStatus: "Active",
       contractType: "Open-Ended Employment Contract",
@@ -913,6 +1009,10 @@ function getText(language: Lang) {
       adminRole: "People & Culture Manager",
       employeeTeam: "Product",
       adminTeam: "People & Culture",
+      employeeBuddyName: "Deniz Aksoy",
+      adminBuddyName: "Selin Kaya",
+      employeeBuddyEmailAddress: "deniz.aksoy@token.com.tr",
+      adminBuddyEmailAddress: "selin.kaya@token.com.tr",
       todoItemsEmployee: ["Complete the Welcome To Token course", "Fill out the Concert Ticket Gift form", "Review the company Wi‑Fi details"],
       todoItemsAdmin: ["Review announcement requests", "Update Growth O'Clock courses", "Review Welcome On Board content"],
     },
@@ -1144,6 +1244,18 @@ function DashboardPage({ role, language }: { role: Role; language: Lang }) {
         </div>
       </section>
 
+      {isAdmin ? (
+        <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+          <SectionTitle title={t.dashboard.adminControls} description="" />
+          <div className="mt-6 grid gap-3 md:grid-cols-4">
+            <ButtonLink href={withRole("/announcements/create", role)}>{t.common.createAnnouncement}</ButtonLink>
+            <ButtonLink href={withRole("/documents?modal=add-document", role)} variant="outline">{t.dashboard.addDocument}</ButtonLink>
+            <ButtonLink href={withRole("/documents?modal=assign-document", role)} variant="outline">{t.dashboard.addDocumentForEmployee}</ButtonLink>
+            <ButtonLink href={withRole("/benefits?modal=add-benefit", role)} variant="outline">{t.dashboard.addBenefit}</ButtonLink>
+          </div>
+        </section>
+      ) : null}
+
       {!isAdmin ? (
         <section className="grid gap-6 xl:grid-cols-3">
           <Link
@@ -1188,14 +1300,17 @@ function AnnouncementsPage({ role, language }: { role: Role; language: Lang }) {
 
   return (
     <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <SectionTitle title={t.announcements.recentTitle} description="" />
-
+      <div className="flex flex-wrap items-center justify-end gap-4">
         <div className="flex flex-wrap gap-3">
           {role === "admin" ? (
-            <ButtonLink href={withRole("/announcements/requests", role)} variant="outline">
-              {t.announcements.requests}
-            </ButtonLink>
+            <>
+              <ButtonLink href={withRole("/announcements/create", role)}>
+                {t.common.createAnnouncement}
+              </ButtonLink>
+              <ButtonLink href={withRole("/announcements/requests", role)} variant="outline">
+                {t.announcements.requests}
+              </ButtonLink>
+            </>
           ) : null}
 
           {role === "employee" ? (
@@ -1769,7 +1884,21 @@ function AnnouncementRequestPage({ role, language }: { role: Role; language: Lan
   );
 }
 
-function BlogPage({ role, language, category, requestView }: { role: Role; language: Lang; category?: BlogCategory; requestView?: boolean }) {
+function BlogPage({
+  role,
+  language,
+  category,
+  requestView,
+  followedCategories,
+  onToggleFollow,
+}: {
+  role: Role;
+  language: Lang;
+  category?: BlogCategory;
+  requestView?: boolean;
+  followedCategories: BlogCategory[];
+  onToggleFollow: (category: BlogCategory) => void;
+}) {
   const isAdmin = role === "admin";
   const t = getText(language);
   const postItems = getPosts(language);
@@ -1777,17 +1906,6 @@ function BlogPage({ role, language, category, requestView }: { role: Role; langu
   const [publishTopic, setPublishTopic] = useState("");
   const [publishSummary, setPublishSummary] = useState("");
   const [publishContent, setPublishContent] = useState("");
-  const birthdays = language === "tr"
-    ? [
-        { name: "Selin K.", team: "Pazarlama" },
-        { name: "Can A.", team: "Ürün" },
-        { name: "İrem D.", team: "Finans" },
-      ]
-    : [
-        { name: "Selin K.", team: "Marketing" },
-        { name: "Can A.", team: "Product" },
-        { name: "İrem D.", team: "Finance" },
-      ];
   const blogSpaces: Array<{ id: BlogCategory; title: string; description: string }> = [
     { id: "main", title: t.blog.mainBlog, description: t.blog.mainBlogDesc },
     { id: "sports", title: t.blog.sportsBlog, description: t.blog.sportsBlogDesc },
@@ -1796,6 +1914,7 @@ function BlogPage({ role, language, category, requestView }: { role: Role; langu
   ];
   const selectedSpace = blogSpaces.find((item) => item.id === category);
   const filteredPosts = category ? postItems.filter((post) => post.category === category) : postItems;
+  const isFollowing = category ? followedCategories.includes(category) : false;
   const blogRequests = language === "tr"
     ? [
         { topic: "Aile ve Ebeveynlik Blogu", owner: "Ece T." },
@@ -1807,13 +1926,15 @@ function BlogPage({ role, language, category, requestView }: { role: Role; langu
       ];
 
   return (
-    <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_280px]">
+    <div className="space-y-6">
       <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-4">
-          <SectionTitle
-            title={requestView ? (isAdmin ? t.blog.reviewRequests : t.blog.requestBlog) : category ? selectedSpace?.title : t.blog.spaces}
-            description={requestView ? t.blog.requestBlogDesc : category ? selectedSpace?.description : ""}
-          />
+          {requestView || category ? (
+            <SectionTitle
+              title={requestView ? (isAdmin ? t.blog.reviewRequests : t.blog.requestBlog) : selectedSpace?.title}
+              description={requestView ? t.blog.requestBlogDesc : selectedSpace?.description}
+            />
+          ) : <div />}
           <div className="flex flex-wrap gap-3">
             {(requestView || category) ? (
               <ButtonLink href={withRole("/blog", role)} variant="outline">
@@ -1821,13 +1942,22 @@ function BlogPage({ role, language, category, requestView }: { role: Role; langu
               </ButtonLink>
             ) : null}
             {category ? (
-              <button
-                type="button"
-                onClick={() => setPublishOpen(true)}
-                className={getActionButtonClass("primary")}
-              >
-                {t.blog.publish}
-              </button>
+              <>
+                <button
+                  type="button"
+                  onClick={() => onToggleFollow(category)}
+                  className={getActionButtonClass(isFollowing ? "secondary" : "primary")}
+                >
+                  {isFollowing ? t.blog.followingBlog : t.blog.followBlog}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPublishOpen(true)}
+                  className={getActionButtonClass("primary")}
+                >
+                  {t.blog.publish}
+                </button>
+              </>
             ) : null}
             {!requestView && !category ? (
               <ButtonLink href={withRole(`/blog?request=true`, role)}>
@@ -1913,23 +2043,6 @@ function BlogPage({ role, language, category, requestView }: { role: Role; langu
           </div>
         )}
       </div>
-
-      <aside className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
-        <SectionTitle title={t.blog.todaysBirthdays} description="" />
-        <div className="mt-4 space-y-3">
-          {birthdays.map((person) => (
-            <div key={person.name} className="flex items-center gap-3 rounded-2xl bg-slate-50 p-4 ring-1 ring-slate-200">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-rose-50 text-rose-700 ring-1 ring-rose-100">
-                <UsersIcon className="h-4 w-4" />
-              </span>
-              <div className="min-w-0">
-                <p className="font-medium text-slate-950">{person.name}</p>
-                <p className="text-sm text-slate-500">{person.team}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </aside>
 
       {publishOpen && category && selectedSpace ? (
         <div className="fixed inset-0 z-40 flex items-center justify-center bg-slate-950/30 p-4 backdrop-blur-sm">
@@ -2292,23 +2405,41 @@ function DocumentsPage({ role, language }: { role: Role; language: Lang }) {
   const t = getText(language);
   const documentItems = getDocuments(language);
   const isAdmin = role === "admin";
-  const [requestOpen, setRequestOpen] = useState(false);
+  const searchParams = useSearchParams();
+  const initialModal = isAdmin
+    ? (searchParams.get("modal") === "add-document" || searchParams.get("modal") === "assign-document"
+        ? searchParams.get("modal") as "add-document" | "assign-document"
+        : null)
+    : (searchParams.get("modal") === "request-document" ? "request-document" : null);
+  const [activeModal, setActiveModal] = useState<null | "request-document" | "add-document" | "assign-document">(initialModal);
   const [requestText, setRequestText] = useState("");
+  const [newDocument, setNewDocument] = useState({ title: "", description: "", audience: "", link: "" });
+  const [assignDocument, setAssignDocument] = useState({ employeeName: "", employeeEmail: "", documentTitle: documentItems[0]?.name ?? "", note: "" });
+
+  const closeModal = () => setActiveModal(null);
 
   return (
     <>
       <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <SectionTitle title={t.documents.mostUsed} description="" />
-          {!isAdmin ? (
+        <div className="flex flex-wrap items-center justify-end gap-3">
+          {isAdmin ? (
+            <>
+              <button type="button" onClick={() => setActiveModal("add-document")} className={getActionButtonClass("primary")}>
+                {t.documents.addDocument}
+              </button>
+              <button type="button" onClick={() => setActiveModal("assign-document")} className={getActionButtonClass("secondary")}>
+                {t.documents.assignDocument}
+              </button>
+            </>
+          ) : (
             <button
               type="button"
-              onClick={() => setRequestOpen(true)}
+              onClick={() => setActiveModal("request-document")}
               className={getActionButtonClass("secondary")}
             >
               {t.documents.requestDocument}
             </button>
-          ) : null}
+          )}
         </div>
 
         <div className="mt-6 flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-400">
@@ -2344,33 +2475,300 @@ function DocumentsPage({ role, language }: { role: Role; language: Lang }) {
         </div>
       </div>
 
-      {requestOpen ? (
+      {activeModal ? (
         <div className="fixed inset-0 z-40 flex items-center justify-center bg-slate-950/30 p-4 backdrop-blur-sm">
           <div className="w-full max-w-xl rounded-3xl border border-slate-200 bg-white p-6 shadow-xl">
-            <SectionTitle title={t.documents.requestDocumentTitle} description="" />
-            <textarea
-              value={requestText}
-              onChange={(event) => setRequestText(event.target.value)}
-              className="mt-5 h-40 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
-              placeholder={t.documents.requestDocumentPlaceholder}
+            <SectionTitle
+              title={activeModal === "request-document"
+                ? t.documents.requestDocumentTitle
+                : activeModal === "add-document"
+                  ? t.documents.addDocumentTitle
+                  : t.documents.assignDocumentTitle}
+              description=""
             />
+
+            {activeModal === "request-document" ? (
+              <textarea
+                value={requestText}
+                onChange={(event) => setRequestText(event.target.value)}
+                className="mt-5 h-40 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
+                placeholder={t.documents.requestDocumentPlaceholder}
+              />
+            ) : null}
+
+            {activeModal === "add-document" ? (
+              <div className="mt-5 space-y-4">
+                <input
+                  value={newDocument.title}
+                  onChange={(event) => setNewDocument((current) => ({ ...current, title: event.target.value }))}
+                  className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
+                  placeholder={t.documents.documentTitle}
+                />
+                <input
+                  value={newDocument.description}
+                  onChange={(event) => setNewDocument((current) => ({ ...current, description: event.target.value }))}
+                  className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
+                  placeholder={t.documents.addDocumentDescription}
+                />
+                <input
+                  value={newDocument.audience}
+                  onChange={(event) => setNewDocument((current) => ({ ...current, audience: event.target.value }))}
+                  className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
+                  placeholder={t.documents.addDocumentAudience}
+                />
+                <input
+                  value={newDocument.link}
+                  onChange={(event) => setNewDocument((current) => ({ ...current, link: event.target.value }))}
+                  className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
+                  placeholder={t.documents.addDocumentLink}
+                />
+              </div>
+            ) : null}
+
+            {activeModal === "assign-document" ? (
+              <div className="mt-5 space-y-4">
+                <input
+                  value={assignDocument.employeeName}
+                  onChange={(event) => setAssignDocument((current) => ({ ...current, employeeName: event.target.value }))}
+                  className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
+                  placeholder={t.documents.employeeName}
+                />
+                <input
+                  value={assignDocument.employeeEmail}
+                  onChange={(event) => setAssignDocument((current) => ({ ...current, employeeEmail: event.target.value }))}
+                  className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
+                  placeholder={t.documents.employeeEmail}
+                />
+                <select
+                  value={assignDocument.documentTitle}
+                  onChange={(event) => setAssignDocument((current) => ({ ...current, documentTitle: event.target.value }))}
+                  className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
+                >
+                  {documentItems.map((document) => (
+                    <option key={document.slug} value={document.name}>{document.name}</option>
+                  ))}
+                </select>
+                <textarea
+                  value={assignDocument.note}
+                  onChange={(event) => setAssignDocument((current) => ({ ...current, note: event.target.value }))}
+                  className="h-32 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
+                  placeholder={t.documents.assignNote}
+                />
+              </div>
+            ) : null}
+
             <div className="mt-5 flex justify-end gap-3">
-              <button
-                type="button"
-                onClick={() => setRequestOpen(false)}
-                className={getActionButtonClass("secondary")}
-              >
+              <button type="button" onClick={closeModal} className={getActionButtonClass("secondary")}>
                 {t.documents.cancel}
               </button>
               <button
                 type="button"
                 onClick={() => {
-                  setRequestOpen(false);
+                  closeModal();
                   setRequestText("");
+                  setNewDocument({ title: "", description: "", audience: "", link: "" });
+                  setAssignDocument({ employeeName: "", employeeEmail: "", documentTitle: documentItems[0]?.name ?? "", note: "" });
                 }}
                 className={getActionButtonClass("primary")}
               >
-                {t.documents.sendRequest}
+                {activeModal === "request-document" ? t.documents.sendRequest : t.documents.save}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+    </>
+  );
+}
+
+function getBenefitCampaigns(language: Lang) {
+  return language === "tr"
+    ? [
+        {
+          slug: "boyner",
+          title: "Boyner Çalışan Kampanyası",
+          description: "Seçili sezon ürünlerinde çalışanlara özel indirim fırsatları.",
+          href: "https://www.boyner.com.tr",
+        },
+        {
+          slug: "pegasus",
+          title: "Pegasus Seyahat Fırsatları",
+          description: "Yurt içi ve yurt dışı seyahat planları için dönemsel kampanyalar.",
+          href: "https://www.flypgs.com",
+        },
+        {
+          slug: "getiryemek",
+          title: "GetirYemek Öğle Yemeği İndirimi",
+          description: "Ofis günlerinde kullanılabilecek seçili restoran kampanyaları.",
+          href: "https://getiryemek.com",
+        },
+        {
+          slug: "dr",
+          title: "D&R Kültür ve Hobi Avantajları",
+          description: "Kitap, kırtasiye ve hobi ürünlerinde çalışanlara yönelik fırsatlar.",
+          href: "https://www.dr.com.tr",
+        },
+      ]
+    : [
+        {
+          slug: "boyner",
+          title: "Boyner Employee Campaign",
+          description: "Special employee discounts on selected seasonal products.",
+          href: "https://www.boyner.com.tr",
+        },
+        {
+          slug: "pegasus",
+          title: "Pegasus Travel Deals",
+          description: "Seasonal travel campaigns for domestic and international trips.",
+          href: "https://www.flypgs.com",
+        },
+        {
+          slug: "getiryemek",
+          title: "GetirYemek Lunch Discount",
+          description: "Selected restaurant offers that can be used on office days.",
+          href: "https://getiryemek.com",
+        },
+        {
+          slug: "dr",
+          title: "D&R Culture And Hobby Offers",
+          description: "Employee-facing offers for books, stationery, and hobby products.",
+          href: "https://www.dr.com.tr",
+        },
+      ];
+}
+
+function BenefitsPage({ role, language, slug }: { role: Role; language: Lang; slug?: string }) {
+  const t = getText(language);
+  const isAdmin = role === "admin";
+  const searchParams = useSearchParams();
+  const [addBenefitOpen, setAddBenefitOpen] = useState(isAdmin && searchParams.get("modal") === "add-benefit");
+  const [benefitForm, setBenefitForm] = useState({ partner: "", title: "", description: "", link: "" });
+  const campaigns = getBenefitCampaigns(language);
+
+  if (slug) {
+    const campaign = campaigns.find((item) => item.slug === slug);
+
+    if (!campaign) {
+      return (
+        <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+          <SectionTitle title={t.documents.notFound} description="" />
+        </div>
+      );
+    }
+
+    return (
+      <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+        <Link
+          href={withRole("/benefits", role)}
+          className="inline-flex rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-900"
+        >
+          ← {t.announcements.back}
+        </Link>
+
+        <div className="mt-6 flex items-start gap-4">
+          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100">
+            <BrandIcon className="h-5 w-5" />
+          </span>
+          <div>
+            <h2 className="text-2xl font-semibold text-sky-800">{campaign.title}</h2>
+            <p className="mt-3 text-sm leading-6 text-slate-600">{campaign.description}</p>
+          </div>
+        </div>
+
+        <div className="mt-6 rounded-3xl bg-slate-50 p-5 ring-1 ring-slate-200">
+          <p className="text-sm font-medium text-slate-900">{t.benefits.brandWebsite}</p>
+          <a
+            href={campaign.href}
+            target="_blank"
+            rel="noreferrer"
+            className="mt-3 inline-flex items-center gap-2 text-sm font-medium text-sky-700 hover:text-sky-800"
+          >
+            {campaign.href.replace(/^https?:\/\//, "").replace(/\/$/, "")}
+            <ArrowRightIcon className="h-4 w-4" />
+          </a>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="flex flex-wrap items-center justify-end gap-3">
+          {isAdmin ? (
+            <button type="button" onClick={() => setAddBenefitOpen(true)} className={getActionButtonClass("primary")}>
+              {t.benefits.addBenefit}
+            </button>
+          ) : null}
+        </div>
+        <div className="mt-6 grid gap-4 md:grid-cols-2">
+          {campaigns.map((campaign) => (
+            <Link
+              key={campaign.slug}
+              href={withRole(`/benefits/${campaign.slug}`, role)}
+              className="group rounded-3xl bg-slate-50 p-5 ring-1 ring-slate-200 transition hover:bg-sky-50 hover:ring-sky-200"
+            >
+              <div className="flex items-start gap-4">
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100">
+                  <BrandIcon className="h-4 w-4" />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <h3 className="text-lg font-semibold text-slate-950 group-hover:text-sky-900">{campaign.title}</h3>
+                  <p className="mt-2 text-sm leading-6 text-slate-500">{campaign.description}</p>
+                  <span className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-sky-700 group-hover:text-sky-800">
+                    {t.benefits.openCampaign}
+                    <ArrowRightIcon className="h-4 w-4" />
+                  </span>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {addBenefitOpen ? (
+        <div className="fixed inset-0 z-40 flex items-center justify-center bg-slate-950/30 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-xl rounded-3xl border border-slate-200 bg-white p-6 shadow-xl">
+            <SectionTitle title={t.benefits.addBenefitTitle} description="" />
+            <div className="mt-5 space-y-4">
+              <input
+                value={benefitForm.partner}
+                onChange={(event) => setBenefitForm((current) => ({ ...current, partner: event.target.value }))}
+                className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
+                placeholder={t.benefits.partnerName}
+              />
+              <input
+                value={benefitForm.title}
+                onChange={(event) => setBenefitForm((current) => ({ ...current, title: event.target.value }))}
+                className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
+                placeholder={t.benefits.campaignTitle}
+              />
+              <textarea
+                value={benefitForm.description}
+                onChange={(event) => setBenefitForm((current) => ({ ...current, description: event.target.value }))}
+                className="h-32 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
+                placeholder={t.benefits.campaignDescription}
+              />
+              <input
+                value={benefitForm.link}
+                onChange={(event) => setBenefitForm((current) => ({ ...current, link: event.target.value }))}
+                className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
+                placeholder={t.benefits.campaignLink}
+              />
+            </div>
+            <div className="mt-5 flex justify-end gap-3">
+              <button type="button" onClick={() => setAddBenefitOpen(false)} className={getActionButtonClass("secondary")}>
+                {t.documents.cancel}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setAddBenefitOpen(false);
+                  setBenefitForm({ partner: "", title: "", description: "", link: "" });
+                }}
+                className={getActionButtonClass("primary")}
+              >
+                {t.documents.save}
               </button>
             </div>
           </div>
@@ -2813,27 +3211,41 @@ function MyPage({ role, language, slug }: { role: Role; language: Lang; slug?: s
   const email = isAdmin ? t.myPage.adminEmailAddress : t.myPage.employeeEmailAddress;
   const jobTitle = isAdmin ? t.myPage.adminRole : t.myPage.employeeRole;
   const team = isAdmin ? t.myPage.adminTeam : t.myPage.employeeTeam;
+  const buddyName = isAdmin ? t.myPage.adminBuddyName : t.myPage.employeeBuddyName;
+  const buddyEmail = isAdmin ? t.myPage.adminBuddyEmailAddress : t.myPage.employeeBuddyEmailAddress;
   const todoItems = isAdmin ? t.myPage.todoItemsAdmin : t.myPage.todoItemsEmployee;
-  const contractUpdated = language === "tr" ? "3 Haziran 2026" : "June 3, 2026";
+  const birthdays = language === "tr"
+    ? [
+        { name: "Selin K.", team: "Pazarlama" },
+        { name: "Can A.", team: "Ürün" },
+        { name: "İrem D.", team: "Finans" },
+      ]
+    : [
+        { name: "Selin K.", team: "Marketing" },
+        { name: "Can A.", team: "Product" },
+        { name: "İrem D.", team: "Finance" },
+      ];
 
   return (
     <div className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
       <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-        <div>
-          <h2 className="text-2xl font-semibold text-sky-800">{name}</h2>
-          <p className="mt-1 text-sm text-slate-500">{jobTitle} · {team}</p>
-          <p className="mt-1 text-sm text-slate-500">{email}</p>
+        <div className="rounded-3xl bg-slate-50 p-5 ring-1 ring-slate-200">
+          <SectionTitle title={t.myPage.personalInfo} description="" />
+          <p className="mt-4 text-lg font-semibold text-slate-950">{name}</p>
+          <p className="mt-3 text-sm font-medium text-slate-900">{jobTitle}</p>
+          <p className="mt-1 text-sm text-slate-500">{team}</p>
+          <p className="mt-3 text-sm text-slate-500">{email}</p>
+          <div className="mt-5 border-t border-slate-200 pt-4">
+            <p className="text-sm font-medium text-slate-900">{t.myPage.buddy}: {buddyName}</p>
+            <p className="mt-1 text-sm text-slate-500">{t.myPage.buddyEmail}: {buddyEmail}</p>
+          </div>
         </div>
 
         <Link
           href={withRole("/my-page/contract", role)}
           className="group relative mt-6 block rounded-3xl bg-slate-50 p-5 ring-1 ring-slate-200 transition hover:bg-sky-50/70 hover:ring-sky-200"
         >
-          <SectionTitle title={t.myPage.contract} description="" />
-          <div className="mt-3 inline-flex items-center gap-1.5 text-xs text-slate-400">
-            <ClockIcon className="h-3.5 w-3.5" />
-            {t.myPage.contractUpdated}: {contractUpdated}
-          </div>
+          <SectionTitle title={t.myPage.documents} description="" />
           <span className="absolute bottom-5 right-5 flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 shadow-sm transition group-hover:border-sky-200 group-hover:text-sky-700">
             <ArrowRightIcon className="h-5 w-5" />
           </span>
@@ -2847,6 +3259,23 @@ function MyPage({ role, language, slug }: { role: Role; language: Lang; slug?: s
             <div key={item} className="flex items-start gap-3 rounded-2xl bg-slate-50 p-4 ring-1 ring-slate-200">
               <span className="mt-1 flex h-5 w-5 shrink-0 rounded-full border-2 border-slate-300 bg-white" />
               <p className="text-sm leading-6 text-slate-700">{item}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm xl:col-span-2">
+        <SectionTitle title={t.blog.todaysBirthdays} description="" />
+        <div className="mt-4 flex flex-wrap gap-3">
+          {birthdays.map((person) => (
+            <div key={person.name} className="flex min-w-[220px] flex-1 items-center gap-3 rounded-2xl bg-slate-50 px-4 py-3 ring-1 ring-slate-200">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-rose-50 text-rose-700 ring-1 ring-rose-100">
+                <UsersIcon className="h-4 w-4" />
+              </span>
+              <div className="min-w-0">
+                <p className="font-medium text-slate-950">{person.name}</p>
+                <p className="text-sm text-slate-500">{person.team}</p>
+              </div>
             </div>
           ))}
         </div>
@@ -2879,32 +3308,16 @@ function MyPageDetailPage({ role, language, slug }: { role: Role; language: Lang
         ← {t.announcements.back}
       </Link>
 
-      <div className="mt-6 flex items-start gap-4">
-        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-sky-50 text-sky-700 ring-1 ring-sky-100">
-          <FileIcon className="h-5 w-5" />
-        </span>
-        <div>
-          <h2 className="text-2xl font-semibold text-sky-800">{t.myPage.contract}</h2>
-          <p className="mt-1 text-sm text-slate-500">{name} · {jobTitle} · {team}</p>
-          <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-500">
-            <ClockIcon className="h-3.5 w-3.5" />
-            {t.myPage.contractUpdated}: {language === "tr" ? "3 Haziran 2026" : "June 3, 2026"}
+      <div className="mt-6 rounded-3xl bg-slate-50 p-5 ring-1 ring-slate-200">
+        <div className="flex items-center gap-4 rounded-2xl bg-white p-4">
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-sky-50 text-sky-700 ring-1 ring-sky-100">
+            <FileIcon className="h-4 w-4" />
+          </span>
+          <div className="min-w-0 flex-1">
+            <h3 className="font-medium text-slate-950">{t.myPage.contract}</h3>
+            <p className="mt-1 text-sm text-slate-500">{name} · {jobTitle} · {team}</p>
           </div>
         </div>
-      </div>
-
-      <div className="mt-6 space-y-4 text-sm leading-7 text-slate-700">
-        {language === "tr" ? (
-          <>
-            <p>Bu demo sözleşme sayfası, çalışanın kişisel sözleşme detaylarını platform içinde görüntüleyebileceği alanı temsil eder.</p>
-            <p>Sözleşme tipi, başlangıç tarihi, temel çalışma koşulları ve ilgili şirket yükümlülükleri burada sade bir özet halinde sunulabilir.</p>
-          </>
-        ) : (
-          <>
-            <p>This demo contract page represents the area where an employee can review personal contract details inside the platform.</p>
-            <p>Contract type, start date, core working terms, and related company commitments can be shown here in a simple summary format.</p>
-          </>
-        )}
       </div>
     </div>
   );
@@ -3488,36 +3901,50 @@ function ExpandableSocialItem({
   const iconTone = kind === "benefit"
     ? "bg-sky-50 text-sky-700 ring-sky-100"
     : "bg-emerald-50 text-emerald-700 ring-emerald-100";
+  const inlineEdit = isAdmin && kind === "benefit";
 
   return (
-    <div className={isAdmin ? "grid grid-cols-[minmax(0,1fr)_72px] items-start gap-3" : "block"}>
+    <div className={isAdmin && !inlineEdit ? "grid grid-cols-[minmax(0,1fr)_72px] items-start gap-3" : "block"}>
       <div className="min-h-[84px] rounded-2xl bg-white p-4 ring-1 ring-slate-200 transition hover:ring-slate-300">
-        <button
-          type="button"
-          onClick={() => onToggle(id)}
-          className="flex w-full items-center gap-4 text-left"
-        >
+        <div className="flex items-start justify-between gap-3">
+          <button
+            type="button"
+            onClick={() => onToggle(id)}
+            className="flex min-w-0 flex-1 items-center gap-4 text-left"
+          >
           <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ring-1 ${iconTone}`}>
             {kind === "benefit" ? <BrandIcon className="h-4 w-4" /> : <UsersIcon className="h-4 w-4" />}
           </span>
 
           <span className="min-w-0 flex-1 font-medium text-slate-950">{title}</span>
 
-          <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 shadow-sm transition ${open ? "rotate-90 border-sky-200 text-sky-700" : ""}`}>
-            <ArrowRightIcon className="h-5 w-5" />
-          </span>
-        </button>
+            <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 shadow-sm transition ${open ? "rotate-90 border-sky-200 text-sky-700" : ""}`}>
+              <ArrowRightIcon className="h-5 w-5" />
+            </span>
+          </button>
+
+          {inlineEdit ? (
+            <Link
+              href={editHref}
+              className={getActionButtonClass("secondary", "h-10 px-3 text-xs")}
+            >
+              {editLabel}
+            </Link>
+          ) : null}
+        </div>
         {open ? (
           <div className="mt-4 pl-[3.75rem]">
             <p className="text-sm leading-6 text-slate-600">{content}</p>
             {isAdmin ? (
               <div className="mt-4 flex flex-wrap items-center gap-2">
-                <Link
-                  href={editHref}
-                  className={getActionButtonClass("secondary", "h-10 px-4")}
-                >
-                  {editLabel}
-                </Link>
+                {!inlineEdit ? (
+                  <Link
+                    href={editHref}
+                    className={getActionButtonClass("secondary", "h-10 px-4")}
+                  >
+                    {editLabel}
+                  </Link>
+                ) : null}
                 <button
                   type="button"
                   onClick={onDelete}
@@ -3538,7 +3965,7 @@ function ExpandableSocialItem({
         ) : null}
       </div>
 
-      {isAdmin ? (
+      {isAdmin && !inlineEdit ? (
         <Link
           href={editHref}
           className={getActionButtonClass("secondary", "h-10 w-full self-start px-2 text-xs")}
@@ -3807,12 +4234,15 @@ function renderPage(
   page: PortalPage,
   role: Role,
   language: Lang,
+  followedBlogCategories: BlogCategory[],
+  onToggleFollowedBlog: (category: BlogCategory) => void,
   selectedPostSlug?: string,
   selectedBlogCategory?: BlogCategory,
   isBlogRequestView?: boolean,
   selectedAnnouncementSlug?: string,
   selectedAnnouncementRequestSlug?: string,
   selectedDocumentSlug?: string,
+  selectedBenefitSlug?: string,
   selectedCourseSlug?: string,
   selectedMyPageSlug?: string,
   selectedWelcomeOnBoardSlug?: string,
@@ -3839,13 +4269,15 @@ function renderPage(
     case "blog":
       return selectedPostSlug
         ? <BlogPostPage role={role} slug={selectedPostSlug} language={language} />
-        : <BlogPage role={role} language={language} category={selectedBlogCategory} requestView={isBlogRequestView} />;
+        : <BlogPage role={role} language={language} category={selectedBlogCategory} requestView={isBlogRequestView} followedCategories={followedBlogCategories} onToggleFollow={onToggleFollowedBlog} />;
     case "publish":
       return <PublishPage role={role} language={language} />;
     case "documents":
       return selectedDocumentSlug
         ? <DocumentDetailPage role={role} slug={selectedDocumentSlug} language={language} />
         : <DocumentsPage role={role} language={language} />;
+    case "benefits":
+      return <BenefitsPage role={role} language={language} slug={selectedBenefitSlug} />;
     case "my-page":
       return <MyPage role={role} language={language} slug={selectedMyPageSlug} />;
     case "courses":
@@ -3876,6 +4308,7 @@ export default function PortalShell({
   selectedAnnouncementSlug,
   selectedAnnouncementRequestSlug,
   selectedDocumentSlug,
+  selectedBenefitSlug,
   selectedCourseSlug,
   selectedMyPageSlug,
   selectedWelcomeOnBoardSlug,
@@ -3888,10 +4321,28 @@ export default function PortalShell({
     return getLang(window.localStorage.getItem("token-hub-language") ?? undefined);
   });
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [followedBlogCategories, setFollowedBlogCategories] = useState<BlogCategory[]>(() => getStoredFollowedBlogs());
 
   const t = getText(language);
-  const notifications = getNotifications(language, role);
+  const followedBlogNotifications = followedBlogCategories.map((category, index) => ({
+    type: "publish" as const,
+    text: language === "tr"
+      ? `${category === "main" ? t.blog.mainBlog : category === "sports" ? t.blog.sportsBlog : category === "foodie" ? t.blog.foodieBlog : t.blog.artBlog} için yeni bir paylaşım yayınlandı.`
+      : `A new post was published in ${category === "main" ? t.blog.mainBlog : category === "sports" ? t.blog.sportsBlog : category === "foodie" ? t.blog.foodieBlog : t.blog.artBlog}.`,
+    href: `/blog?category=${category}`,
+    time: `${8 + index * 6} ${language === "tr" ? "dk" : "min"}`,
+  }));
+  const notifications = [...followedBlogNotifications, ...getNotifications(language, role)];
   const myPageTodoCount = (role === "admin" ? t.myPage.todoItemsAdmin : t.myPage.todoItemsEmployee).length;
+  const toggleFollowedBlog = (category: BlogCategory) => {
+    setFollowedBlogCategories((current) => {
+      const next = current.includes(category) ? current.filter((item) => item !== category) : [...current, category];
+      if (typeof window !== "undefined") {
+        window.localStorage.setItem("token-hub-followed-blogs", JSON.stringify(next));
+      }
+      return next;
+    });
+  };
   const navLinks = role === "admin"
     ? [
         { label: t.nav.adminDashboard, href: "/" },
@@ -3899,6 +4350,7 @@ export default function PortalShell({
         { label: t.nav.announcements, href: "/announcements" },
         { label: t.nav.blogManagement, href: "/blog" },
         { label: t.nav.documents, href: "/documents" },
+        { label: t.nav.benefits, href: "/benefits" },
         { label: t.nav.courses, href: "/courses" },
         { label: t.nav.socialHubSettings, href: "/social-hub" },
         { label: t.nav.welcomeOnBoard, href: "/welcome-on-board" },
@@ -3908,16 +4360,24 @@ export default function PortalShell({
         { label: t.nav.announcements, href: "/announcements" },
         { label: t.nav.blog, href: "/blog" },
         { label: t.nav.documents, href: "/documents" },
+        { label: t.nav.benefits, href: "/benefits" },
         { label: t.nav.courses, href: "/courses" },
         { label: t.nav.socialHub, href: "/social-hub" },
         { label: t.nav.welcomeOnBoard, href: "/welcome-on-board" },
       ];
+  const pageName = role === "admin" ? t.myPage.adminName : t.myPage.employeeName;
+  const firstName = pageName.split(" ")[0];
   const heading =
     page === "dashboard"
       ? {
           title: role === "admin" ? t.common.adminDashboard : t.common.announcements,
           description: "",
         }
+      : page === "my-page"
+        ? {
+            title: selectedMyPageSlug === "contract" ? t.myPage.documents : `${t.myPage.hello} ${firstName},`,
+            description: "",
+          }
       : page === "announcement-request"
         ? t.headings.announcementRequest
         : page === "announcement-requests"
@@ -4057,11 +4517,6 @@ export default function PortalShell({
                     ))}
                   </div>
 
-                  {role === "admin" ? (
-                    <ButtonLink href={withRole("/announcements/create", role)}>
-                      {t.common.createAnnouncement}
-                    </ButtonLink>
-                  ) : null}
                 </div>
               </div>
 
@@ -4094,7 +4549,7 @@ export default function PortalShell({
           </header>
 
           <main className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
-            {renderPage(page, role, language, selectedPostSlug, selectedBlogCategory, isBlogRequestView, selectedAnnouncementSlug, selectedAnnouncementRequestSlug, selectedDocumentSlug, selectedCourseSlug, selectedMyPageSlug, selectedWelcomeOnBoardSlug, selectedSocialHubSection, selectedSocialHubItem)}
+            {renderPage(page, role, language, followedBlogCategories, toggleFollowedBlog, selectedPostSlug, selectedBlogCategory, isBlogRequestView, selectedAnnouncementSlug, selectedAnnouncementRequestSlug, selectedDocumentSlug, selectedBenefitSlug, selectedCourseSlug, selectedMyPageSlug, selectedWelcomeOnBoardSlug, selectedSocialHubSection, selectedSocialHubItem)}
           </main>
         </div>
       </div>
