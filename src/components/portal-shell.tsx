@@ -74,12 +74,60 @@ function withRole(href: string, role: Role) {
   return `${href}${href.includes("?") ? "&" : "?"}role=${role}`;
 }
 
+function withFrom(href: string, from?: string) {
+  if (!from) return href;
+  return `${href}${href.includes("?") ? "&" : "?"}from=${encodeURIComponent(from)}`;
+}
+
+function withRoleAndFrom(href: string, role: Role, from?: string) {
+  return withRole(withFrom(href, from), role);
+}
+
 function getRoleHref(pathname: string, role: Role) {
   if (role === "employee" && pathname === "/") {
     return withRole("/announcements", role);
   }
 
   return withRole(pathname, role);
+}
+
+type DirectoryEmployee = {
+  name: string;
+  email: string;
+  team: string;
+  role: string;
+};
+
+function getTeamOptions(language: Lang) {
+  return language === "tr"
+    ? ["Ürün", "People & Culture", "Pazarlama", "Finans", "Tasarım", "Teknoloji"]
+    : ["Product", "People & Culture", "Marketing", "Finance", "Design", "Engineering"];
+}
+
+function getRoleOptions(language: Lang) {
+  return language === "tr"
+    ? ["Ürün Uzmanı", "People Partner", "Pazarlama Uzmanı", "Finans Uzmanı", "Tasarımcı", "Yazılım Mühendisi"]
+    : ["Product Specialist", "People Partner", "Marketing Specialist", "Finance Specialist", "Designer", "Software Engineer"];
+}
+
+function getEmployeeDirectory(language: Lang): DirectoryEmployee[] {
+  return language === "tr"
+    ? [
+        { name: "Ayça Berra", email: "ayca.berra@token.com.tr", team: "Ürün", role: "Ürün Uzmanı" },
+        { name: "Deniz Aksoy", email: "deniz.aksoy@token.com.tr", team: "People & Culture", role: "People Partner" },
+        { name: "Selin Kaya", email: "selin.kaya@token.com.tr", team: "Pazarlama", role: "Pazarlama Uzmanı" },
+        { name: "Can Arslan", email: "can.arslan@token.com.tr", team: "Finans", role: "Finans Uzmanı" },
+        { name: "İrem Demir", email: "irem.demir@token.com.tr", team: "Tasarım", role: "Tasarımcı" },
+        { name: "Mert Kılıç", email: "mert.kilic@token.com.tr", team: "Teknoloji", role: "Yazılım Mühendisi" },
+      ]
+    : [
+        { name: "Ayça Berra", email: "ayca.berra@token.com.tr", team: "Product", role: "Product Specialist" },
+        { name: "Deniz Aksoy", email: "deniz.aksoy@token.com.tr", team: "People & Culture", role: "People Partner" },
+        { name: "Selin Kaya", email: "selin.kaya@token.com.tr", team: "Marketing", role: "Marketing Specialist" },
+        { name: "Can Arslan", email: "can.arslan@token.com.tr", team: "Finance", role: "Finance Specialist" },
+        { name: "İrem Demir", email: "irem.demir@token.com.tr", team: "Design", role: "Designer" },
+        { name: "Mert Kılıç", email: "mert.kilic@token.com.tr", team: "Engineering", role: "Software Engineer" },
+      ];
 }
 
 function getNotifications(language: Lang, role: Role): NotificationItem[] {
@@ -418,6 +466,7 @@ function getText(language: Lang) {
         benefits: "Çalışan Ayrıcalıkları",
         courses: "Growth O'Clock",
         myPage: "Ana Sayfa",
+        profiles: "Çalışan Profilleri",
         welcomeOnBoard: "Aramıza Hoş Geldin",
         formSubmissions: "Form Gönderimleri",
         socialHubSettings: "Social Hub",
@@ -428,14 +477,19 @@ function getText(language: Lang) {
         dashboard: { title: "Panel", description: "" },
         announcements: { title: "Duyurular", description: "" },
         announcementRequest: { title: "Duyuru Talebi", description: "" },
-        announcementRequests: { title: "Duyurular", description: "" },
+        announcementRequests: { title: "Duyuru Talepleri", description: "" },
         announcementCreate: { title: "Duyuru Oluştur", description: "" },
         announcementEdit: { title: "Duyuru Düzenle", description: "" },
         blog: { title: "Blog", description: "" },
         publish: { title: "Yayınla", description: "" },
         documents: { title: "Dokümanlar", description: "" },
+        "document-create": { title: "Yeni Doküman Ekle", description: "" },
+        "document-assign": { title: "Çalışana Doküman Ata", description: "" },
+        "document-request": { title: "Doküman Talebi Oluştur", description: "" },
         benefits: { title: "Çalışan Ayrıcalıkları", description: "" },
+        "benefit-create": { title: "Yeni Ayrıcalık Ekle", description: "" },
         courses: { title: "Growth O'Clock", description: "" },
+        "profile-create": { title: "Yeni Profil Oluştur", description: "" },
         "my-page": { title: "Ana Sayfa", description: "" },
         "welcome-on-board": { title: "Aramıza Hoş Geldin", description: "" },
         forms: { title: "Formlar", description: "Form Gönderimleri ve Şirket İçi Talepler." },
@@ -468,6 +522,7 @@ function getText(language: Lang) {
         addDocument: "Doküman Ekle",
         addDocumentForEmployee: "Çalışana Doküman Ekle",
         addBenefit: "Yeni Ayrıcalık Ekle",
+        createProfile: "Yeni Profil Oluştur",
         announcementRequests: "Duyuru Talepleri",
         total: "Toplam",
         accepted: "Onaylanan",
@@ -642,6 +697,33 @@ function getText(language: Lang) {
         videoPreview: "Video Önizleme",
         play: "Oynat",
       },
+      profileCreate: {
+        title: "Yeni Profil Oluştur",
+        employeeName: "Çalışan Adı",
+        employeeEmail: "Çalışan E-Postası",
+        employeeRole: "Pozisyon",
+        employeeTeam: "Takım",
+        selectTeam: "Bir Takım Seçin",
+        buddyName: "Buddy Adı",
+        selectBuddy: "Bir Buddy Seçin",
+        startDate: "Başlangıç Tarihi",
+        personalInfo: "Kişisel Bilgiler",
+        uploads: "Yüklenen Belgeler",
+        uploadType: "Belge Türü",
+        uploadName: "Dosya Adı",
+        uploadNamePlaceholder: "Örn. ayca_berra_sozlesme.pdf",
+        addUpload: "Yüklemeyi Onayla",
+        updateUpload: "Yüklemeyi Güncelle",
+        uploadedItems: "Eklenen Belgeler",
+        noUploads: "Henüz eklenen belge yok.",
+        editUpload: "Düzenle",
+        deleteUpload: "Sil",
+        profilePhoto: "Profil Fotoğrafı",
+        contract: "Sözleşme",
+        idCopy: "Kimlik Kopyası",
+        emergencyForm: "Acil Durum Formu",
+        save: "Profili Oluştur",
+      },
       myPage: {
         title: "Ana Sayfa",
         hello: "Merhaba",
@@ -763,6 +845,7 @@ function getText(language: Lang) {
       benefits: "Employee Benefits",
       courses: "Growth O'Clock",
       myPage: "Homepage",
+      profiles: "Employee Profiles",
       welcomeOnBoard: "Welcome On Board",
       formSubmissions: "Form Submissions",
       socialHubSettings: "Social Hub",
@@ -773,14 +856,19 @@ function getText(language: Lang) {
       dashboard: { title: "Dashboard", description: "" },
       announcements: { title: "Announcements", description: "" },
       announcementRequest: { title: "Announcement Request", description: "" },
-      announcementRequests: { title: "Announcements", description: "" },
+      announcementRequests: { title: "Announcement Requests", description: "" },
       announcementCreate: { title: "Create Announcement", description: "" },
       announcementEdit: { title: "Edit Announcement", description: "" },
       blog: { title: "Blog", description: "" },
       publish: { title: "Publish", description: "" },
       documents: { title: "Documents", description: "" },
+      "document-create": { title: "Add A New Document", description: "" },
+      "document-assign": { title: "Assign Document To Employee", description: "" },
+      "document-request": { title: "Create A Document Request", description: "" },
       benefits: { title: "Employee Benefits", description: "" },
+      "benefit-create": { title: "Add A New Benefit", description: "" },
       courses: { title: "Growth O'Clock", description: "" },
+      "profile-create": { title: "Create New Profile", description: "" },
       "my-page": { title: "Homepage", description: "" },
       "welcome-on-board": { title: "Welcome On Board", description: "" },
       forms: { title: "Forms", description: "Submission tracking and internal request forms." },
@@ -813,6 +901,7 @@ function getText(language: Lang) {
       addDocument: "Add Document",
       addDocumentForEmployee: "Add Document For An Employee",
       addBenefit: "Add New Benefit",
+      createProfile: "Create New Profile",
       announcementRequests: "Announcement Requests",
       total: "Total",
       accepted: "Accepted",
@@ -987,6 +1076,33 @@ function getText(language: Lang) {
       videoPreview: "Video Preview",
       play: "Play",
     },
+    profileCreate: {
+      title: "Create New Profile",
+      employeeName: "Employee Name",
+      employeeEmail: "Employee Email",
+      employeeRole: "Role",
+      employeeTeam: "Team",
+      selectTeam: "Select A Team",
+      buddyName: "Buddy Name",
+      selectBuddy: "Select A Buddy",
+      startDate: "Start Date",
+      personalInfo: "Personal Info",
+      uploads: "Uploads",
+      uploadType: "Document Type",
+      uploadName: "File Name",
+      uploadNamePlaceholder: "Example: ayca_berra_contract.pdf",
+      addUpload: "Confirm Upload",
+      updateUpload: "Update Upload",
+      uploadedItems: "Added Documents",
+      noUploads: "No document has been added yet.",
+      editUpload: "Edit",
+      deleteUpload: "Delete",
+      profilePhoto: "Profile Photo",
+      contract: "Contract",
+      idCopy: "ID Copy",
+      emergencyForm: "Emergency Form",
+      save: "Create Profile",
+    },
     myPage: {
       title: "Homepage",
       hello: "Hello",
@@ -1140,10 +1256,12 @@ function ButtonLink({
   href,
   children,
   variant = "dark",
+  className = "",
 }: {
   href: string;
   children: React.ReactNode;
   variant?: "dark" | "light" | "outline";
+  className?: string;
 }) {
   const styles = {
     dark: getActionButtonClass("primary"),
@@ -1152,10 +1270,30 @@ function ButtonLink({
   };
 
   return (
-    <Link href={href} className={styles[variant]}>
+    <Link href={href} className={`${styles[variant]} ${className}`.trim()}>
       {children}
     </Link>
   );
+}
+
+function BackButton({ href, label }: { href: string; label: string }) {
+  return (
+    <Link
+      href={href}
+      className="inline-flex items-center gap-2 rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-900 shadow-sm transition hover:border-sky-200 hover:text-sky-800"
+    >
+      <span aria-hidden="true">←</span>
+      {label}
+    </Link>
+  );
+}
+
+function MasterBackButton({ role, fallbackHref, label }: { role: Role; fallbackHref: string; label: string }) {
+  const searchParams = useSearchParams();
+  const from = searchParams.get("from");
+  const href = withRole(from ? decodeURIComponent(from) : fallbackHref, role);
+
+  return <BackButton href={href} label={label} />;
 }
 
 function RoleToggle({ pathname, role, language }: { pathname: string; role: Role; language: Lang }) {
@@ -1247,11 +1385,12 @@ function DashboardPage({ role, language }: { role: Role; language: Lang }) {
       {isAdmin ? (
         <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
           <SectionTitle title={t.dashboard.adminControls} description="" />
-          <div className="mt-6 grid gap-3 md:grid-cols-4">
-            <ButtonLink href={withRole("/announcements/create", role)}>{t.common.createAnnouncement}</ButtonLink>
-            <ButtonLink href={withRole("/documents?modal=add-document", role)} variant="outline">{t.dashboard.addDocument}</ButtonLink>
-            <ButtonLink href={withRole("/documents?modal=assign-document", role)} variant="outline">{t.dashboard.addDocumentForEmployee}</ButtonLink>
-            <ButtonLink href={withRole("/benefits?modal=add-benefit", role)} variant="outline">{t.dashboard.addBenefit}</ButtonLink>
+          <div className="mt-6 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+            <ButtonLink href={withRoleAndFrom("/profiles/create", role, "/")} className="min-h-[52px] text-center leading-5">{t.dashboard.createProfile}</ButtonLink>
+            <ButtonLink href={withRoleAndFrom("/announcements/create", role, "/")} variant="outline" className="min-h-[52px] text-center leading-5">{t.common.createAnnouncement}</ButtonLink>
+            <ButtonLink href={withRoleAndFrom("/documents/create", role, "/")} variant="outline" className="min-h-[52px] text-center leading-5">{t.dashboard.addDocument}</ButtonLink>
+            <ButtonLink href={withRoleAndFrom("/documents/assign", role, "/")} variant="outline" className="min-h-[52px] text-center leading-5">{t.dashboard.addDocumentForEmployee}</ButtonLink>
+            <ButtonLink href={withRoleAndFrom("/benefits/create", role, "/")} variant="outline" className="min-h-[52px] text-center leading-5">{t.dashboard.addBenefit}</ButtonLink>
           </div>
         </section>
       ) : null}
@@ -1304,10 +1443,10 @@ function AnnouncementsPage({ role, language }: { role: Role; language: Lang }) {
         <div className="flex flex-wrap gap-3">
           {role === "admin" ? (
             <>
-              <ButtonLink href={withRole("/announcements/create", role)}>
+              <ButtonLink href={withRoleAndFrom("/announcements/create", role, "/announcements")}>
                 {t.common.createAnnouncement}
               </ButtonLink>
-              <ButtonLink href={withRole("/announcements/requests", role)} variant="outline">
+              <ButtonLink href={withRoleAndFrom("/announcements/requests", role, "/announcements")} variant="outline">
                 {t.announcements.requests}
               </ButtonLink>
             </>
@@ -1315,7 +1454,7 @@ function AnnouncementsPage({ role, language }: { role: Role; language: Lang }) {
 
           {role === "employee" ? (
             <Link
-              href={withRole("/announcements/request", role)}
+              href={withRoleAndFrom("/announcements/request", role, "/announcements")}
               className="inline-flex items-center gap-2 rounded-2xl bg-slate-950 px-4 py-2.5 text-sm font-medium !text-white shadow-sm shadow-slate-200/80 transition hover:-translate-y-0.5 hover:opacity-95"
             >
               <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-white/10">
@@ -1331,7 +1470,7 @@ function AnnouncementsPage({ role, language }: { role: Role; language: Lang }) {
         {announcementItems.map((item) => (
           <Link
             key={item.slug}
-            href={withRole(`/announcements/${item.slug}`, role)}
+            href={withRoleAndFrom(`/announcements/${item.slug}`, role, "/announcements")}
             className="group flex items-center gap-4 rounded-2xl bg-slate-50 p-4 transition hover:bg-sky-50"
           >
             <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white ring-1 ${item.hasForm ? "text-violet-700 ring-violet-100" : "text-sky-700 ring-sky-100"}`}>
@@ -1377,13 +1516,6 @@ function AnnouncementDetailPage({ role, slug, language }: { role: Role; slug: st
   return (
     <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <Link
-          href={withRole("/announcements", role)}
-          className="inline-flex rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-900"
-        >
-          ← {t.announcements.back}
-        </Link>
-
         {role === "admin" ? (
           <div className="flex flex-wrap gap-3">
             <button
@@ -1393,7 +1525,7 @@ function AnnouncementDetailPage({ role, slug, language }: { role: Role; slug: st
             >
               {isArchived ? t.common.archived : t.common.archive}
             </button>
-            <ButtonLink href={withRole(`/announcements/${slug}/edit`, role)} variant="outline">
+            <ButtonLink href={withRoleAndFrom(`/announcements/${slug}/edit`, role, `/announcements/${slug}`)} variant="outline">
               {t.announcements.edit}
             </ButtonLink>
           </div>
@@ -1491,12 +1623,11 @@ function AnnouncementRequestsPage({ role, language }: { role: Role; language: La
 
   return (
     <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-      <SectionTitle title={t.announcements.requestsTitle} description="" />
-      <div className="mt-6 space-y-4">
+      <div className="space-y-4">
         {requests.map((request) => (
           <Link
             key={request.slug}
-            href={withRole(`/announcements/requests/${request.slug}`, role)}
+            href={withRoleAndFrom(`/announcements/requests/${request.slug}`, role, "/announcements/requests")}
             className="block rounded-2xl border border-slate-200 p-4 transition hover:bg-sky-50"
           >
             <div className="flex flex-wrap items-center justify-between gap-3">
@@ -1511,7 +1642,7 @@ function AnnouncementRequestsPage({ role, language }: { role: Role; language: La
   );
 }
 
-function AnnouncementRequestDetailPage({ role, slug, language }: { role: Role; slug: string; language: Lang }) {
+function AnnouncementRequestDetailPage({ slug, language }: { role: Role; slug: string; language: Lang }) {
   const t = getText(language);
   const request = getAnnouncementRequests(language).find((item) => item.slug === slug);
 
@@ -1525,14 +1656,7 @@ function AnnouncementRequestDetailPage({ role, slug, language }: { role: Role; s
 
   return (
     <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-      <Link
-        href={withRole("/announcements/requests", role)}
-        className="inline-flex rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-900"
-      >
-        ← {t.announcements.back}
-      </Link>
-
-      <h2 className="mt-6 text-2xl font-semibold text-sky-800">{request.title}</h2>
+      <h2 className="text-2xl font-semibold text-sky-800">{request.title}</h2>
       <p className="mt-3 text-sm text-slate-500">{t.announcements.requestOwner}: {request.owner}</p>
       <p className="mt-1 text-sm text-slate-500">{t.announcements.requestTeam}: {request.team}</p>
       <p className="mt-6 text-sm leading-6 text-slate-600">{request.content}</p>
@@ -1606,9 +1730,7 @@ function AnnouncementCreatePage({ language }: { role: Role; language: Lang }) {
 
   return (
     <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-      <SectionTitle title={t.announcements.createTitle} description="" />
-
-      <div className="mt-6 space-y-4">
+      <div className="space-y-4">
         <input
           value={title}
           onChange={(event) => setTitle(event.target.value)}
@@ -1796,7 +1918,7 @@ function AnnouncementCreatePage({ language }: { role: Role; language: Lang }) {
   );
 }
 
-function AnnouncementEditPage({ role, slug, language }: { role: Role; slug: string; language: Lang }) {
+function AnnouncementEditPage({ slug, language }: { role: Role; slug: string; language: Lang }) {
   const t = getText(language);
   const announcement = getAnnouncementBySlug(slug, language);
   const [title, setTitle] = useState(announcement?.title ?? "");
@@ -1813,17 +1935,7 @@ function AnnouncementEditPage({ role, slug, language }: { role: Role; slug: stri
 
   return (
     <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <SectionTitle title={t.announcements.editTitle} description="" />
-        <Link
-          href={withRole("/announcements", role)}
-          className="inline-flex rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-900"
-        >
-          ← {t.announcements.back}
-        </Link>
-      </div>
-
-      <div className="mt-6 space-y-4">
+      <div className="space-y-4">
         <input
           value={title}
           onChange={(event) => setTitle(event.target.value)}
@@ -1864,20 +1976,40 @@ function AnnouncementEditPage({ role, slug, language }: { role: Role; slug: stri
 
 function AnnouncementRequestPage({ role, language }: { role: Role; language: Lang }) {
   const t = getText(language);
+  const [team, setTeam] = useState("");
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const teamOptions = getTeamOptions(language);
 
   return (
     <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-      <SectionTitle title={t.announcements.requestTitle} description="" />
-      <div className="mt-6 space-y-4">
-        <div className="rounded-2xl bg-slate-50 p-4 text-sm text-slate-500">
-          {t.announcements.teamName}
-        </div>
-        <div className="rounded-2xl bg-slate-50 p-4 text-sm text-slate-500">
-          {t.announcements.announcementTitle}
-        </div>
-        <div className="rounded-2xl bg-slate-50 p-4 text-sm text-slate-500 h-40">
-          {t.announcements.announcementContent}
-        </div>
+      <div className="space-y-4">
+        <>
+          <input
+            list="announcement-team-options"
+            value={team}
+            onChange={(event) => setTeam(event.target.value)}
+            className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
+            placeholder={t.announcements.teamName}
+          />
+          <datalist id="announcement-team-options">
+            {teamOptions.map((option) => (
+              <option key={option} value={option} />
+            ))}
+          </datalist>
+        </>
+        <input
+          value={title}
+          onChange={(event) => setTitle(event.target.value)}
+          className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
+          placeholder={t.announcements.announcementTitle}
+        />
+        <textarea
+          value={content}
+          onChange={(event) => setContent(event.target.value)}
+          className="h-40 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
+          placeholder={t.announcements.announcementContent}
+        />
         <ButtonLink href={withRole("/announcements", role)}>{t.announcements.sendToAdmin}</ButtonLink>
       </div>
     </div>
@@ -1936,11 +2068,6 @@ function BlogPage({
             />
           ) : <div />}
           <div className="flex flex-wrap gap-3">
-            {(requestView || category) ? (
-              <ButtonLink href={withRole("/blog", role)} variant="outline">
-                {t.blog.backToPosts}
-              </ButtonLink>
-            ) : null}
             {category ? (
               <>
                 <button
@@ -1960,7 +2087,7 @@ function BlogPage({
               </>
             ) : null}
             {!requestView && !category ? (
-              <ButtonLink href={withRole(`/blog?request=true`, role)}>
+              <ButtonLink href={withRoleAndFrom(`/blog?request=true`, role, "/blog")}>
                 {isAdmin ? t.blog.reviewRequests : t.blog.requestBlog}
               </ButtonLink>
             ) : null}
@@ -1993,7 +2120,7 @@ function BlogPage({
             {filteredPosts.map((post) => (
               <Link
                 key={post.slug}
-                href={withRole(`/blog/${post.slug}`, role)}
+                href={withRoleAndFrom(`/blog/${post.slug}`, role, `/blog?category=${category}`)}
                 className="group flex items-center gap-4 rounded-2xl bg-slate-50 p-4 transition hover:bg-sky-50"
               >
                 <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white text-sky-700 ring-1 ring-sky-100">
@@ -2124,13 +2251,6 @@ function BlogPostPage({ role, slug, language }: { role: Role; slug: string; lang
     <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
       <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <Link
-            href={withRole("/blog", role)}
-            className="inline-flex rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-900"
-          >
-            ← {t.blog.backToPosts}
-          </Link>
-
           {role === "admin" || isOwner ? (
             <div className="flex flex-wrap gap-3">
               {role === "admin" ? (
@@ -2403,181 +2523,197 @@ function getCourseItems(language: Lang): CourseItem[] {
 
 function DocumentsPage({ role, language }: { role: Role; language: Lang }) {
   const t = getText(language);
+  const pathname = usePathname();
   const documentItems = getDocuments(language);
   const isAdmin = role === "admin";
-  const searchParams = useSearchParams();
-  const initialModal = isAdmin
-    ? (searchParams.get("modal") === "add-document" || searchParams.get("modal") === "assign-document"
-        ? searchParams.get("modal") as "add-document" | "assign-document"
-        : null)
-    : (searchParams.get("modal") === "request-document" ? "request-document" : null);
-  const [activeModal, setActiveModal] = useState<null | "request-document" | "add-document" | "assign-document">(initialModal);
-  const [requestText, setRequestText] = useState("");
-  const [newDocument, setNewDocument] = useState({ title: "", description: "", audience: "", link: "" });
-  const [assignDocument, setAssignDocument] = useState({ employeeName: "", employeeEmail: "", documentTitle: documentItems[0]?.name ?? "", note: "" });
-
-  const closeModal = () => setActiveModal(null);
+  const [documentSearch, setDocumentSearch] = useState("");
+  const filteredDocuments = documentItems.filter((document) => `${document.name} ${document.description}`.toLowerCase().includes(documentSearch.trim().toLowerCase()));
 
   return (
-    <>
-      <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-        <div className="flex flex-wrap items-center justify-end gap-3">
-          {isAdmin ? (
-            <>
-              <button type="button" onClick={() => setActiveModal("add-document")} className={getActionButtonClass("primary")}>
-                {t.documents.addDocument}
-              </button>
-              <button type="button" onClick={() => setActiveModal("assign-document")} className={getActionButtonClass("secondary")}>
-                {t.documents.assignDocument}
-              </button>
-            </>
-          ) : (
-            <button
-              type="button"
-              onClick={() => setActiveModal("request-document")}
-              className={getActionButtonClass("secondary")}
-            >
-              {t.documents.requestDocument}
-            </button>
-          )}
-        </div>
-
-        <div className="mt-6 flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-400">
-          <SearchIcon className="h-4 w-4 text-slate-400" />
-          <span>{t.documents.search}</span>
-        </div>
-
-        <div className="mt-6 space-y-4">
-          {documentItems.map((document) => (
-            <Link
-              key={document.slug}
-              href={withRole(document.href, role)}
-              className="group flex items-center gap-4 rounded-2xl bg-slate-50 p-4 transition hover:bg-sky-50"
-            >
-              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white text-sky-700 ring-1 ring-sky-100">
-                <FileIcon className="h-4 w-4" />
-              </span>
-
-              <div className="min-w-0 flex-1">
-                <h3 className="font-medium text-slate-950 transition group-hover:text-sky-900">{document.name}</h3>
-                <div className="mt-2 inline-flex items-center gap-1.5 text-xs text-slate-400">
-                  <ClockIcon className="h-3.5 w-3.5" />
-                  {document.updatedAt}
-                </div>
-                <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-500">{document.description}</p>
-              </div>
-
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 shadow-sm transition group-hover:border-sky-200 group-hover:text-sky-700">
-                <ArrowRightIcon className="h-5 w-5" />
-              </span>
-            </Link>
-          ))}
-        </div>
+    <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="flex flex-wrap items-center justify-end gap-3">
+        {isAdmin ? (
+          <>
+            <ButtonLink href={withRoleAndFrom("/documents/create", role, pathname)}>{t.documents.addDocument}</ButtonLink>
+            <ButtonLink href={withRoleAndFrom("/documents/assign", role, pathname)} variant="outline">{t.documents.assignDocument}</ButtonLink>
+          </>
+        ) : (
+          <ButtonLink href={withRoleAndFrom("/documents/request", role, pathname)} variant="outline">{t.documents.requestDocument}</ButtonLink>
+        )}
       </div>
 
-      {activeModal ? (
-        <div className="fixed inset-0 z-40 flex items-center justify-center bg-slate-950/30 p-4 backdrop-blur-sm">
-          <div className="w-full max-w-xl rounded-3xl border border-slate-200 bg-white p-6 shadow-xl">
-            <SectionTitle
-              title={activeModal === "request-document"
-                ? t.documents.requestDocumentTitle
-                : activeModal === "add-document"
-                  ? t.documents.addDocumentTitle
-                  : t.documents.assignDocumentTitle}
-              description=""
-            />
+      <div className="mt-6 flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-500">
+        <SearchIcon className="h-4 w-4 text-slate-400" />
+        <input
+          value={documentSearch}
+          onChange={(event) => setDocumentSearch(event.target.value)}
+          className="min-w-0 flex-1 bg-transparent text-sm text-slate-700 outline-none placeholder:text-slate-400"
+          placeholder={t.documents.search}
+        />
+      </div>
 
-            {activeModal === "request-document" ? (
-              <textarea
-                value={requestText}
-                onChange={(event) => setRequestText(event.target.value)}
-                className="mt-5 h-40 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
-                placeholder={t.documents.requestDocumentPlaceholder}
-              />
-            ) : null}
+      <div className="mt-6 space-y-4">
+        {filteredDocuments.length ? filteredDocuments.map((document) => (
+          <Link
+            key={document.slug}
+            href={withRoleAndFrom(document.href, role, pathname)}
+            className="group flex items-center gap-4 rounded-2xl bg-slate-50 p-4 transition hover:bg-sky-50"
+          >
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white text-sky-700 ring-1 ring-sky-100">
+              <FileIcon className="h-4 w-4" />
+            </span>
 
-            {activeModal === "add-document" ? (
-              <div className="mt-5 space-y-4">
-                <input
-                  value={newDocument.title}
-                  onChange={(event) => setNewDocument((current) => ({ ...current, title: event.target.value }))}
-                  className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
-                  placeholder={t.documents.documentTitle}
-                />
-                <input
-                  value={newDocument.description}
-                  onChange={(event) => setNewDocument((current) => ({ ...current, description: event.target.value }))}
-                  className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
-                  placeholder={t.documents.addDocumentDescription}
-                />
-                <input
-                  value={newDocument.audience}
-                  onChange={(event) => setNewDocument((current) => ({ ...current, audience: event.target.value }))}
-                  className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
-                  placeholder={t.documents.addDocumentAudience}
-                />
-                <input
-                  value={newDocument.link}
-                  onChange={(event) => setNewDocument((current) => ({ ...current, link: event.target.value }))}
-                  className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
-                  placeholder={t.documents.addDocumentLink}
-                />
+            <div className="min-w-0 flex-1">
+              <h3 className="font-medium text-slate-950 transition group-hover:text-sky-900">{document.name}</h3>
+              <div className="mt-2 inline-flex items-center gap-1.5 text-xs text-slate-400">
+                <ClockIcon className="h-3.5 w-3.5" />
+                {document.updatedAt}
               </div>
-            ) : null}
-
-            {activeModal === "assign-document" ? (
-              <div className="mt-5 space-y-4">
-                <input
-                  value={assignDocument.employeeName}
-                  onChange={(event) => setAssignDocument((current) => ({ ...current, employeeName: event.target.value }))}
-                  className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
-                  placeholder={t.documents.employeeName}
-                />
-                <input
-                  value={assignDocument.employeeEmail}
-                  onChange={(event) => setAssignDocument((current) => ({ ...current, employeeEmail: event.target.value }))}
-                  className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
-                  placeholder={t.documents.employeeEmail}
-                />
-                <select
-                  value={assignDocument.documentTitle}
-                  onChange={(event) => setAssignDocument((current) => ({ ...current, documentTitle: event.target.value }))}
-                  className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
-                >
-                  {documentItems.map((document) => (
-                    <option key={document.slug} value={document.name}>{document.name}</option>
-                  ))}
-                </select>
-                <textarea
-                  value={assignDocument.note}
-                  onChange={(event) => setAssignDocument((current) => ({ ...current, note: event.target.value }))}
-                  className="h-32 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
-                  placeholder={t.documents.assignNote}
-                />
-              </div>
-            ) : null}
-
-            <div className="mt-5 flex justify-end gap-3">
-              <button type="button" onClick={closeModal} className={getActionButtonClass("secondary")}>
-                {t.documents.cancel}
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  closeModal();
-                  setRequestText("");
-                  setNewDocument({ title: "", description: "", audience: "", link: "" });
-                  setAssignDocument({ employeeName: "", employeeEmail: "", documentTitle: documentItems[0]?.name ?? "", note: "" });
-                }}
-                className={getActionButtonClass("primary")}
-              >
-                {activeModal === "request-document" ? t.documents.sendRequest : t.documents.save}
-              </button>
+              <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-500">{document.description}</p>
             </div>
+
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 shadow-sm transition group-hover:border-sky-200 group-hover:text-sky-700">
+              <ArrowRightIcon className="h-5 w-5" />
+            </span>
+          </Link>
+        )) : (
+          <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-4 py-5 text-sm text-slate-500">
+            {t.documents.notFound}
           </div>
-        </div>
-      ) : null}
-    </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function DocumentCreatePage({ language }: { role: Role; language: Lang }) {
+  const t = getText(language);
+  const audienceOptions = [language === "tr" ? "Tüm Çalışanlar" : "All Employees", language === "tr" ? "Yeni Çalışanlar" : "New Hires", ...getTeamOptions(language)];
+  const [form, setForm] = useState({ title: "", description: "", audience: "", link: "" });
+
+  return (
+    <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="space-y-4">
+        <input
+          value={form.title}
+          onChange={(event) => setForm((current) => ({ ...current, title: event.target.value }))}
+          className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
+          placeholder={t.documents.documentTitle}
+        />
+        <input
+          value={form.description}
+          onChange={(event) => setForm((current) => ({ ...current, description: event.target.value }))}
+          className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
+          placeholder={t.documents.addDocumentDescription}
+        />
+        <>
+          <input
+            list="document-page-audience-options"
+            value={form.audience}
+            onChange={(event) => setForm((current) => ({ ...current, audience: event.target.value }))}
+            className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
+            placeholder={t.documents.addDocumentAudience}
+          />
+          <datalist id="document-page-audience-options">
+            {audienceOptions.map((option) => (
+              <option key={option} value={option} />
+            ))}
+          </datalist>
+        </>
+        <input
+          value={form.link}
+          onChange={(event) => setForm((current) => ({ ...current, link: event.target.value }))}
+          className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
+          placeholder={t.documents.addDocumentLink}
+        />
+      </div>
+      <div className="mt-6 flex justify-end gap-3">
+        <button type="button" className={getActionButtonClass("secondary")}>{t.documents.cancel}</button>
+        <button type="button" className={getActionButtonClass("primary")}>{t.documents.save}</button>
+      </div>
+    </div>
+  );
+}
+
+function DocumentAssignPage({ language }: { role: Role; language: Lang }) {
+  const t = getText(language);
+  const documentItems = getDocuments(language);
+  const employeeDirectory = getEmployeeDirectory(language);
+  const [form, setForm] = useState({ employeeName: "", employeeEmail: "", documentTitle: documentItems[0]?.name ?? "", note: "" });
+
+  return (
+    <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="space-y-4">
+        <>
+          <input
+            list="document-page-employee-options"
+            value={form.employeeName}
+            onChange={(event) => {
+              const employeeName = event.target.value;
+              const selectedEmployee = employeeDirectory.find((item) => item.name === employeeName);
+              setForm((current) => ({ ...current, employeeName, employeeEmail: selectedEmployee?.email ?? "" }));
+            }}
+            className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
+            placeholder={t.documents.employeeName}
+          />
+          <datalist id="document-page-employee-options">
+            {employeeDirectory.map((employee) => (
+              <option key={employee.email} value={employee.name} />
+            ))}
+          </datalist>
+        </>
+        <input
+          value={form.employeeEmail}
+          onChange={(event) => setForm((current) => ({ ...current, employeeEmail: event.target.value }))}
+          className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
+          placeholder={t.documents.employeeEmail}
+        />
+        <>
+          <input
+            list="document-page-document-options"
+            value={form.documentTitle}
+            onChange={(event) => setForm((current) => ({ ...current, documentTitle: event.target.value }))}
+            className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
+            placeholder={t.documents.documentTitle}
+          />
+          <datalist id="document-page-document-options">
+            {documentItems.map((document) => (
+              <option key={document.slug} value={document.name} />
+            ))}
+          </datalist>
+        </>
+        <textarea
+          value={form.note}
+          onChange={(event) => setForm((current) => ({ ...current, note: event.target.value }))}
+          className="h-32 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
+          placeholder={t.documents.assignNote}
+        />
+      </div>
+      <div className="mt-6 flex justify-end gap-3">
+        <button type="button" className={getActionButtonClass("secondary")}>{t.documents.cancel}</button>
+        <button type="button" className={getActionButtonClass("primary")}>{t.documents.save}</button>
+      </div>
+    </div>
+  );
+}
+
+function DocumentRequestPage({ language }: { role: Role; language: Lang }) {
+  const t = getText(language);
+  const [requestText, setRequestText] = useState("");
+
+  return (
+    <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      <textarea
+        value={requestText}
+        onChange={(event) => setRequestText(event.target.value)}
+        className="mt-6 h-40 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
+        placeholder={t.documents.requestDocumentPlaceholder}
+      />
+      <div className="mt-6 flex justify-end gap-3">
+        <button type="button" className={getActionButtonClass("secondary")}>{t.documents.cancel}</button>
+        <button type="button" className={getActionButtonClass("primary")}>{t.documents.sendRequest}</button>
+      </div>
+    </div>
   );
 }
 
@@ -2637,12 +2773,210 @@ function getBenefitCampaigns(language: Lang) {
       ];
 }
 
+function ProfileCreatePage({ language }: { role: Role; language: Lang }) {
+  const t = getText(language);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [employeeRole, setEmployeeRole] = useState("");
+  const [team, setTeam] = useState("");
+  const [buddy, setBuddy] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const roleOptions = getRoleOptions(language);
+  const teamOptions = getTeamOptions(language);
+  const buddyOptions = getEmployeeDirectory(language).map((employee) => employee.name);
+  const [uploadType, setUploadType] = useState("profile-photo");
+  const [uploadName, setUploadName] = useState("");
+  const [editingUploadId, setEditingUploadId] = useState<string | null>(null);
+  const [uploads, setUploads] = useState<Array<{ id: string; type: string; name: string }>>([]);
+
+  const uploadTypeOptions = [
+    { id: "profile-photo", label: t.profileCreate.profilePhoto },
+    { id: "contract", label: t.profileCreate.contract },
+    { id: "id-copy", label: t.profileCreate.idCopy },
+    { id: "emergency-form", label: t.profileCreate.emergencyForm },
+  ];
+
+  const resetUploadEditor = () => {
+    setUploadType("profile-photo");
+    setUploadName("");
+    setEditingUploadId(null);
+  };
+
+  const saveUpload = () => {
+    const trimmedName = uploadName.trim();
+    if (!trimmedName) return;
+
+    if (editingUploadId) {
+      setUploads((current) => current.map((item) => item.id === editingUploadId ? { ...item, type: uploadType, name: trimmedName } : item));
+    } else {
+      setUploads((current) => [...current, { id: `${Date.now()}-${current.length}`, type: uploadType, name: trimmedName }]);
+    }
+
+    resetUploadEditor();
+  };
+
+  return (
+    <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="grid gap-4 xl:grid-cols-[1fr_0.95fr]">
+        <div className="space-y-4">
+          <input
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+            className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
+            placeholder={t.profileCreate.employeeName}
+          />
+          <input
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+            className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
+            placeholder={t.profileCreate.employeeEmail}
+          />
+          <div className="grid gap-4 md:grid-cols-2">
+            <>
+              <input
+                list="role-options"
+                value={employeeRole}
+                onChange={(event) => setEmployeeRole(event.target.value)}
+                className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
+                placeholder={t.profileCreate.employeeRole}
+              />
+              <datalist id="role-options">
+                {roleOptions.map((option) => (
+                  <option key={option} value={option} />
+                ))}
+              </datalist>
+            </>
+            <>
+              <input
+                list="team-options"
+                value={team}
+                onChange={(event) => setTeam(event.target.value)}
+                className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
+                placeholder={t.profileCreate.selectTeam}
+              />
+              <datalist id="team-options">
+                {teamOptions.map((option) => (
+                  <option key={option} value={option} />
+                ))}
+              </datalist>
+            </>
+          </div>
+          <div className="grid gap-4 md:grid-cols-2">
+            <>
+              <input
+                list="buddy-options"
+                value={buddy}
+                onChange={(event) => setBuddy(event.target.value)}
+                className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
+                placeholder={t.profileCreate.selectBuddy}
+              />
+              <datalist id="buddy-options">
+                {buddyOptions.map((option) => (
+                  <option key={option} value={option} />
+                ))}
+              </datalist>
+            </>
+            <input
+              type="date"
+              value={startDate}
+              onChange={(event) => setStartDate(event.target.value)}
+              className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
+              aria-label={t.profileCreate.startDate}
+            />
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <div className="rounded-3xl bg-slate-50 p-5 ring-1 ring-slate-200">
+            <SectionTitle title={t.profileCreate.uploads} description="" />
+            <div className="mt-4 grid gap-3 md:grid-cols-[180px_minmax(0,1fr)]">
+              <select
+                value={uploadType}
+                onChange={(event) => setUploadType(event.target.value)}
+                className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none"
+              >
+                {uploadTypeOptions.map((option) => (
+                  <option key={option.id} value={option.id}>{option.label}</option>
+                ))}
+              </select>
+              <input
+                value={uploadName}
+                onChange={(event) => setUploadName(event.target.value)}
+                className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none"
+                placeholder={t.profileCreate.uploadNamePlaceholder}
+              />
+            </div>
+            <div className="mt-3 flex flex-wrap gap-3">
+              <button type="button" onClick={saveUpload} className={getActionButtonClass("primary")}>
+                {editingUploadId ? t.profileCreate.updateUpload : t.profileCreate.addUpload}
+              </button>
+              {editingUploadId ? (
+                <button type="button" onClick={resetUploadEditor} className={getActionButtonClass("secondary")}>
+                  {t.documents.cancel}
+                </button>
+              ) : null}
+            </div>
+
+            <div className="mt-5 space-y-3">
+              <p className="text-sm font-medium text-slate-900">{t.profileCreate.uploadedItems}</p>
+              {uploads.length ? uploads.map((item) => {
+                const typeLabel = uploadTypeOptions.find((option) => option.id === item.type)?.label ?? item.type;
+                return (
+                  <div key={item.id} className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-white p-4 ring-1 ring-slate-200">
+                    <div className="min-w-0">
+                      <p className="font-medium text-slate-950">{typeLabel}</p>
+                      <p className="mt-1 text-sm text-slate-500">{item.name}</p>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setUploadType(item.type);
+                          setUploadName(item.name);
+                          setEditingUploadId(item.id);
+                        }}
+                        className={getActionButtonClass("secondary", "px-3 py-2 text-xs")}
+                      >
+                        {t.profileCreate.editUpload}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setUploads((current) => current.filter((entry) => entry.id !== item.id));
+                          if (editingUploadId === item.id) {
+                            resetUploadEditor();
+                          }
+                        }}
+                        className={getActionButtonClass("danger", "px-3 py-2 text-xs")}
+                      >
+                        {t.profileCreate.deleteUpload}
+                      </button>
+                    </div>
+                  </div>
+                );
+              }) : (
+                <div className="rounded-2xl border border-dashed border-slate-300 bg-white px-4 py-5 text-sm text-slate-500">
+                  {t.profileCreate.noUploads}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-6 flex justify-end">
+        <button type="button" className={getActionButtonClass("primary")}>
+          {t.profileCreate.save}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function BenefitsPage({ role, language, slug }: { role: Role; language: Lang; slug?: string }) {
   const t = getText(language);
+  const pathname = usePathname();
   const isAdmin = role === "admin";
-  const searchParams = useSearchParams();
-  const [addBenefitOpen, setAddBenefitOpen] = useState(isAdmin && searchParams.get("modal") === "add-benefit");
-  const [benefitForm, setBenefitForm] = useState({ partner: "", title: "", description: "", link: "" });
   const campaigns = getBenefitCampaigns(language);
 
   if (slug) {
@@ -2658,14 +2992,7 @@ function BenefitsPage({ role, language, slug }: { role: Role; language: Lang; sl
 
     return (
       <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-        <Link
-          href={withRole("/benefits", role)}
-          className="inline-flex rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-900"
-        >
-          ← {t.announcements.back}
-        </Link>
-
-        <div className="mt-6 flex items-start gap-4">
+        <div className="flex items-start gap-4">
           <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100">
             <BrandIcon className="h-5 w-5" />
           </span>
@@ -2692,89 +3019,76 @@ function BenefitsPage({ role, language, slug }: { role: Role; language: Lang; sl
   }
 
   return (
-    <>
-      <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-        <div className="flex flex-wrap items-center justify-end gap-3">
-          {isAdmin ? (
-            <button type="button" onClick={() => setAddBenefitOpen(true)} className={getActionButtonClass("primary")}>
-              {t.benefits.addBenefit}
-            </button>
-          ) : null}
-        </div>
-        <div className="mt-6 grid gap-4 md:grid-cols-2">
-          {campaigns.map((campaign) => (
-            <Link
-              key={campaign.slug}
-              href={withRole(`/benefits/${campaign.slug}`, role)}
-              className="group rounded-3xl bg-slate-50 p-5 ring-1 ring-slate-200 transition hover:bg-sky-50 hover:ring-sky-200"
-            >
-              <div className="flex items-start gap-4">
-                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100">
-                  <BrandIcon className="h-4 w-4" />
-                </span>
-                <div className="min-w-0 flex-1">
-                  <h3 className="text-lg font-semibold text-slate-950 group-hover:text-sky-900">{campaign.title}</h3>
-                  <p className="mt-2 text-sm leading-6 text-slate-500">{campaign.description}</p>
-                  <span className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-sky-700 group-hover:text-sky-800">
-                    {t.benefits.openCampaign}
-                    <ArrowRightIcon className="h-4 w-4" />
-                  </span>
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
+    <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="flex flex-wrap items-center justify-end gap-3">
+        {isAdmin ? (
+          <ButtonLink href={withRoleAndFrom("/benefits/create", role, pathname)}>{t.benefits.addBenefit}</ButtonLink>
+        ) : null}
       </div>
+      <div className="mt-6 grid gap-4 md:grid-cols-2">
+        {campaigns.map((campaign) => (
+          <Link
+            key={campaign.slug}
+            href={withRoleAndFrom(`/benefits/${campaign.slug}`, role, pathname)}
+            className="group rounded-3xl bg-slate-50 p-5 ring-1 ring-slate-200 transition hover:bg-sky-50 hover:ring-sky-200"
+          >
+            <div className="flex items-start gap-4">
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100">
+                <BrandIcon className="h-4 w-4" />
+              </span>
+              <div className="min-w-0 flex-1">
+                <h3 className="text-lg font-semibold text-slate-950 group-hover:text-sky-900">{campaign.title}</h3>
+                <p className="mt-2 text-sm leading-6 text-slate-500">{campaign.description}</p>
+                <span className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-sky-700 group-hover:text-sky-800">
+                  {t.benefits.openCampaign}
+                  <ArrowRightIcon className="h-4 w-4" />
+                </span>
+              </div>
+            </div>
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
+}
 
-      {addBenefitOpen ? (
-        <div className="fixed inset-0 z-40 flex items-center justify-center bg-slate-950/30 p-4 backdrop-blur-sm">
-          <div className="w-full max-w-xl rounded-3xl border border-slate-200 bg-white p-6 shadow-xl">
-            <SectionTitle title={t.benefits.addBenefitTitle} description="" />
-            <div className="mt-5 space-y-4">
-              <input
-                value={benefitForm.partner}
-                onChange={(event) => setBenefitForm((current) => ({ ...current, partner: event.target.value }))}
-                className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
-                placeholder={t.benefits.partnerName}
-              />
-              <input
-                value={benefitForm.title}
-                onChange={(event) => setBenefitForm((current) => ({ ...current, title: event.target.value }))}
-                className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
-                placeholder={t.benefits.campaignTitle}
-              />
-              <textarea
-                value={benefitForm.description}
-                onChange={(event) => setBenefitForm((current) => ({ ...current, description: event.target.value }))}
-                className="h-32 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
-                placeholder={t.benefits.campaignDescription}
-              />
-              <input
-                value={benefitForm.link}
-                onChange={(event) => setBenefitForm((current) => ({ ...current, link: event.target.value }))}
-                className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
-                placeholder={t.benefits.campaignLink}
-              />
-            </div>
-            <div className="mt-5 flex justify-end gap-3">
-              <button type="button" onClick={() => setAddBenefitOpen(false)} className={getActionButtonClass("secondary")}>
-                {t.documents.cancel}
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setAddBenefitOpen(false);
-                  setBenefitForm({ partner: "", title: "", description: "", link: "" });
-                }}
-                className={getActionButtonClass("primary")}
-              >
-                {t.documents.save}
-              </button>
-            </div>
-          </div>
-        </div>
-      ) : null}
-    </>
+function BenefitCreatePage({ language }: { role: Role; language: Lang }) {
+  const t = getText(language);
+  const [form, setForm] = useState({ partner: "", title: "", description: "", link: "" });
+
+  return (
+    <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="space-y-4">
+        <input
+          value={form.partner}
+          onChange={(event) => setForm((current) => ({ ...current, partner: event.target.value }))}
+          className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
+          placeholder={t.benefits.partnerName}
+        />
+        <input
+          value={form.title}
+          onChange={(event) => setForm((current) => ({ ...current, title: event.target.value }))}
+          className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
+          placeholder={t.benefits.campaignTitle}
+        />
+        <textarea
+          value={form.description}
+          onChange={(event) => setForm((current) => ({ ...current, description: event.target.value }))}
+          className="h-32 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
+          placeholder={t.benefits.campaignDescription}
+        />
+        <input
+          value={form.link}
+          onChange={(event) => setForm((current) => ({ ...current, link: event.target.value }))}
+          className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
+          placeholder={t.benefits.campaignLink}
+        />
+      </div>
+      <div className="mt-6 flex justify-end gap-3">
+        <button type="button" className={getActionButtonClass("secondary")}>{t.documents.cancel}</button>
+        <button type="button" className={getActionButtonClass("primary")}>{t.documents.save}</button>
+      </div>
+    </div>
   );
 }
 
@@ -2819,8 +3133,7 @@ function CoursesContent({ role, language }: { role: Role; language: Lang }) {
 
   return (
     <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <SectionTitle title={t.courses.title} description="" />
+      <div className="flex flex-wrap items-center justify-end gap-4">
         {isAdmin ? (
           <button
             type="button"
@@ -2926,12 +3239,6 @@ function CourseDetailPage({ role, language, slug }: { role: Role; language: Lang
   return (
     <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <Link
-          href={withRole("/courses", role)}
-          className="inline-flex rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-900"
-        >
-          ← {t.announcements.back}
-        </Link>
 
         {isAdmin ? (
           <div className="flex flex-wrap gap-3">
@@ -3080,12 +3387,6 @@ function DocumentDetailPage({ role, slug, language }: { role: Role; slug: string
   return (
     <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <Link
-          href={withRole("/documents", role)}
-          className="inline-flex rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-900"
-        >
-          ← {t.announcements.back}
-        </Link>
 
         {role === "admin" ? (
           <div className="flex flex-wrap gap-3">
@@ -3242,7 +3543,7 @@ function MyPage({ role, language, slug }: { role: Role; language: Lang; slug?: s
         </div>
 
         <Link
-          href={withRole("/my-page/contract", role)}
+          href={withRoleAndFrom("/my-page/contract", role, "/my-page")}
           className="group relative mt-6 block rounded-3xl bg-slate-50 p-5 ring-1 ring-slate-200 transition hover:bg-sky-50/70 hover:ring-sky-200"
         >
           <SectionTitle title={t.myPage.documents} description="" />
@@ -3301,12 +3602,6 @@ function MyPageDetailPage({ role, language, slug }: { role: Role; language: Lang
 
   return (
     <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-      <Link
-        href={withRole("/my-page", role)}
-        className="inline-flex rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-900"
-      >
-        ← {t.announcements.back}
-      </Link>
 
       <div className="mt-6 rounded-3xl bg-slate-50 p-5 ring-1 ring-slate-200">
         <div className="flex items-center gap-4 rounded-2xl bg-white p-4">
@@ -3700,12 +3995,6 @@ function WelcomeOnBoardDetailPage({ role, language, slug }: { role: Role; langua
   return (
     <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <Link
-          href={withRole("/welcome-on-board", role)}
-          className="inline-flex rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-900"
-        >
-          ← {t.announcements.back}
-        </Link>
 
         {isAdmin ? (
           <div className="flex flex-wrap gap-3">
@@ -3997,17 +4286,12 @@ function SocialHubPage({ role, language }: { role: Role; language: Lang }) {
 
   return (
     <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-      <SectionTitle
-        title={isAdmin ? t.socialHub.manage : t.socialHub.openInfo}
-        description=""
-      />
-
-      <div className="mt-6 grid gap-6 xl:grid-cols-2">
+      <div className="grid gap-6 xl:grid-cols-2">
         <section className="rounded-3xl bg-slate-50 p-5">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <h3 className="text-lg font-semibold text-slate-950">{t.socialHub.benefits}</h3>
             {isAdmin ? (
-              <ButtonLink href={withRole("/social-hub/edit?section=benefits", role)} variant="outline">
+              <ButtonLink href={withRoleAndFrom("/social-hub/edit?section=benefits", role, "/social-hub")} variant="outline">
                 {t.socialHub.updateBenefits}
               </ButtonLink>
             ) : null}
@@ -4018,7 +4302,7 @@ function SocialHubPage({ role, language }: { role: Role; language: Lang }) {
                 id="multisport"
                 title={t.socialHub.multiSportTitle}
                 content={t.socialHub.multiSport}
-                editHref={withRole("/social-hub/edit?section=benefits&item=multisport", role)}
+                editHref={withRoleAndFrom("/social-hub/edit?section=benefits&item=multisport", role, "/social-hub")}
                 isAdmin={isAdmin}
                 editLabel={t.socialHub.edit}
                 deleteLabel={t.common.delete}
@@ -4038,7 +4322,7 @@ function SocialHubPage({ role, language }: { role: Role; language: Lang }) {
                 id="dietician"
                 title={t.socialHub.dieticianTitle}
                 content={t.socialHub.dietician}
-                editHref={withRole("/social-hub/edit?section=benefits&item=dietician", role)}
+                editHref={withRoleAndFrom("/social-hub/edit?section=benefits&item=dietician", role, "/social-hub")}
                 isAdmin={isAdmin}
                 editLabel={t.socialHub.edit}
                 deleteLabel={t.common.delete}
@@ -4058,7 +4342,7 @@ function SocialHubPage({ role, language }: { role: Role; language: Lang }) {
                 id="cambly"
                 title={t.socialHub.camblyTitle}
                 content={t.socialHub.cambly}
-                editHref={withRole("/social-hub/edit?section=benefits&item=cambly", role)}
+                editHref={withRoleAndFrom("/social-hub/edit?section=benefits&item=cambly", role, "/social-hub")}
                 isAdmin={isAdmin}
                 editLabel={t.socialHub.edit}
                 deleteLabel={t.common.delete}
@@ -4079,7 +4363,7 @@ function SocialHubPage({ role, language }: { role: Role; language: Lang }) {
           <div className="flex flex-wrap items-center justify-between gap-3">
             <h3 className="text-lg font-semibold text-slate-950">{t.socialHub.clubs}</h3>
             {isAdmin ? (
-              <ButtonLink href={withRole("/social-hub/edit?section=clubs", role)} variant="outline">
+              <ButtonLink href={withRoleAndFrom("/social-hub/edit?section=clubs", role, "/social-hub")} variant="outline">
                 {t.socialHub.update}
               </ButtonLink>
             ) : null}
@@ -4090,7 +4374,7 @@ function SocialHubPage({ role, language }: { role: Role; language: Lang }) {
                 id="rowing"
                 title={t.socialHub.rowingTitle}
                 content={t.socialHub.rowing}
-                editHref={withRole("/social-hub/edit?section=clubs&item=rowing", role)}
+                editHref={withRoleAndFrom("/social-hub/edit?section=clubs&item=rowing", role, "/social-hub")}
                 isAdmin={isAdmin}
                 editLabel={t.socialHub.edit}
                 deleteLabel={t.common.delete}
@@ -4110,7 +4394,7 @@ function SocialHubPage({ role, language }: { role: Role; language: Lang }) {
                 id="football"
                 title={t.socialHub.footballTitle}
                 content={t.socialHub.football}
-                editHref={withRole("/social-hub/edit?section=clubs&item=football", role)}
+                editHref={withRoleAndFrom("/social-hub/edit?section=clubs&item=football", role, "/social-hub")}
                 isAdmin={isAdmin}
                 editLabel={t.socialHub.edit}
                 deleteLabel={t.common.delete}
@@ -4130,7 +4414,7 @@ function SocialHubPage({ role, language }: { role: Role; language: Lang }) {
                 id="reading"
                 title={t.socialHub.readingTitle}
                 content={t.socialHub.reading}
-                editHref={withRole("/social-hub/edit?section=clubs&item=reading", role)}
+                editHref={withRoleAndFrom("/social-hub/edit?section=clubs&item=reading", role, "/social-hub")}
                 isAdmin={isAdmin}
                 editLabel={t.socialHub.edit}
                 deleteLabel={t.common.delete}
@@ -4150,7 +4434,7 @@ function SocialHubPage({ role, language }: { role: Role; language: Lang }) {
                 id="foodie"
                 title={t.socialHub.foodieTitle}
                 content={t.socialHub.foodie}
-                editHref={withRole("/social-hub/edit?section=clubs&item=foodie", role)}
+                editHref={withRoleAndFrom("/social-hub/edit?section=clubs&item=foodie", role, "/social-hub")}
                 isAdmin={isAdmin}
                 editLabel={t.socialHub.edit}
                 deleteLabel={t.common.delete}
@@ -4170,7 +4454,7 @@ function SocialHubPage({ role, language }: { role: Role; language: Lang }) {
                 id="hali-saha"
                 title={t.socialHub.haliSahaTitle}
                 content={t.socialHub.haliSaha}
-                editHref={withRole("/social-hub/edit?section=clubs&item=hali-saha", role)}
+                editHref={withRoleAndFrom("/social-hub/edit?section=clubs&item=hali-saha", role, "/social-hub")}
                 isAdmin={isAdmin}
                 editLabel={t.socialHub.edit}
                 deleteLabel={t.common.delete}
@@ -4206,8 +4490,7 @@ function SocialHubEditPage({
 
   return (
     <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-      <SectionTitle title={t.socialHub.updateTitle} description="" />
-      <div className="mt-6 rounded-2xl bg-slate-50 p-4 text-sm font-medium text-slate-700">
+      <div className="rounded-2xl bg-slate-50 p-4 text-sm font-medium text-slate-700">
         {item ?? (isBenefits ? t.socialHub.updateSectionBenefits : t.socialHub.updateSectionClubs)}
       </div>
       <div className="mt-4 space-y-4">
@@ -4276,8 +4559,18 @@ function renderPage(
       return selectedDocumentSlug
         ? <DocumentDetailPage role={role} slug={selectedDocumentSlug} language={language} />
         : <DocumentsPage role={role} language={language} />;
+    case "document-create":
+      return <DocumentCreatePage role={role} language={language} />;
+    case "document-assign":
+      return <DocumentAssignPage role={role} language={language} />;
+    case "document-request":
+      return <DocumentRequestPage role={role} language={language} />;
     case "benefits":
       return <BenefitsPage role={role} language={language} slug={selectedBenefitSlug} />;
+    case "benefit-create":
+      return <BenefitCreatePage role={role} language={language} />;
+    case "profile-create":
+      return <ProfileCreatePage role={role} language={language} />;
     case "my-page":
       return <MyPage role={role} language={language} slug={selectedMyPageSlug} />;
     case "courses":
@@ -4316,11 +4609,14 @@ export default function PortalShell({
   selectedSocialHubItem,
 }: PortalShellProps) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const [language, setLanguage] = useState<Lang>(() => {
     if (typeof window === "undefined") return "en";
     return getLang(window.localStorage.getItem("token-hub-language") ?? undefined);
   });
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [quickAccessSearch, setQuickAccessSearch] = useState("");
   const [followedBlogCategories, setFollowedBlogCategories] = useState<BlogCategory[]>(() => getStoredFollowedBlogs());
 
   const t = getText(language);
@@ -4347,6 +4643,7 @@ export default function PortalShell({
     ? [
         { label: t.nav.adminDashboard, href: "/" },
         { label: t.nav.myPage, href: "/my-page", badge: myPageTodoCount },
+        { label: t.nav.profiles, href: "/profiles/create" },
         { label: t.nav.announcements, href: "/announcements" },
         { label: t.nav.blogManagement, href: "/blog" },
         { label: t.nav.documents, href: "/documents" },
@@ -4365,8 +4662,70 @@ export default function PortalShell({
         { label: t.nav.socialHub, href: "/social-hub" },
         { label: t.nav.welcomeOnBoard, href: "/welcome-on-board" },
       ];
+  const quickAccessLinks = [
+    ...navLinks,
+    ...(role === "admin"
+      ? [
+          { label: t.dashboard.createProfile, href: "/profiles/create" },
+          { label: t.common.createAnnouncement, href: "/announcements/create" },
+          { label: t.documents.addDocument, href: "/documents/create" },
+          { label: t.documents.assignDocument, href: "/documents/assign" },
+          { label: t.benefits.addBenefit, href: "/benefits/create" },
+        ]
+      : [
+          { label: t.documents.requestDocument, href: "/documents/request" },
+          { label: t.blog.requestBlog, href: "/blog?request=true" },
+        ]),
+  ];
+  const navigateFromQuickAccess = () => {
+    const normalizedSearch = quickAccessSearch.trim().toLowerCase();
+    if (!normalizedSearch) return;
+    const match = quickAccessLinks.find((item) => item.label.toLowerCase() === normalizedSearch)
+      ?? quickAccessLinks.find((item) => item.label.toLowerCase().includes(normalizedSearch));
+    if (!match) return;
+    const currentParams = new URLSearchParams(searchParams.toString());
+    currentParams.delete("role");
+    currentParams.delete("from");
+    const currentPath = `${pathname}${currentParams.toString() ? `?${currentParams.toString()}` : ""}`;
+    router.push(withRoleAndFrom(match.href, role, currentPath));
+    setQuickAccessSearch("");
+  };
   const pageName = role === "admin" ? t.myPage.adminName : t.myPage.employeeName;
   const firstName = pageName.split(" ")[0];
+  const backConfig =
+    page === "announcement-request"
+      ? { fallbackHref: "/announcements", label: t.announcements.back }
+      : page === "announcement-requests"
+        ? { fallbackHref: "/announcements", label: t.announcements.back }
+        : page === "announcement-create"
+          ? { fallbackHref: "/announcements", label: t.announcements.back }
+          : page === "announcement-edit" || (page === "announcements" && selectedAnnouncementSlug)
+            ? { fallbackHref: "/announcements", label: t.announcements.back }
+            : page === "blog" && (selectedPostSlug || selectedBlogCategory || isBlogRequestView)
+              ? { fallbackHref: "/blog", label: t.blog.backToPosts }
+              : page === "documents" && selectedDocumentSlug
+                ? { fallbackHref: "/documents", label: t.announcements.back }
+                : page === "document-create"
+                  ? { fallbackHref: "/documents", label: t.announcements.back }
+                  : page === "document-assign"
+                    ? { fallbackHref: "/documents", label: t.announcements.back }
+                    : page === "document-request"
+                      ? { fallbackHref: "/documents", label: t.announcements.back }
+                      : page === "benefits" && selectedBenefitSlug
+                        ? { fallbackHref: "/benefits", label: t.announcements.back }
+                        : page === "benefit-create"
+                          ? { fallbackHref: "/benefits", label: t.announcements.back }
+                          : page === "profile-create"
+                            ? { fallbackHref: "/", label: t.announcements.back }
+                            : page === "courses" && selectedCourseSlug
+                              ? { fallbackHref: "/courses", label: t.announcements.back }
+                              : page === "my-page" && selectedMyPageSlug
+                                ? { fallbackHref: "/my-page", label: t.announcements.back }
+                                : page === "welcome-on-board" && selectedWelcomeOnBoardSlug
+                                  ? { fallbackHref: "/welcome-on-board", label: t.announcements.back }
+                                  : page === "social-hub-edit"
+                                    ? { fallbackHref: "/social-hub", label: t.announcements.back }
+                                    : null;
   const heading =
     page === "dashboard"
       ? {
@@ -4395,7 +4754,7 @@ export default function PortalShell({
   return (
     <div className="min-h-screen bg-[linear-gradient(180deg,_#f8fbff_0%,_#f8fafc_45%,_#ffffff_100%)] text-slate-900">
       <div className="mx-auto flex min-h-screen max-w-[1600px]">
-        <aside className="sticky top-0 hidden h-screen w-72 flex-col border-r border-slate-200/80 bg-white/88 px-6 py-8 text-slate-900 backdrop-blur-xl lg:flex">
+        <aside className="sticky top-0 hidden h-screen w-72 overflow-y-auto border-r border-slate-200/80 bg-white/88 px-6 py-8 text-slate-900 backdrop-blur-xl lg:flex lg:flex-col">
           <TokenHubLogo />
 
           <nav className="mt-8 space-y-2">
@@ -4442,13 +4801,35 @@ export default function PortalShell({
                   {heading.description ? (
                     <p className="mt-1 text-sm text-slate-500">{heading.description}</p>
                   ) : null}
+                  {backConfig ? (
+                    <div className="mt-3">
+                      <MasterBackButton role={role} fallbackHref={backConfig.fallbackHref} label={backConfig.label} />
+                    </div>
+                  ) : null}
                 </div>
 
                 <div className="flex flex-wrap items-center gap-3">
-                  <div className="flex min-w-[220px] flex-1 items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-500 shadow-sm lg:max-w-xs">
+                  <form
+                    onSubmit={(event) => {
+                      event.preventDefault();
+                      navigateFromQuickAccess();
+                    }}
+                    className="flex min-w-[220px] flex-1 items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-500 shadow-sm lg:max-w-xs"
+                  >
                     <SearchIcon className="h-4 w-4 text-slate-400" />
-                    <span>{t.common.search}</span>
-                  </div>
+                    <input
+                      list="portal-quick-access-options"
+                      value={quickAccessSearch}
+                      onChange={(event) => setQuickAccessSearch(event.target.value)}
+                      className="min-w-0 flex-1 bg-transparent py-1 text-sm text-slate-700 outline-none placeholder:text-slate-400"
+                      placeholder={t.common.search}
+                    />
+                    <datalist id="portal-quick-access-options">
+                      {quickAccessLinks.map((item) => (
+                        <option key={`${item.href}-${item.label}`} value={item.label} />
+                      ))}
+                    </datalist>
+                  </form>
 
                   <div className="relative">
                     <button
@@ -4520,30 +4901,33 @@ export default function PortalShell({
                 </div>
               </div>
 
-              <div className="flex gap-2 overflow-x-auto lg:hidden">
-                {navLinks.map((item) => {
-                  const active = pathname === item.href || (item.href !== "/" && pathname.startsWith(`${item.href}/`));
+              <div className="space-y-3 lg:hidden">
+                <div className="flex gap-2 overflow-x-auto">
+                  {navLinks.map((item) => {
+                    const active = pathname === item.href || (item.href !== "/" && pathname.startsWith(`${item.href}/`));
 
-                  return (
-                    <Link
-                      key={item.label}
-                      href={withRole(item.href, role)}
-                      className={`inline-flex items-center gap-2 whitespace-nowrap rounded-2xl border px-4 py-2.5 text-sm font-medium ${
-                        active
-                          ? "border-slate-950 bg-slate-950 !text-white"
-                          : "border-slate-200 bg-white text-slate-600"
-                      }`}
-                    >
-                      <NavItemIcon href={item.href} className="h-4 w-4" />
-                      {item.label}
-                      {item.badge ? (
-                        <span className={`inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-[11px] font-semibold ${active ? "bg-white/15 text-white" : "bg-sky-100 text-sky-700"}`}>
-                          {item.badge}
-                        </span>
-                      ) : null}
-                    </Link>
-                  );
-                })}
+                    return (
+                      <Link
+                        key={item.label}
+                        href={withRole(item.href, role)}
+                        className={`inline-flex items-center gap-2 whitespace-nowrap rounded-2xl border px-4 py-2.5 text-sm font-medium ${
+                          active
+                            ? "border-slate-950 bg-slate-950 !text-white"
+                            : "border-slate-200 bg-white text-slate-600"
+                        }`}
+                      >
+                        <NavItemIcon href={item.href} className="h-4 w-4" />
+                        {item.label}
+                        {item.badge ? (
+                          <span className={`inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-[11px] font-semibold ${active ? "bg-white/15 text-white" : "bg-sky-100 text-sky-700"}`}>
+                            {item.badge}
+                          </span>
+                        ) : null}
+                      </Link>
+                    );
+                  })}
+                </div>
+                <RoleToggle pathname={pathname} role={role} language={language} />
               </div>
             </div>
           </header>
