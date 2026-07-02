@@ -466,7 +466,6 @@ function getText(language: Lang) {
         benefits: "Çalışan Ayrıcalıkları",
         courses: "Growth O'Clock",
         myPage: "Ana Sayfa",
-        profiles: "Çalışan Profilleri",
         welcomeOnBoard: "Aramıza Hoş Geldin",
         formSubmissions: "Form Gönderimleri",
         socialHubSettings: "Social Hub",
@@ -489,6 +488,7 @@ function getText(language: Lang) {
         benefits: { title: "Çalışan Ayrıcalıkları", description: "" },
         "benefit-create": { title: "Yeni Ayrıcalık Ekle", description: "" },
         courses: { title: "Growth O'Clock", description: "" },
+        profiles: { title: "Çalışan Profilleri", description: "" },
         "profile-create": { title: "Yeni Profil Oluştur", description: "" },
         "my-page": { title: "Ana Sayfa", description: "" },
         "welcome-on-board": { title: "Aramıza Hoş Geldin", description: "" },
@@ -522,6 +522,7 @@ function getText(language: Lang) {
         addDocument: "Doküman Ekle",
         addDocumentForEmployee: "Çalışana Doküman Ekle",
         addBenefit: "Yeni Ayrıcalık Ekle",
+        employeeProfiles: "Çalışan Profilleri",
         createProfile: "Yeni Profil Oluştur",
         announcementRequests: "Duyuru Talepleri",
         total: "Toplam",
@@ -670,6 +671,7 @@ function getText(language: Lang) {
         title: "Çalışan Ayrıcalıkları",
         openCampaign: "Kampanyayı Aç",
         brandWebsite: "Marka Websitesi",
+        expires: "Son Tarih",
         addBenefit: "Yeni Ayrıcalık Ekle",
         addBenefitTitle: "Yeni Ayrıcalık Oluştur",
         partnerName: "Marka / İş Ortağı",
@@ -699,6 +701,11 @@ function getText(language: Lang) {
       },
       profileCreate: {
         title: "Yeni Profil Oluştur",
+        editTitle: "Çalışan Profilini Düzenle",
+        update: "Profili Kaydet",
+        listTitle: "Çalışan Profilleri",
+        noResults: "Gösterilecek çalışan bulunamadı.",
+        editProfile: "Düzenle",
         employeeName: "Çalışan Adı",
         employeeEmail: "Çalışan E-Postası",
         employeeRole: "Pozisyon",
@@ -731,6 +738,7 @@ function getText(language: Lang) {
         companyEmail: "Şirket E-Postam",
         buddy: "Buddy'm",
         buddyEmail: "Buddy E-Postası",
+        buddyPhone: "Buddy Telefonu",
         documents: "Dokümanlarım",
         contract: "Sözleşmem",
         contractStatus: "Aktif",
@@ -750,6 +758,8 @@ function getText(language: Lang) {
         adminBuddyName: "Selin Kaya",
         employeeBuddyEmailAddress: "deniz.aksoy@token.com.tr",
         adminBuddyEmailAddress: "selin.kaya@token.com.tr",
+        employeeBuddyPhoneNumber: "+90 532 245 18 40",
+        adminBuddyPhoneNumber: "+90 533 412 67 28",
         todoItemsEmployee: ["Welcome To Token kursunu tamamla", "Konser Bileti Hediyesi formunu doldur", "Şirket Wi‑Fi bilgilerini gözden geçir"],
         todoItemsAdmin: ["Duyuru taleplerini değerlendir", "Growth O'Clock kurslarını güncelle", "Aramıza Hoş Geldin içeriklerini gözden geçir"],
       },
@@ -845,7 +855,6 @@ function getText(language: Lang) {
       benefits: "Employee Benefits",
       courses: "Growth O'Clock",
       myPage: "Homepage",
-      profiles: "Employee Profiles",
       welcomeOnBoard: "Welcome On Board",
       formSubmissions: "Form Submissions",
       socialHubSettings: "Social Hub",
@@ -868,6 +877,7 @@ function getText(language: Lang) {
       benefits: { title: "Employee Benefits", description: "" },
       "benefit-create": { title: "Add A New Benefit", description: "" },
       courses: { title: "Growth O'Clock", description: "" },
+      profiles: { title: "Employee Profiles", description: "" },
       "profile-create": { title: "Create New Profile", description: "" },
       "my-page": { title: "Homepage", description: "" },
       "welcome-on-board": { title: "Welcome On Board", description: "" },
@@ -901,6 +911,7 @@ function getText(language: Lang) {
       addDocument: "Add Document",
       addDocumentForEmployee: "Add Document For An Employee",
       addBenefit: "Add New Benefit",
+      employeeProfiles: "Employee Profiles",
       createProfile: "Create New Profile",
       announcementRequests: "Announcement Requests",
       total: "Total",
@@ -1049,6 +1060,7 @@ function getText(language: Lang) {
       title: "Employee Benefits",
       openCampaign: "Open Campaign",
       brandWebsite: "Brand Website",
+      expires: "Expiry Date",
       addBenefit: "Add New Benefit",
       addBenefitTitle: "Create A New Benefit",
       partnerName: "Partner / Brand",
@@ -1078,6 +1090,11 @@ function getText(language: Lang) {
     },
     profileCreate: {
       title: "Create New Profile",
+      editTitle: "Edit Employee Profile",
+      update: "Save Profile",
+      listTitle: "Employee Profiles",
+      noResults: "No employee found to display.",
+      editProfile: "Edit",
       employeeName: "Employee Name",
       employeeEmail: "Employee Email",
       employeeRole: "Role",
@@ -1110,6 +1127,7 @@ function getText(language: Lang) {
       companyEmail: "My Company Email",
       buddy: "My Buddy",
       buddyEmail: "Buddy Email",
+      buddyPhone: "Buddy Phone",
       documents: "My Documents",
       contract: "My Contract",
       contractStatus: "Active",
@@ -1129,6 +1147,8 @@ function getText(language: Lang) {
       adminBuddyName: "Selin Kaya",
       employeeBuddyEmailAddress: "deniz.aksoy@token.com.tr",
       adminBuddyEmailAddress: "selin.kaya@token.com.tr",
+      employeeBuddyPhoneNumber: "+90 532 245 18 40",
+      adminBuddyPhoneNumber: "+90 533 412 67 28",
       todoItemsEmployee: ["Complete the Welcome To Token course", "Fill out the Concert Ticket Gift form", "Review the company Wi‑Fi details"],
       todoItemsAdmin: ["Review announcement requests", "Update Growth O'Clock courses", "Review Welcome On Board content"],
     },
@@ -1386,7 +1406,8 @@ function DashboardPage({ role, language }: { role: Role; language: Lang }) {
         <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
           <SectionTitle title={t.dashboard.adminControls} description="" />
           <div className="mt-6 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-            <ButtonLink href={withRoleAndFrom("/profiles/create", role, "/")} className="min-h-[52px] text-center leading-5">{t.dashboard.createProfile}</ButtonLink>
+            <ButtonLink href={withRoleAndFrom("/profiles", role, "/")} className="min-h-[52px] text-center leading-5">{t.dashboard.employeeProfiles}</ButtonLink>
+            <ButtonLink href={withRoleAndFrom("/profiles/create", role, "/")} variant="outline" className="min-h-[52px] text-center leading-5">{t.dashboard.createProfile}</ButtonLink>
             <ButtonLink href={withRoleAndFrom("/announcements/create", role, "/")} variant="outline" className="min-h-[52px] text-center leading-5">{t.common.createAnnouncement}</ButtonLink>
             <ButtonLink href={withRoleAndFrom("/documents/create", role, "/")} variant="outline" className="min-h-[52px] text-center leading-5">{t.dashboard.addDocument}</ButtonLink>
             <ButtonLink href={withRoleAndFrom("/documents/assign", role, "/")} variant="outline" className="min-h-[52px] text-center leading-5">{t.dashboard.addDocumentForEmployee}</ButtonLink>
@@ -2725,24 +2746,28 @@ function getBenefitCampaigns(language: Lang) {
           title: "Boyner Çalışan Kampanyası",
           description: "Seçili sezon ürünlerinde çalışanlara özel indirim fırsatları.",
           href: "https://www.boyner.com.tr",
+          expiresAt: "30 Temmuz 2026",
         },
         {
           slug: "pegasus",
           title: "Pegasus Seyahat Fırsatları",
           description: "Yurt içi ve yurt dışı seyahat planları için dönemsel kampanyalar.",
           href: "https://www.flypgs.com",
+          expiresAt: "12 Ağustos 2026",
         },
         {
           slug: "getiryemek",
           title: "GetirYemek Öğle Yemeği İndirimi",
           description: "Ofis günlerinde kullanılabilecek seçili restoran kampanyaları.",
           href: "https://getiryemek.com",
+          expiresAt: "5 Ağustos 2026",
         },
         {
           slug: "dr",
           title: "D&R Kültür ve Hobi Avantajları",
           description: "Kitap, kırtasiye ve hobi ürünlerinde çalışanlara yönelik fırsatlar.",
           href: "https://www.dr.com.tr",
+          expiresAt: "18 Ağustos 2026",
         },
       ]
     : [
@@ -2751,36 +2776,96 @@ function getBenefitCampaigns(language: Lang) {
           title: "Boyner Employee Campaign",
           description: "Special employee discounts on selected seasonal products.",
           href: "https://www.boyner.com.tr",
+          expiresAt: "July 30, 2026",
         },
         {
           slug: "pegasus",
           title: "Pegasus Travel Deals",
           description: "Seasonal travel campaigns for domestic and international trips.",
           href: "https://www.flypgs.com",
+          expiresAt: "August 12, 2026",
         },
         {
           slug: "getiryemek",
           title: "GetirYemek Lunch Discount",
           description: "Selected restaurant offers that can be used on office days.",
           href: "https://getiryemek.com",
+          expiresAt: "August 5, 2026",
         },
         {
           slug: "dr",
           title: "D&R Culture And Hobby Offers",
           description: "Employee-facing offers for books, stationery, and hobby products.",
           href: "https://www.dr.com.tr",
+          expiresAt: "August 18, 2026",
         },
       ];
 }
 
-function ProfileCreatePage({ language }: { role: Role; language: Lang }) {
+function ProfilesPage({ role, language }: { role: Role; language: Lang }) {
   const t = getText(language);
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [employeeRole, setEmployeeRole] = useState("");
-  const [team, setTeam] = useState("");
+  const pathname = usePathname();
+  const [employeeSearch, setEmployeeSearch] = useState("");
+  const employees = getEmployeeDirectory(language).filter((employee) => `${employee.name} ${employee.email} ${employee.team} ${employee.role}`.toLowerCase().includes(employeeSearch.trim().toLowerCase()));
+
+  return (
+    <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="flex flex-wrap items-center justify-end gap-3">
+        <ButtonLink href={withRoleAndFrom("/profiles/create", role, pathname)}>{t.dashboard.createProfile}</ButtonLink>
+      </div>
+
+      <div className="mt-6 flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-500">
+        <SearchIcon className="h-4 w-4 text-slate-400" />
+        <input
+          value={employeeSearch}
+          onChange={(event) => setEmployeeSearch(event.target.value)}
+          className="min-w-0 flex-1 bg-transparent text-sm text-slate-700 outline-none placeholder:text-slate-400"
+          placeholder={t.common.search}
+        />
+      </div>
+
+      <div className="mt-6 space-y-4">
+        {employees.length ? employees.map((employee) => (
+          <div key={employee.email} className="rounded-2xl bg-slate-50 p-4 ring-1 ring-slate-200">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div className="min-w-0">
+                <div className="flex flex-wrap items-center gap-3">
+                  <p className="font-medium text-slate-950">{employee.name}</p>
+                  <ButtonLink href={withRoleAndFrom(`/profiles/create?employee=${encodeURIComponent(employee.email)}`, role, "/profiles")} variant="outline" className="px-3 py-2 text-xs">
+                    {t.profileCreate.editProfile}
+                  </ButtonLink>
+                </div>
+                <p className="mt-2 text-sm text-slate-500">{employee.role} · {employee.team}</p>
+                <p className="mt-1 text-sm text-slate-500">{employee.email}</p>
+              </div>
+            </div>
+          </div>
+        )) : (
+          <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-4 py-5 text-sm text-slate-500">
+            {t.profileCreate.noResults}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function ProfileCreatePage({ language }: { role: Role; language: Lang }) {
+  const searchParams = useSearchParams();
+  const selectedEmployeeEmail = searchParams.get("employee") ?? undefined;
+  const selectedEmployee = getEmployeeDirectory(language).find((employee) => employee.email === selectedEmployeeEmail);
+
+  return <ProfileCreateForm key={selectedEmployeeEmail ?? "new"} language={language} selectedEmployee={selectedEmployee} />;
+}
+
+function ProfileCreateForm({ language, selectedEmployee }: { language: Lang; selectedEmployee?: DirectoryEmployee }) {
+  const t = getText(language);
+  const [name, setName] = useState(selectedEmployee?.name ?? "");
+  const [email, setEmail] = useState(selectedEmployee?.email ?? "");
+  const [employeeRole, setEmployeeRole] = useState(selectedEmployee?.role ?? "");
+  const [team, setTeam] = useState(selectedEmployee?.team ?? "");
   const [buddy, setBuddy] = useState("");
-  const [startDate, setStartDate] = useState("");
+  const [startDate, setStartDate] = useState(selectedEmployee ? "2026-06-10" : "");
   const roleOptions = getRoleOptions(language);
   const teamOptions = getTeamOptions(language);
   const buddyOptions = getEmployeeDirectory(language).map((employee) => employee.name);
@@ -2966,7 +3051,7 @@ function ProfileCreatePage({ language }: { role: Role; language: Lang }) {
 
       <div className="mt-6 flex justify-end">
         <button type="button" className={getActionButtonClass("primary")}>
-          {t.profileCreate.save}
+          {selectedEmployee ? t.profileCreate.update : t.profileCreate.save}
         </button>
       </div>
     </div>
@@ -2999,6 +3084,7 @@ function BenefitsPage({ role, language, slug }: { role: Role; language: Lang; sl
           <div>
             <h2 className="text-2xl font-semibold text-sky-800">{campaign.title}</h2>
             <p className="mt-3 text-sm leading-6 text-slate-600">{campaign.description}</p>
+            <p className="mt-3 text-sm text-slate-500">{t.benefits.expires}: {campaign.expiresAt}</p>
           </div>
         </div>
 
@@ -3039,6 +3125,7 @@ function BenefitsPage({ role, language, slug }: { role: Role; language: Lang; sl
               <div className="min-w-0 flex-1">
                 <h3 className="text-lg font-semibold text-slate-950 group-hover:text-sky-900">{campaign.title}</h3>
                 <p className="mt-2 text-sm leading-6 text-slate-500">{campaign.description}</p>
+                <p className="mt-3 text-sm text-slate-500">{t.benefits.expires}: {campaign.expiresAt}</p>
                 <span className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-sky-700 group-hover:text-sky-800">
                   {t.benefits.openCampaign}
                   <ArrowRightIcon className="h-4 w-4" />
@@ -3514,6 +3601,7 @@ function MyPage({ role, language, slug }: { role: Role; language: Lang; slug?: s
   const team = isAdmin ? t.myPage.adminTeam : t.myPage.employeeTeam;
   const buddyName = isAdmin ? t.myPage.adminBuddyName : t.myPage.employeeBuddyName;
   const buddyEmail = isAdmin ? t.myPage.adminBuddyEmailAddress : t.myPage.employeeBuddyEmailAddress;
+  const buddyPhone = isAdmin ? t.myPage.adminBuddyPhoneNumber : t.myPage.employeeBuddyPhoneNumber;
   const todoItems = isAdmin ? t.myPage.todoItemsAdmin : t.myPage.todoItemsEmployee;
   const birthdays = language === "tr"
     ? [
@@ -3539,6 +3627,7 @@ function MyPage({ role, language, slug }: { role: Role; language: Lang; slug?: s
           <div className="mt-5 border-t border-slate-200 pt-4">
             <p className="text-sm font-medium text-slate-900">{t.myPage.buddy}: {buddyName}</p>
             <p className="mt-1 text-sm text-slate-500">{t.myPage.buddyEmail}: {buddyEmail}</p>
+            <p className="mt-1 text-sm text-slate-500">{t.myPage.buddyPhone}: {buddyPhone}</p>
           </div>
         </div>
 
@@ -4569,6 +4658,8 @@ function renderPage(
       return <BenefitsPage role={role} language={language} slug={selectedBenefitSlug} />;
     case "benefit-create":
       return <BenefitCreatePage role={role} language={language} />;
+    case "profiles":
+      return <ProfilesPage role={role} language={language} />;
     case "profile-create":
       return <ProfileCreatePage role={role} language={language} />;
     case "my-page":
@@ -4643,7 +4734,6 @@ export default function PortalShell({
     ? [
         { label: t.nav.adminDashboard, href: "/" },
         { label: t.nav.myPage, href: "/my-page", badge: myPageTodoCount },
-        { label: t.nav.profiles, href: "/profiles/create" },
         { label: t.nav.announcements, href: "/announcements" },
         { label: t.nav.blogManagement, href: "/blog" },
         { label: t.nav.documents, href: "/documents" },
@@ -4666,6 +4756,7 @@ export default function PortalShell({
     ...navLinks,
     ...(role === "admin"
       ? [
+          { label: t.dashboard.employeeProfiles, href: "/profiles" },
           { label: t.dashboard.createProfile, href: "/profiles/create" },
           { label: t.common.createAnnouncement, href: "/announcements/create" },
           { label: t.documents.addDocument, href: "/documents/create" },
@@ -4690,6 +4781,8 @@ export default function PortalShell({
     router.push(withRoleAndFrom(match.href, role, currentPath));
     setQuickAccessSearch("");
   };
+  const activeSource = searchParams.get("from");
+  const activePath = activeSource ? decodeURIComponent(activeSource).split("?")[0] : pathname;
   const pageName = role === "admin" ? t.myPage.adminName : t.myPage.employeeName;
   const firstName = pageName.split(" ")[0];
   const backConfig =
@@ -4715,8 +4808,10 @@ export default function PortalShell({
                         ? { fallbackHref: "/benefits", label: t.announcements.back }
                         : page === "benefit-create"
                           ? { fallbackHref: "/benefits", label: t.announcements.back }
-                          : page === "profile-create"
+                          : page === "profiles"
                             ? { fallbackHref: "/", label: t.announcements.back }
+                            : page === "profile-create"
+                              ? { fallbackHref: searchParams.get("from") === "/profiles" ? "/profiles" : "/", label: t.announcements.back }
                             : page === "courses" && selectedCourseSlug
                               ? { fallbackHref: "/courses", label: t.announcements.back }
                               : page === "my-page" && selectedMyPageSlug
@@ -4735,6 +4830,11 @@ export default function PortalShell({
       : page === "my-page"
         ? {
             title: selectedMyPageSlug === "contract" ? t.myPage.documents : `${t.myPage.hello} ${firstName},`,
+            description: "",
+          }
+      : page === "profile-create" && searchParams.get("employee")
+        ? {
+            title: t.profileCreate.editTitle,
             description: "",
           }
       : page === "announcement-request"
@@ -4759,7 +4859,9 @@ export default function PortalShell({
 
           <nav className="mt-8 space-y-2">
             {navLinks.map((item) => {
-              const active = pathname === item.href || (item.href !== "/" && pathname.startsWith(`${item.href}/`));
+              const active = item.href === "/"
+                ? activePath === "/"
+                : activePath === item.href || activePath.startsWith(`${item.href}/`);
 
               return (
                 <Link
@@ -4800,11 +4902,6 @@ export default function PortalShell({
                   </h1>
                   {heading.description ? (
                     <p className="mt-1 text-sm text-slate-500">{heading.description}</p>
-                  ) : null}
-                  {backConfig ? (
-                    <div className="mt-3">
-                      <MasterBackButton role={role} fallbackHref={backConfig.fallbackHref} label={backConfig.label} />
-                    </div>
                   ) : null}
                 </div>
 
@@ -4904,7 +5001,9 @@ export default function PortalShell({
               <div className="space-y-3 lg:hidden">
                 <div className="flex gap-2 overflow-x-auto">
                   {navLinks.map((item) => {
-                    const active = pathname === item.href || (item.href !== "/" && pathname.startsWith(`${item.href}/`));
+                    const active = item.href === "/"
+                      ? activePath === "/"
+                      : activePath === item.href || activePath.startsWith(`${item.href}/`);
 
                     return (
                       <Link
@@ -4931,6 +5030,12 @@ export default function PortalShell({
               </div>
             </div>
           </header>
+
+          {backConfig ? (
+            <div className="px-4 pt-4 sm:px-6 lg:px-8 lg:pt-6">
+              <MasterBackButton role={role} fallbackHref={backConfig.fallbackHref} label={backConfig.label} />
+            </div>
+          ) : null}
 
           <main className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
             {renderPage(page, role, language, followedBlogCategories, toggleFollowedBlog, selectedPostSlug, selectedBlogCategory, isBlogRequestView, selectedAnnouncementSlug, selectedAnnouncementRequestSlug, selectedDocumentSlug, selectedBenefitSlug, selectedCourseSlug, selectedMyPageSlug, selectedWelcomeOnBoardSlug, selectedSocialHubSection, selectedSocialHubItem)}

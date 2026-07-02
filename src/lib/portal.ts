@@ -16,6 +16,7 @@ export type PortalPage =
   | "benefits"
   | "benefit-create"
   | "courses"
+  | "profiles"
   | "profile-create"
   | "my-page"
   | "welcome-on-board"
